@@ -57,22 +57,18 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         position: 'relative',
-
     },
     container: {
         width: '100%',
         borderWidth: 2,
-        borderTopLeftRadius: 120,
+        borderTopLeftRadius: 50,
+        borderTopRightRadius: 50,
         justifyContent: 'center',
         alignItems: 'center',
-        height: '60%',
+        height: '70%',
         position: 'absolute',
-        top: screenHeight / 2.5,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
+        bottom: '0%',
+
     },
     inputContainer: {
         width: '80%'
