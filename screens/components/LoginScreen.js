@@ -14,6 +14,9 @@ const LoginScreen = () => {
 
     return (
         <KeyboardAvoidingView style={styles.root}>
+            <View style={styles.textLogo}>
+                <Text style={styles.wors}>WORS<Text style={styles.hify}>HIFY</Text></Text>
+            </View>
             <View
                 style={styles.container}
                 behavior='padding'>
@@ -26,6 +29,9 @@ const LoginScreen = () => {
                         placeholder='Password'
                         secureTextEntry
                         style={styles.input} />
+                    <TouchableOpacity>
+                        <Text style={styles.Ftext}>Forgot your password?</Text>
+                    </TouchableOpacity>
                 </View>
 
 
@@ -58,6 +64,21 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         position: 'relative',
+        backgroundColor: '#151414'
+    },
+    wors: {
+        color: '#F9F9F9',
+        fontSize: '35%'
+    },
+    hify: {
+        color: '#0EB080'
+    },
+    textLogo: {
+        position: 'absolute',
+        justifyContent: 'center',
+        zIndex: 1,
+        alignItems: 'center',
+        top: screenHeight / 5.5,
     },
     container: {
         width: '100%',
@@ -66,47 +87,60 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 50,
         justifyContent: 'center',
         alignItems: 'center',
-        height: '70%',
+        height: '65%',
         position: 'absolute',
         bottom: '0%',
-
+        backgroundColor: '#F9F9F9'
     },
     inputContainer: {
-        width: '80%'
+        width: '80%',
+        marginBottom: '5%'
     },
     input: {
-        backgroundColor: 'white',
+        backgroundColor: '#F9F9F9',
         paddingHorizontal: 15,
         paddingVertical: 10,
-        borderRadius: 15,
-        marginTop: 5
+        borderRadius: 25,
+        marginTop: 5,
+        borderWidth: 2,
+        borderColor: '#0EB080',
+        paddingVertical: 15,
+
+    },
+    Ftext: {
+        fontSize: 12,
+        textAlign: 'right',
+        color: '#32324D',
+        marginTop: '3%'
     },
     buttonContainer: {
-        width: "60%",
+        width: "80%",
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 40,
     },
     button: {
-        backgroundColor: 'blue',
+        backgroundColor: '#0EB080',
         width: '100%',
         padding: 15,
-        borderRadius: 10,
-        alignItems: 'center'
+        borderRadius: 25,
+        alignItems: 'center',
+        width: '100%',
+        marginBottom: '4%'
     },
     buttonOutline: {
-        backgroundColor: 'white',
+        backgroundColor: '#F9F9F9',
         marginTop: 5,
-        borderColor: 'blue',
+        borderColor: '#0EB080',
         borderWidth: 2
     },
     buttonText: {
-        color: 'white',
+        color: '#F9F9F9',
         fontWeight: '700',
         fontSize: 16
     },
     buttonOutlineText: {
-        color: 'blue',
+        color: '#0EB080',
         fontWeight: '700',
         fontSize: 16
     }
