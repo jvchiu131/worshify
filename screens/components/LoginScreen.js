@@ -13,8 +13,8 @@ const LoginScreen = () => {
 
 
     return (
-        <View style={styles.root}>
-            <KeyboardAvoidingView
+        <KeyboardAvoidingView style={styles.root}>
+            <View
                 style={styles.container}
                 behavior='padding'>
                 <View style={styles.inputContainer}>
@@ -27,6 +27,7 @@ const LoginScreen = () => {
                         secureTextEntry
                         style={styles.input} />
                 </View>
+
 
                 <View
                     style={styles.buttonContainer}>
@@ -43,9 +44,9 @@ const LoginScreen = () => {
                     </TouchableOpacity>
                 </View>
                 <StatusBar style='auto' />
-            </KeyboardAvoidingView>
+            </View>
 
-        </View>
+        </KeyboardAvoidingView>
     )
 }
 
