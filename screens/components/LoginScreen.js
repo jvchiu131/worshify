@@ -1,8 +1,12 @@
-import { KeyboardAvoidingView, StyleSheet, Text, View, Dimensions } from 'react-native'
-import React from 'react'
+import { KeyboardAvoidingView, StyleSheet, Text, View, Dimensions, Animated } from 'react-native'
+import React, { useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
-import { TextInput } from 'react-native-gesture-handler'
 import { TouchableOpacity } from 'react-native'
+import { Stack, TextInput, IconButton } from '@react-native-material/core'
+import Icon from '@expo/vector-icons/MaterialCommunityIcons'
+import LoginModal from '../LoginModal'
+import { TouchableWithoutFeedback } from 'react-native'
+
 
 
 
@@ -11,48 +15,60 @@ const { height: screenHeight } = Dimensions.get('window');
 
 const LoginScreen = () => {
 
+    const animValue = useState(new Animated.Value(-600))[0]
+
+    const moveModal = () => {
+        Animated.timing(animValue, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: false
+        }).start()
+    }
+
+    const moveBack = () => {
+        Animated.timing(animValue, {
+            toValue: -600,
+            duration: 300,
+            useNativeDriver: false
+        }).start()
+
+        console.log("press out!")
+    }
+
+
 
     return (
         <KeyboardAvoidingView style={styles.root}>
+
             <View style={styles.textLogo}>
                 <Text style={styles.wors}>WORS<Text style={styles.hify}>HIFY</Text></Text>
             </View>
+            <TouchableWithoutFeedback onPressOut={moveBack}>
+                <Animated.View
+                    style={{ ...styles.container, bottom: animValue }}
+                    behavior='padding'>
+                    <LoginModal />
+                </Animated.View>
+            </TouchableWithoutFeedback>
             <View
-                style={styles.container}
-                behavior='padding'>
-                <View style={styles.inputContainer}>
-                    <TextInput
-                        placeholder='Email'
-                        style={styles.input}
-                    />
-                    <TextInput
-                        placeholder='Password'
-                        secureTextEntry
-                        style={styles.input} />
-                    <TouchableOpacity>
-                        <Text style={styles.Ftext}>Forgot your password?</Text>
-                    </TouchableOpacity>
-                </View>
+                style={styles.rootbtnContainer}>
+                <TouchableOpacity
+                    onPress={moveModal}
+                    style={styles.rootbtn}>
+                    <Text style={styles.buttonText}>Login</Text>
+                </TouchableOpacity>
 
-
-                <View
-                    style={styles.buttonContainer}>
-                    <TouchableOpacity
-                        onPress={() => { }}
-                        style={styles.button}>
-                        <Text style={styles.buttonText}>Login</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        onPress={() => { }}
-                        style={[styles.button, styles.buttonOutline]}>
-                        <Text style={styles.buttonOutlineText}>Register</Text>
-                    </TouchableOpacity>
-                </View>
-                <StatusBar style='auto' />
+                <TouchableOpacity
+                    onPress={moveBack}
+                    style={[styles.rootbtn, styles.rootbtnOutline]}>
+                    <Text style={styles.buttonOutlineText}>Register</Text>
+                </TouchableOpacity>
             </View>
+            <StatusBar style='light' />
 
-        </KeyboardAvoidingView>
+
+        </KeyboardAvoidingView >
+
     )
 }
 
@@ -64,7 +80,26 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         position: 'relative',
-        backgroundColor: '#151414'
+        backgroundColor: '#151414',
+    },
+    rootbtn: {
+        backgroundColor: '#0EB080',
+        width: '100%',
+        padding: 15,
+        borderRadius: 25,
+        alignItems: 'center',
+        width: '100%',
+        marginBottom: '4%',
+    },
+    rootbtnOutline: {
+        backgroundColor: '#F9F9F9',
+        marginTop: 5,
+        borderColor: '#0EB080',
+        borderWidth: 2
+    },
+    rootbtnContainer: {
+        width: "80%",
+        top: '30%'
     },
     wors: {
         color: '#F9F9F9',
@@ -89,8 +124,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         height: '65%',
         position: 'absolute',
-        bottom: '0%',
-        backgroundColor: '#F9F9F9'
+        backgroundColor: '#F9F9F9',
+        zIndex: 1
     },
     inputContainer: {
         width: '80%',
