@@ -29,7 +29,7 @@ const RegisterModal = () => {
                 <Text style={styles.RegTxt}>Register</Text>
             </View>
 
-            <View style={styles.inputContainer}>
+            {/* <View style={styles.inputContainer}>
                 <TextInput
                     label="Username"
                     variant="outlined"
@@ -69,8 +69,7 @@ const RegisterModal = () => {
                 <TouchableOpacity>
                     <Text style={styles.Ftext}>Forgot your password?</Text>
                 </TouchableOpacity>
-            </View>
-
+            </View> */}
 
             <View
                 style={styles.buttonContainer}>
