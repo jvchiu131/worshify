@@ -4,8 +4,10 @@ import { StatusBar } from 'expo-status-bar'
 import { TouchableOpacity } from 'react-native'
 import { Stack, TextInput, IconButton } from '@react-native-material/core'
 import Icon from '@expo/vector-icons/MaterialCommunityIcons'
-import LoginModal from '../LoginModal'
+import LoginModal from './LoginModal'
+import RegisterModal from './RegisterModal'
 import { TouchableWithoutFeedback } from 'react-native'
+
 
 
 
@@ -16,9 +18,18 @@ const { height: screenHeight } = Dimensions.get('window');
 const LoginScreen = () => {
 
     const animValue = useState(new Animated.Value(-600))[0]
+    const regValue = useState(new Animated.Value(-600))[0]
 
-    const moveModal = () => {
+    const moveLoginModal = () => {
         Animated.timing(animValue, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: false
+        }).start()
+    }
+
+    const moveRegModal = () => {
+        Animated.timing(regValue, {
             toValue: 0,
             duration: 300,
             useNativeDriver: false
@@ -32,7 +43,15 @@ const LoginScreen = () => {
             useNativeDriver: false
         }).start()
 
-        console.log("press out!")
+    }
+
+    const moveRegBack = () => {
+        Animated.timing(regValue, {
+            toValue: -600,
+            duration: 300,
+            useNativeDriver: false
+        }).start()
+
     }
 
 
@@ -43,6 +62,7 @@ const LoginScreen = () => {
             <View style={styles.textLogo}>
                 <Text style={styles.wors}>WORS<Text style={styles.hify}>HIFY</Text></Text>
             </View>
+
             <TouchableWithoutFeedback onPressOut={moveBack}>
                 <Animated.View
                     style={{ ...styles.container, bottom: animValue }}
@@ -50,24 +70,33 @@ const LoginScreen = () => {
                     <LoginModal />
                 </Animated.View>
             </TouchableWithoutFeedback>
+
+            <TouchableWithoutFeedback onPressOut={moveRegBack}>
+                <Animated.View
+                    style={{ ...styles.container, bottom: regValue }}
+                    behavior='padding'>
+                    <RegisterModal />
+                </Animated.View>
+            </TouchableWithoutFeedback>
+
             <View
                 style={styles.rootbtnContainer}>
                 <TouchableOpacity
-                    onPress={moveModal}
+                    onPress={moveLoginModal}
                     style={styles.rootbtn}>
                     <Text style={styles.buttonText}>Login</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    onPress={moveBack}
+                    onPress={moveRegModal}
                     style={[styles.rootbtn, styles.rootbtnOutline]}>
                     <Text style={styles.buttonOutlineText}>Register</Text>
                 </TouchableOpacity>
             </View>
             <StatusBar style='light' />
-
-
         </KeyboardAvoidingView >
+
+
 
     )
 }
@@ -81,6 +110,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         position: 'relative',
         backgroundColor: '#151414',
+
     },
     rootbtn: {
         backgroundColor: '#0EB080',
@@ -127,56 +157,5 @@ const styles = StyleSheet.create({
         backgroundColor: '#F9F9F9',
         zIndex: 1
     },
-    inputContainer: {
-        width: '80%',
-        marginBottom: '5%'
-    },
-    input: {
-        backgroundColor: '#F9F9F9',
-        paddingHorizontal: 15,
-        paddingVertical: 10,
-        borderRadius: 25,
-        marginTop: 5,
-        borderWidth: 2,
-        borderColor: '#0EB080',
-        paddingVertical: 15,
 
-    },
-    Ftext: {
-        fontSize: 12,
-        textAlign: 'right',
-        color: '#32324D',
-        marginTop: '3%'
-    },
-    buttonContainer: {
-        width: "80%",
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 40,
-    },
-    button: {
-        backgroundColor: '#0EB080',
-        width: '100%',
-        padding: 15,
-        borderRadius: 25,
-        alignItems: 'center',
-        width: '100%',
-        marginBottom: '4%'
-    },
-    buttonOutline: {
-        backgroundColor: '#F9F9F9',
-        marginTop: 5,
-        borderColor: '#0EB080',
-        borderWidth: 2
-    },
-    buttonText: {
-        color: '#F9F9F9',
-        fontWeight: '700',
-        fontSize: 16
-    },
-    buttonOutlineText: {
-        color: '#0EB080',
-        fontWeight: '700',
-        fontSize: 16
-    }
 })

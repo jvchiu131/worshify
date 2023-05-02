@@ -1,14 +1,14 @@
-import { StyleSheet, Text, View, Animated } from 'react-native'
-import { Stack, TextInput, IconButton } from '@react-native-material/core'
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import Icon from '@expo/vector-icons/MaterialCommunityIcons'
+import { TextInput } from '@react-native-material/core'
 import React, { useState } from 'react'
-import { TouchableOpacity } from 'react-native'
 
-const LoginModal = () => {
+const RegisterModal = () => {
+
+
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-
     const [isFocused, setIsFocused] = useState(false);
 
 
@@ -22,14 +22,24 @@ const LoginModal = () => {
         //setIconColor('#606060'); // Reset the color to the original value upon deselection
     };
 
+
     return (
         <View style={styles.container}>
+            <View style={styles.regContainer}>
+                <Text style={styles.RegTxt}>Register</Text>
+            </View>
+
             <View style={styles.inputContainer}>
                 <TextInput
                     label="Username"
                     variant="outlined"
-                    value={username}
-                    onChangeText={setUsername}
+
+                    onChangeText={text => setUsername(text.replace(/\s+/g, ''))}
+                    onKeyPress={e => {
+                        if (e.nativeEvent.key === ' ') {
+                            e.preventDefault();
+                        }
+                    }}
                     color={isFocused || username ? '#0EB080' : '#606060'}
                     onFocus={handleFocus}
                     onBlur={handleBlur}
@@ -41,11 +51,17 @@ const LoginModal = () => {
                 <TextInput
                     label="Password"
                     variant="outlined"
-                    value={password}
-                    onChangeText={setPassword}
+                    // value={password}
+                    onChangeText={text => setPassword(text.replace(/\s+/g, ''))}
+                    onKeyPress={e => {
+                        if (e.nativeEvent.key === ' ') {
+                            e.preventDefault();
+                        }
+                    }}
                     color={isFocused || password ? '#0EB080' : '#606060'}
                     onFocus={handleFocus}
                     onBlur={handleBlur}
+                    secureTextEntry={true}
                     trailing={props =>
                         <Icon name="lock"
                             style={{ color: isFocused || password ? '#0EB080' : '#606060' }}
@@ -75,23 +91,30 @@ const LoginModal = () => {
     )
 }
 
-export default LoginModal
+export default RegisterModal
 
 const styles = StyleSheet.create({
     container: {
+        justifyContent: 'center',
+        alignItems: 'center',
         width: '100%',
         borderTopLeftRadius: 50,
         borderTopRightRadius: 50,
+        height: '100%'
+    },
+    regContainer: {
         justifyContent: 'center',
         alignItems: 'center',
-        height: '100%',
-        position: 'absolute',
-        bottom: '0%',
-        backgroundColor: '#F9F9F9',
+        bottom: '7%',
+    },
+    RegTxt: {
+        fontSize: 24,
+        fontWeight: 'bold'
+
     },
     inputContainer: {
         width: '80%',
-        marginBottom: '5%'
+        marginBottom: '5%',
     },
     input: {
         backgroundColor: '#F9F9F9',
@@ -102,7 +125,6 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: '#0EB080',
         paddingVertical: 15,
-
     },
     Ftext: {
         fontSize: 12,
