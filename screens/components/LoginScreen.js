@@ -2,11 +2,11 @@ import { KeyboardAvoidingView, StyleSheet, Text, View, Dimensions, Animated } fr
 import React, { useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import { TouchableOpacity } from 'react-native'
-import { Stack, TextInput, IconButton } from '@react-native-material/core'
-import Icon from '@expo/vector-icons/MaterialCommunityIcons'
 import LoginModal from './LoginModal'
 import RegisterModal from './RegisterModal'
 import { TouchableWithoutFeedback } from 'react-native'
+
+
 
 
 

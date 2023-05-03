@@ -1,27 +1,19 @@
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
-import Icon from '@expo/vector-icons/MaterialCommunityIcons'
-import { TextInput } from '@react-native-material/core'
 import React, { useState } from 'react'
+import { useNavigation } from '@react-navigation/native'
+
 
 const RegisterModal = () => {
 
+    const navigation = useNavigation();
 
+    const handleClient = () => {
+        navigation.navigate('Client')
+    }
 
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [isFocused, setIsFocused] = useState(false);
-
-
-
-    const handleFocus = () => {
-        setIsFocused(true); // Change the color to a different value upon selection
-    };
-
-    const handleBlur = () => {
-        setIsFocused(false)
-        //setIconColor('#606060'); // Reset the color to the original value upon deselection
-    };
-
+    const handleMusician = () => {
+        navigation.navigate('Musician')
+    }
 
     return (
         <View style={styles.container}>
@@ -29,64 +21,30 @@ const RegisterModal = () => {
                 <Text style={styles.RegTxt}>Register</Text>
             </View>
 
-            {/* <View style={styles.inputContainer}>
-                <TextInput
-                    label="Username"
-                    variant="outlined"
+            <View style={styles.typeContainer}>
+                <Text style={styles.typeTxt}>Who are you?</Text>
+            </View>
 
-                    onChangeText={text => setUsername(text.replace(/\s+/g, ''))}
-                    onKeyPress={e => {
-                        if (e.nativeEvent.key === ' ') {
-                            e.preventDefault();
-                        }
-                    }}
-                    color={isFocused || username ? '#0EB080' : '#606060'}
-                    onFocus={handleFocus}
-                    onBlur={handleBlur}
-                    trailing={props =>
-                        <Icon name="account"
-                            style={{ color: isFocused || username ? '#0EB080' : '#606060' }}
-                            {...props} />}
-                />
-                <TextInput
-                    label="Password"
-                    variant="outlined"
-                    // value={password}
-                    onChangeText={text => setPassword(text.replace(/\s+/g, ''))}
-                    onKeyPress={e => {
-                        if (e.nativeEvent.key === ' ') {
-                            e.preventDefault();
-                        }
-                    }}
-                    color={isFocused || password ? '#0EB080' : '#606060'}
-                    onFocus={handleFocus}
-                    onBlur={handleBlur}
-                    secureTextEntry={true}
-                    trailing={props =>
-                        <Icon name="lock"
-                            style={{ color: isFocused || password ? '#0EB080' : '#606060' }}
-                            {...props} />} />
-                <TouchableOpacity>
-                    <Text style={styles.Ftext}>Forgot your password?</Text>
-                </TouchableOpacity>
-            </View> */}
+            {/* Registration Fields */}
+
 
             <View
                 style={styles.buttonContainer}>
                 <TouchableOpacity
-                    onPress={() => { }}
+                    onPress={handleClient}
                     style={styles.button}>
-                    <Text style={styles.buttonText}>Login</Text>
+                    <Text style={styles.buttonText}>Client</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    onPress={() => { }}
+                    onPress={handleMusician}
                     style={[styles.button, styles.buttonOutline]}>
-                    <Text style={styles.buttonOutlineText}>Register</Text>
+                    <Text style={styles.buttonOutlineText}>Musician</Text>
                 </TouchableOpacity>
             </View>
 
         </View>
+
     )
 }
 
@@ -104,53 +62,67 @@ const styles = StyleSheet.create({
     regContainer: {
         justifyContent: 'center',
         alignItems: 'center',
-        bottom: '7%',
+        bottom: '20%',
     },
     RegTxt: {
         fontSize: 24,
         fontWeight: 'bold'
 
     },
-    inputContainer: {
-        width: '80%',
-        marginBottom: '5%',
+    typeContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        bottom: '10%',
+
     },
-    input: {
-        backgroundColor: '#F9F9F9',
-        paddingHorizontal: 15,
-        paddingVertical: 10,
-        borderRadius: 25,
-        marginTop: 5,
-        borderWidth: 2,
-        borderColor: '#0EB080',
-        paddingVertical: 15,
+    typeTxt: {
+        fontSize: 20,
+        fontWeight: 'normal'
+
     },
-    Ftext: {
-        fontSize: 12,
-        textAlign: 'right',
-        color: '#32324D',
-        marginTop: '3%'
-    },
+    // inputContainer: {
+    //     width: '80%',
+    //     marginBottom: '5%',
+    // },
+    // input: {
+    //     backgroundColor: '#F9F9F9',
+    //     paddingHorizontal: 15,
+    //     paddingVertical: 10,
+    //     borderRadius: 25,
+    //     marginTop: 5,
+    //     borderWidth: 2,
+    //     borderColor: '#0EB080',
+    //     paddingVertical: 15,
+    // },
+    // Ftext: {
+    //     fontSize: 12,
+    //     textAlign: 'right',
+    //     color: '#32324D',
+    //     marginTop: '3%'
+    // },
     buttonContainer: {
         width: "80%",
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 40,
+        flexDirection: 'row',
+        bottom: '5%',
+
     },
     button: {
+        flex: 2,
         backgroundColor: '#0EB080',
         width: '100%',
         padding: 15,
-        borderRadius: 25,
         alignItems: 'center',
-        width: '100%',
-        marginBottom: '4%'
+        paddingVertical: '20%',
+        borderWidth: 2,
+        borderColor: '#0EB080'
     },
     buttonOutline: {
         backgroundColor: '#F9F9F9',
-        marginTop: 5,
         borderColor: '#0EB080',
-        borderWidth: 2
+
     },
     buttonText: {
         color: '#F9F9F9',

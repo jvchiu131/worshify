@@ -4,6 +4,9 @@ import LoginScreen from './screens/components/LoginScreen';
 import DashScreen from './screens/components/DashScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
+import ClientReg from './screens/components/ClientReg';
+import MusicianReg from './screens/components/MusicianReg';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -13,6 +16,13 @@ export default function App() {
       <Stack.Navigator>
         <Stack.Screen name='Login' options={{ headerShown: false }} component={LoginScreen} />
         <Stack.Screen name='Home' component={DashScreen} />
+        <Stack.Screen name='Client' options={{ headerShown: true, presentation: 'modal' }} component={ClientReg} />
+        <Stack.Screen name='Musician' options={{ headerShown: true, presentation: 'modal' }} component={MusicianReg} />
+        {/* Contact Screen = Previous Messages to other users depending on what account Type */}
+        {/* Search screen = Matchmaking Screen, Components = Account List  */}
+        {/* Contact Screen = Previous Messages to other users depending on what account Type */}
+        {/* Search screen = Matchmaking Screen, Components = Account List  */}
+
       </Stack.Navigator>
     </NavigationContainer>
   );
