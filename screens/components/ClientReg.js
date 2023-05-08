@@ -1,34 +1,23 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
-import { TouchableOpacity } from 'react-native-gesture-handler'
-import { useNavigation } from '@react-navigation/native'
+import { StyleSheet, Text, TouchableOpacity, TextInput, View, Animated, Dimensions } from 'react-native'
+import React, { useState } from 'react'
 
 
-
-
-
+const { height: screenHeight } = Dimensions.get('screen');
 
 const ClientReg = () => {
 
-    const navigation = useNavigation();
-
-    const handleBack = () => {
-        navigation.navigate('Login')
-    }
 
 
     return (
         <View>
-            <Text>Client Reg</Text>
-
-
-            <TouchableOpacity onPress={handleBack}>
-                <Text>This is button</Text>
-            </TouchableOpacity>
+            <Text>This is Client modal registration</Text>
         </View>
     )
 }
 
 export default ClientReg
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+
+})
+

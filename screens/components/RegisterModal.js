@@ -1,49 +1,84 @@
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, Animated, Dimensions } from 'react-native'
 import React, { useState } from 'react'
-import { useNavigation } from '@react-navigation/native'
+import ClientReg from './ClientReg';
+import MusicianReg from './MusicianReg';
 
+const { width: screenWidth } = Dimensions.get('screen');
 
 const RegisterModal = () => {
 
-    const navigation = useNavigation();
+    const [ClientContent, setClientContent] = useState(false);
+    const [MusicianContent, setMusicianContent] = useState(false);
+    const ContentValue = useState(new Animated.Value(-600))[0]
 
     const handleClient = () => {
-        navigation.navigate('Client')
+        Animated.timing(ContentValue, {
+            toValue: screenWidth / -2,
+            duration: 300,
+            useNativeDriver: false,
+        }).start()
+        setClientContent(true);
     }
 
     const handleMusician = () => {
-        navigation.navigate('Musician')
+        Animated.timing(ContentValue, {
+            toValue: screenWidth / -2,
+            duration: 300,
+            useNativeDriver: false,
+        }).start()
+        setMusicianContent(true);
     }
 
+
     return (
-        <View style={styles.container}>
-            <View style={styles.regContainer}>
-                <Text style={styles.RegTxt}>Register</Text>
-            </View>
+        <View style={styles.root}>
+            {ClientContent ? (
+                <Animated.View
+                    style={{ ...styles.container, right: ContentValue }}>
+                    {ClientContent ? (
+                        <ClientReg />
+                    ) : null}
+                </Animated.View>
+            ) : MusicianContent ? (
+                <Animated.View
+                    style={{ ...styles.container, right: ContentValue }}>
+                    {MusicianContent ? (
+                        <MusicianReg />
+                    ) : null}
+                </Animated.View>
+            ) :
+                (
 
-            <View style={styles.typeContainer}>
-                <Text style={styles.typeTxt}>Who are you?</Text>
-            </View>
+                    <View style={styles.container}>
+                        <View style={styles.regContainer}>
+                            <Text style={styles.RegTxt}>Register</Text>
+                        </View>
 
-            {/* Registration Fields */}
+                        <View style={styles.typeContainer}>
+                            <Text style={styles.typeTxt}>Who are you?</Text>
+                        </View>
+
+                        <View
+                            style={styles.buttonContainer}>
+                            <TouchableOpacity
+                                onPress={handleClient}
+                                style={styles.button}>
+                                <Text style={styles.buttonText}>Client</Text>
+                            </TouchableOpacity>
 
 
-            <View
-                style={styles.buttonContainer}>
-                <TouchableOpacity
-                    onPress={handleClient}
-                    style={styles.button}>
-                    <Text style={styles.buttonText}>Client</Text>
-                </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={handleMusician}
+                                style={[styles.button, styles.buttonOutline]}>
+                                <Text style={styles.buttonOutlineText}>Musician</Text>
+                            </TouchableOpacity>
+                        </View>
 
-                <TouchableOpacity
-                    onPress={handleMusician}
-                    style={[styles.button, styles.buttonOutline]}>
-                    <Text style={styles.buttonOutlineText}>Musician</Text>
-                </TouchableOpacity>
-            </View>
+                    </View>
+                )}
 
         </View>
+
 
     )
 }
@@ -51,12 +86,20 @@ const RegisterModal = () => {
 export default RegisterModal
 
 const styles = StyleSheet.create({
+    root: {
+        height: '100%',
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'relative',
+    },
     container: {
         justifyContent: 'center',
         alignItems: 'center',
-        width: '100%',
         borderTopLeftRadius: 50,
         borderTopRightRadius: 50,
+        position: 'absolute',
+        width: '100%',
         height: '100%'
     },
     regContainer: {
@@ -67,7 +110,6 @@ const styles = StyleSheet.create({
     RegTxt: {
         fontSize: 24,
         fontWeight: 'bold'
-
     },
     typeContainer: {
         justifyContent: 'center',
@@ -80,26 +122,6 @@ const styles = StyleSheet.create({
         fontWeight: 'normal'
 
     },
-    // inputContainer: {
-    //     width: '80%',
-    //     marginBottom: '5%',
-    // },
-    // input: {
-    //     backgroundColor: '#F9F9F9',
-    //     paddingHorizontal: 15,
-    //     paddingVertical: 10,
-    //     borderRadius: 25,
-    //     marginTop: 5,
-    //     borderWidth: 2,
-    //     borderColor: '#0EB080',
-    //     paddingVertical: 15,
-    // },
-    // Ftext: {
-    //     fontSize: 12,
-    //     textAlign: 'right',
-    //     color: '#32324D',
-    //     marginTop: '3%'
-    // },
     buttonContainer: {
         width: "80%",
         justifyContent: 'center',

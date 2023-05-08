@@ -5,11 +5,7 @@ import { TouchableOpacity } from 'react-native'
 import LoginModal from './LoginModal'
 import RegisterModal from './RegisterModal'
 import { TouchableWithoutFeedback } from 'react-native'
-
-
-
-
-
+import Logo from './Logo'
 
 
 const { height: screenHeight } = Dimensions.get('window');
@@ -20,20 +16,28 @@ const LoginScreen = () => {
     const animValue = useState(new Animated.Value(-600))[0]
     const regValue = useState(new Animated.Value(-600))[0]
 
+    const [showModal, setShowModal] = useState(false);
+    const [showRegModal, setShowRegModal] = useState(false);
+
+
+
     const moveLoginModal = () => {
+        setShowModal(true)
         Animated.timing(animValue, {
             toValue: 0,
             duration: 300,
             useNativeDriver: false
         }).start()
+
     }
 
     const moveRegModal = () => {
         Animated.timing(regValue, {
             toValue: 0,
             duration: 300,
-            useNativeDriver: false
+            useNativeDriver: false,
         }).start()
+        setShowRegModal(true)
     }
 
     const moveBack = () => {
@@ -43,6 +47,9 @@ const LoginScreen = () => {
             useNativeDriver: false
         }).start()
 
+        setTimeout(() => {
+            setShowModal(false)
+        }, 300)
     }
 
     const moveRegBack = () => {
@@ -51,34 +58,54 @@ const LoginScreen = () => {
             duration: 300,
             useNativeDriver: false
         }).start()
-
+        setTimeout(() => {
+            setShowRegModal(false)
+        }, 300)
     }
 
-
-
     return (
-        <KeyboardAvoidingView style={styles.root}>
 
+
+        <KeyboardAvoidingView style={styles.root} >
+
+            {/* Logo */}
             <View style={styles.textLogo}>
+                <Logo />
                 <Text style={styles.wors}>WORS<Text style={styles.hify}>HIFY</Text></Text>
             </View>
 
+
+            {/* Login Modal */}
             <TouchableWithoutFeedback onPressOut={moveBack}>
                 <Animated.View
                     style={{ ...styles.container, bottom: animValue }}
                     behavior='padding'>
-                    <LoginModal />
+                    {showModal ? (
+                        <View style={styles.containerField}>
+                            <LoginModal />
+                        </View>
+                    ) : (<></>
+                    )}
                 </Animated.View>
-            </TouchableWithoutFeedback>
+            </TouchableWithoutFeedback >
 
+            {/* Register Modal */}
             <TouchableWithoutFeedback onPressOut={moveRegBack}>
                 <Animated.View
-                    style={{ ...styles.container, bottom: regValue }}
-                    behavior='padding'>
-                    <RegisterModal />
-                </Animated.View>
-            </TouchableWithoutFeedback>
+                    style={{ ...styles.container, bottom: regValue }
+                    }
+                    behavior='padding' >
+                    {showRegModal ? (
+                        <View>
+                            <RegisterModal />
+                        </View>
+                    ) : (<></>
+                    )}
+                </Animated.View >
+            </TouchableWithoutFeedback >
 
+
+            {/* Login and Register Button */}
             <View
                 style={styles.rootbtnContainer}>
                 <TouchableOpacity
@@ -97,8 +124,8 @@ const LoginScreen = () => {
         </KeyboardAvoidingView >
 
 
-
     )
+
 }
 
 export default LoginScreen
@@ -110,7 +137,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         position: 'relative',
         backgroundColor: '#151414',
-
     },
     rootbtn: {
         backgroundColor: '#0EB080',
@@ -118,7 +144,6 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 25,
         alignItems: 'center',
-        width: '100%',
         marginBottom: '4%',
     },
     rootbtnOutline: {
@@ -147,12 +172,23 @@ const styles = StyleSheet.create({
     },
     container: {
         width: '100%',
-        borderWidth: 2,
         borderTopLeftRadius: 50,
         borderTopRightRadius: 50,
         justifyContent: 'center',
         alignItems: 'center',
         height: '65%',
+        position: 'absolute',
+        backgroundColor: '#F9F9F9',
+        zIndex: 1
+    },
+
+    containerField: {
+        width: '100%',
+        borderTopLeftRadius: 50,
+        borderTopRightRadius: 50,
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100%',
         position: 'absolute',
         backgroundColor: '#F9F9F9',
         zIndex: 1

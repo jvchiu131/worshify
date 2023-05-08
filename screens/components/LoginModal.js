@@ -3,6 +3,7 @@ import { Stack, TextInput, IconButton } from '@react-native-material/core'
 import Icon from '@expo/vector-icons/MaterialCommunityIcons'
 import React, { useState } from 'react'
 import { TouchableOpacity } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
 
 
 const LoginModal = () => {
@@ -13,6 +14,7 @@ const LoginModal = () => {
     const [password, setPassword] = useState('');
 
     const [isFocused, setIsFocused] = useState(false);
+    const navigation = useNavigation();
 
 
 
@@ -76,16 +78,11 @@ const LoginModal = () => {
             <View
                 style={styles.buttonContainer}>
                 <TouchableOpacity
-                    onPress={() => { }}
+                    onPress={() => { navigation.navigate('Home') }}
                     style={styles.button}>
                     <Text style={styles.buttonText}>Login</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity
-                    onPress={() => { }}
-                    style={[styles.button, styles.buttonOutline]}>
-                    <Text style={styles.buttonOutlineText}>Register</Text>
-                </TouchableOpacity>
             </View>
 
         </View>
@@ -115,16 +112,6 @@ const styles = StyleSheet.create({
     inputContainer: {
         width: '80%',
         marginBottom: '5%',
-    },
-    input: {
-        backgroundColor: '#F9F9F9',
-        paddingHorizontal: 15,
-        paddingVertical: 10,
-        borderRadius: 25,
-        marginTop: 5,
-        borderWidth: 2,
-        borderColor: '#0EB080',
-        paddingVertical: 15,
     },
     Ftext: {
         fontSize: 12,

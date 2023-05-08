@@ -1,30 +1,42 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import LoginScreen from './screens/components/LoginScreen';
 import DashScreen from './screens/components/DashScreen';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import ContactScreen from './screens/components/ContactScreen';
+import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
-import ClientReg from './screens/components/ClientReg';
-import MusicianReg from './screens/components/MusicianReg';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import SearchScreen from './screens/components/SearchScreen';
+import ChatNavigator from './screens/components/ChatNavigator';
+
+const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
 
 
-const Stack = createNativeStackNavigator();
 
 export default function App() {
+
   return (
     <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name='Login' options={{ headerShown: false }} component={LoginScreen} />
-        <Stack.Screen name='Home' component={DashScreen} />
-        <Stack.Screen name='Client' options={{ headerShown: true, presentation: 'modal' }} component={ClientReg} />
-        <Stack.Screen name='Musician' options={{ headerShown: true, presentation: 'modal' }} component={MusicianReg} />
-        {/* Contact Screen = Previous Messages to other users depending on what account Type */}
-        {/* Search screen = Matchmaking Screen, Components = Account List  */}
-        {/* Contact Screen = Previous Messages to other users depending on what account Type */}
-        {/* Search screen = Matchmaking Screen, Components = Account List  */}
-
+      <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='Login'>
+        <Stack.Screen name='Login' component={LoginScreen} />
+        <Stack.Screen name='Home' component={BottomTabNav} />
       </Stack.Navigator>
+      <StatusBar style='auto' />
     </NavigationContainer>
+
+  );
+}
+
+
+function BottomTabNav() {
+  return (
+    <Tab.Navigator>
+      <Tab.Screen name='Home' component={DashScreen} />
+      <Tab.Screen name='Search' component={SearchScreen} />
+      <Tab.Screen name='Contact' component={ContactScreen} />
+      <Tab.Screen name='Profile' component={ChatNavigator} />
+    </Tab.Navigator>
   );
 }
 
