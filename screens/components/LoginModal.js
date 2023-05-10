@@ -14,6 +14,8 @@ const LoginModal = () => {
     const [password, setPassword] = useState('');
 
     const [isFocused, setIsFocused] = useState(false);
+
+
     const navigation = useNavigation();
 
 

@@ -1,7 +1,5 @@
 import { StyleSheet, Text, TouchableOpacity, TextInput, View, Animated, Dimensions } from 'react-native'
 import React, { useState } from 'react'
-import { useNavigation } from '@react-navigation/native';
-import LoginModal from './LoginModal';
 
 
 const { height: screenHeight } = Dimensions.get('screen');
@@ -22,8 +20,7 @@ const MusicianReg = () => {
             </View>
             <View style={styles.subheaderContainer}>
                 <Text style={styles.subHeader}>Do you already have an account?
-                    <TouchableOpacity
-                    >
+                    <TouchableOpacity>
                         <Text style={{ color: '#0EB080' }}> Sign In</Text>
                     </TouchableOpacity>
                 </Text>

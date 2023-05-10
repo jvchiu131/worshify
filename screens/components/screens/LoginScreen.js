@@ -2,10 +2,10 @@ import { KeyboardAvoidingView, StyleSheet, Text, View, Dimensions, Animated } fr
 import React, { useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import { TouchableOpacity } from 'react-native'
-import LoginModal from './LoginModal'
-import RegisterModal from './RegisterModal'
+import LoginModal from '../LoginModal'
+import RegisterModal from '../RegisterModal'
 import { TouchableWithoutFeedback } from 'react-native'
-import Logo from './Logo'
+import Logo from '../assets/Logo'
 
 
 const { height: screenHeight } = Dimensions.get('window');
@@ -68,14 +68,10 @@ const LoginScreen = () => {
 
         <KeyboardAvoidingView style={styles.root} >
 
-            {/* Logo */}
             <View style={styles.textLogo}>
                 <Logo />
                 <Text style={styles.wors}>WORS<Text style={styles.hify}>HIFY</Text></Text>
             </View>
-
-
-            {/* Login Modal */}
             <TouchableWithoutFeedback onPressOut={moveBack}>
                 <Animated.View
                     style={{ ...styles.container, bottom: animValue }}
@@ -89,7 +85,6 @@ const LoginScreen = () => {
                 </Animated.View>
             </TouchableWithoutFeedback >
 
-            {/* Register Modal */}
             <TouchableWithoutFeedback onPressOut={moveRegBack}>
                 <Animated.View
                     style={{ ...styles.container, bottom: regValue }
@@ -105,7 +100,6 @@ const LoginScreen = () => {
             </TouchableWithoutFeedback >
 
 
-            {/* Login and Register Button */}
             <View
                 style={styles.rootbtnContainer}>
                 <TouchableOpacity

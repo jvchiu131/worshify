@@ -1,13 +1,15 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { createStackNavigator } from '@react-navigation/stack'
-import ProfileScreen from './ProfileScreen';
-import ChatScreen from './ChatScreen';
+import ProfileScreen from '../screens/ProfileScreen';
+import ChatScreen from '../screens/ChatScreen';
+import { StatusBar } from 'expo-status-bar';
+
 
 
 const Stack = createStackNavigator();
 
-const ChatNavigator = () => {
+const ChatNav = () => {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name='Profile' component={ProfileScreen} />
@@ -16,6 +18,6 @@ const ChatNavigator = () => {
     )
 }
 
-export default ChatNavigator
+export default ChatNav
 
 const styles = StyleSheet.create({})

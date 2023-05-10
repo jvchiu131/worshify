@@ -1,43 +1,42 @@
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
-import LoginScreen from './screens/components/LoginScreen';
-import DashScreen from './screens/components/DashScreen';
-import ContactScreen from './screens/components/ContactScreen';
-import { createStackNavigator } from '@react-navigation/stack';
+import { StyleSheet, Text, View } from 'react-native';
+import LoginScreen from './screens/components/screens/LoginScreen';
+import DashScreen from './screens/components/screens/DashScreen';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
+import ClientReg from './screens/components/ClientReg';
+import MusicianReg from './screens/components/MusicianReg';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import SearchScreen from './screens/components/SearchScreen';
-import ChatNavigator from './screens/components/ChatNavigator';
+import SearchScreen from './screens/components/screens/SearchScreen';
+import ContactScreen from './screens/components/screens/ContactScreen';
+import ProfileScreen from './screens/components/screens/ProfileScreen';
+import ChatNav from './screens/components/navigator/ChatNav';
 
-const Stack = createStackNavigator();
+
+const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-
-
 export default function App() {
-
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='Login'>
-        <Stack.Screen name='Login' component={LoginScreen} />
-        <Stack.Screen name='Home' component={BottomTabNav} />
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name='Login' options={{ headerShown: false }} component={LoginScreen} />
+        <Stack.Screen name='Home' component={BottomTab} />
       </Stack.Navigator>
       <StatusBar style='auto' />
     </NavigationContainer>
-
   );
 }
 
-
-function BottomTabNav() {
+function BottomTab() {
   return (
-    <Tab.Navigator>
+    <Tab.Navigator screenOptions={{ headerShown: false }}>
       <Tab.Screen name='Home' component={DashScreen} />
       <Tab.Screen name='Search' component={SearchScreen} />
       <Tab.Screen name='Contact' component={ContactScreen} />
-      <Tab.Screen name='Profile' component={ChatNavigator} />
+      <Tab.Screen name='Profile' component={ChatNav} />
     </Tab.Navigator>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
