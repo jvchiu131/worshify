@@ -6,7 +6,9 @@ const DashScreen = () => {
     return (
         <SafeAreaView>
             <View>
-                <Text>DashScreen</Text>
+                <Text>
+                    DashBoard
+                </Text>
             </View>
         </SafeAreaView>
     )
@@ -14,4 +16,6 @@ const DashScreen = () => {
 
 export default DashScreen
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+
+})

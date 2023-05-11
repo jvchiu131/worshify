@@ -1,15 +1,15 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
-import LoginScreen from './screens/components/screens/LoginScreen';
-import DashScreen from './screens/components/screens/DashScreen';
+import LoginScreen from './screens/screens/LoginScreen';
+import DashScreen from './screens/screens/DashScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import ClientReg from './screens/components/ClientReg';
 import MusicianReg from './screens/components/MusicianReg';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import SearchScreen from './screens/components/screens/SearchScreen';
-import ContactScreen from './screens/components/screens/ContactScreen';
-import ProfileScreen from './screens/components/screens/ProfileScreen';
+import SearchScreen from './screens/screens/SearchScreen';
+import ContactScreen from './screens/screens/ContactScreen';
+import ProfileScreen from './screens/screens/ProfileScreen';
 import ChatNav from './screens/components/navigator/ChatNav';
 
 

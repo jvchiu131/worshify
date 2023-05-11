@@ -2,10 +2,10 @@ import { KeyboardAvoidingView, StyleSheet, Text, View, Dimensions, Animated } fr
 import React, { useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import { TouchableOpacity } from 'react-native'
-import LoginModal from '../LoginModal'
-import RegisterModal from '../RegisterModal'
+import LoginModal from '../components/LoginModal'
+import RegisterModal from '../components/RegisterModal'
 import { TouchableWithoutFeedback } from 'react-native'
-import Logo from '../assets/Logo'
+import Logo from '../components/assets/Logo'
 
 
 const { height: screenHeight } = Dimensions.get('window');
