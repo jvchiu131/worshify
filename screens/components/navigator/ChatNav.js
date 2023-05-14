@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { createStackNavigator } from '@react-navigation/stack'
 import ProfileScreen from '../../screens/ProfileScreen';
-import ChatScreen from '../../screens/ChatScreen';
+import EdtProfile from '../../screens/EdtProfile';
 import { StatusBar } from 'expo-status-bar';
 
 
@@ -14,7 +14,7 @@ const ChatNav = () => {
         <>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
                 <Stack.Screen name='Profile' component={ProfileScreen} />
-                <Stack.Screen name='Chat' component={ChatScreen} />
+                <Stack.Screen name='Edit' component={EdtProfile} />
             </Stack.Navigator>
             <StatusBar style='light' />
         </>

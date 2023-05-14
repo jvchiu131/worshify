@@ -11,6 +11,7 @@ import SearchScreen from './screens/screens/SearchScreen';
 import ContactScreen from './screens/screens/ContactScreen';
 import ProfileScreen from './screens/screens/ProfileScreen';
 import ChatNav from './screens/components/navigator/ChatNav';
+import ContactNav from './screens/components/navigator/ContactNav';
 
 
 const Stack = createNativeStackNavigator();
@@ -18,6 +19,8 @@ const Tab = createBottomTabNavigator();
 
 export default function App() {
   return (
+
+
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name='Login' options={{ headerShown: false }} component={LoginScreen} />
@@ -25,17 +28,20 @@ export default function App() {
       </Stack.Navigator>
       <StatusBar style='auto' />
     </NavigationContainer>
+
   );
 }
 
 function BottomTab() {
   return (
-    <Tab.Navigator screenOptions={{ headerShown: false }}>
-      <Tab.Screen name='Home' component={DashScreen} />
-      <Tab.Screen name='Search' component={SearchScreen} />
-      <Tab.Screen name='Contact' component={ContactScreen} />
-      <Tab.Screen name='Profile' component={ChatNav} />
-    </Tab.Navigator>
+    <>
+      <Tab.Navigator screenOptions={{ headerShown: false }}>
+        <Tab.Screen name='Home' component={DashScreen} />
+        <Tab.Screen options={{ headerShown: false }} name='Messages' component={ContactNav} />
+        <Tab.Screen name='Profile' component={ChatNav} />
+      </Tab.Navigator>
+      <StatusBar style='light' />
+    </>
   )
 }
 
