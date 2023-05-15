@@ -3,7 +3,7 @@ import React from 'react'
 import Header from '../components/Header'
 import DashboardBtn from '../components/DashboardBtn';
 import CardJob from '../components/CardJob';
-
+import AdCard from '../components/AdCard';
 
 const { height: screenHeight } = Dimensions.get("screen");
 const { width: screenWidth } = Dimensions.get('screen');
@@ -25,6 +25,10 @@ const DashScreen = () => {
             <View style={styles.cardjob}>
                 <CardJob />
             </View>
+
+            <View style={styles.adStyle}>
+                <AdCard />
+            </View>
         </View>
     )
 }
@@ -34,6 +38,10 @@ const DashScreen = () => {
 export default DashScreen
 
 const styles = StyleSheet.create({
+    adStyle: {
+        bottom: screenHeight / 1.6,
+        alignItems: 'center'
+    },
     root: {
         backgroundColor: '#151414',
         height: screenHeight,

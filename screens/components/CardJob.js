@@ -11,7 +11,7 @@ const CardJob = () => {
             <View style={styles.textContainer}>
                 <Text>TextContainer</Text>
                 <Text>Job detail</Text>
-                <Text>Job Location</Text>
+                <Text>Job detail</Text>
             </View>
         </TouchableOpacity>
     )

@@ -8,6 +8,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import ChatNav from './screens/components/navigator/ChatNav';
 import ContactNav from './screens/components/navigator/ContactNav';
 import NotificationScreen from './screens/screens/NotificationScreen';
+import DashNav from './screens/components/navigator/DashNav';
 
 
 
@@ -32,7 +33,7 @@ function BottomTab() {
   return (
     <>
       <Tab.Navigator screenOptions={{ headerShown: false }}>
-        <Tab.Screen name='Home' component={DashScreen} />
+        <Tab.Screen name='Home' component={DashNav} />
         <Tab.Screen options={{ headerShown: false }} name='Messages' component={ContactNav} />
         <Tab.Screen name='Profile' component={ChatNav} />
         <Tab.Screen name='Notification' component={NotificationScreen} />

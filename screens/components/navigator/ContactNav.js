@@ -3,7 +3,6 @@ import React from 'react'
 import { createStackNavigator } from '@react-navigation/stack'
 import ContactScreen from '../../screens/ContactScreen'
 import ChatScreen from '../../screens/ChatScreen'
-import NotificationScreen from '../../screens/NotificationScreen'
 
 
 const Stack = createStackNavigator();

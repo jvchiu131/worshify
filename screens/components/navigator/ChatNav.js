@@ -13,7 +13,7 @@ const ChatNav = () => {
     return (
         <>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
-                <Stack.Screen name='Profile' component={ProfileScreen} />
+                <Stack.Screen name='ProfileS' component={ProfileScreen} />
                 <Stack.Screen name='Edit' component={EdtProfile} />
             </Stack.Navigator>
             <StatusBar style='light' />
