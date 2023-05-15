@@ -20,7 +20,7 @@ const Header = () => {
             <View style={styles.container}>
 
 
-                <TouchableOpacity style={styles.image}>
+                <TouchableOpacity style={styles.image} onPress={() => { navigation.navigate('Profile') }}>
                     <View >
                     </View>
                 </TouchableOpacity>
@@ -29,7 +29,7 @@ const Header = () => {
                     <Text style={styles.textStyle}>{currentHeaderTitle}</Text>
                 </View>
 
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => { navigation.navigate('Notification') }}>
                     <Ionicons name="notifications" size={24} color="white" />
                 </TouchableOpacity>
 

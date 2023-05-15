@@ -5,7 +5,7 @@ import { TouchableOpacity } from 'react-native'
 import LoginModal from '../components/LoginModal'
 import RegisterModal from '../components/RegisterModal'
 import { TouchableWithoutFeedback } from 'react-native'
-import Logo from '../assets/Logo'
+import Logo from '../components/assets/Logo'
 
 
 

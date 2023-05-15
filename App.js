@@ -4,14 +4,12 @@ import LoginScreen from './screens/screens/LoginScreen';
 import DashScreen from './screens/screens/DashScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
-import ClientReg from './screens/components/ClientReg';
-import MusicianReg from './screens/components/MusicianReg';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import SearchScreen from './screens/screens/SearchScreen';
-import ContactScreen from './screens/screens/ContactScreen';
-import ProfileScreen from './screens/screens/ProfileScreen';
 import ChatNav from './screens/components/navigator/ChatNav';
 import ContactNav from './screens/components/navigator/ContactNav';
+import NotificationScreen from './screens/screens/NotificationScreen';
+
+
 
 
 const Stack = createNativeStackNavigator();
@@ -19,8 +17,6 @@ const Tab = createBottomTabNavigator();
 
 export default function App() {
   return (
-
-
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name='Login' options={{ headerShown: false }} component={LoginScreen} />
@@ -39,6 +35,7 @@ function BottomTab() {
         <Tab.Screen name='Home' component={DashScreen} />
         <Tab.Screen options={{ headerShown: false }} name='Messages' component={ContactNav} />
         <Tab.Screen name='Profile' component={ChatNav} />
+        <Tab.Screen name='Notification' component={NotificationScreen} />
       </Tab.Navigator>
       <StatusBar style='light' />
     </>
