@@ -1,4 +1,5 @@
 import { StyleSheet, Text, View, Dimensions } from 'react-native'
+import { Modal, Portal, Button, PaperProvider } from 'react-native-paper';
 import React from 'react'
 import Header from '../components/Header'
 import DashboardBtn from '../components/DashboardBtn';
