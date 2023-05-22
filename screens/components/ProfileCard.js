@@ -18,10 +18,11 @@ const ProfileCard = () => {
                         <Text style={styles.textName}>
                             David Donguines
                         </Text>
+                        <Text>
+
+                        </Text>
 
                     </View>
-                    <View></View>
-                    <View></View>
                 </View>
             </View>
         </View>
