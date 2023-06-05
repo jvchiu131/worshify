@@ -2,6 +2,8 @@ import { StyleSheet, Text, View, TouchableOpacity, Animated, Dimensions } from '
 import React, { useState } from 'react'
 import ClientReg from './ClientReg';
 import MusicianReg from './MusicianReg';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons';
 
 const { width: screenWidth } = Dimensions.get('screen');
 
@@ -55,7 +57,7 @@ const RegisterModal = () => {
                         </View>
 
                         <View style={styles.typeContainer}>
-                            <Text style={styles.typeTxt}>Who are you?</Text>
+                            <Text style={styles.typeTxt}>Select Your Role!</Text>
                         </View>
 
                         <View
@@ -63,6 +65,7 @@ const RegisterModal = () => {
                             <TouchableOpacity
                                 onPress={handleClient}
                                 style={styles.button}>
+                                <FontAwesome5 name="user-tie" size={60} color="white" />
                                 <Text style={styles.buttonText}>Client</Text>
                             </TouchableOpacity>
 
@@ -70,7 +73,10 @@ const RegisterModal = () => {
                             <TouchableOpacity
                                 onPress={handleMusician}
                                 style={[styles.button, styles.buttonOutline]}>
-                                <Text style={styles.buttonOutlineText}>Musician</Text>
+                                <MaterialCommunityIcons name="account-music-outline" size={70} color="#0EB080" />
+                                <Text style={styles.buttonOutlineText}>
+                                    Musician
+                                </Text>
                             </TouchableOpacity>
                         </View>
 
@@ -105,7 +111,7 @@ const styles = StyleSheet.create({
     regContainer: {
         justifyContent: 'center',
         alignItems: 'center',
-        bottom: '20%',
+        bottom: '15%',
     },
     RegTxt: {
         fontSize: 24,
@@ -114,17 +120,16 @@ const styles = StyleSheet.create({
     typeContainer: {
         justifyContent: 'center',
         alignItems: 'center',
-        bottom: '10%',
+        bottom: '7%',
 
     },
     typeTxt: {
-        fontSize: 20,
+        fontSize: 15,
         fontWeight: 'normal'
-
     },
     buttonContainer: {
-        width: "80%",
-        justifyContent: 'center',
+        width: "100%",
+        justifyContent: 'space-evenly',
         alignItems: 'center',
         marginTop: 40,
         flexDirection: 'row',
@@ -132,28 +137,30 @@ const styles = StyleSheet.create({
 
     },
     button: {
-        flex: 2,
         backgroundColor: '#0EB080',
-        width: '100%',
-        padding: 15,
+        width: '50%',
         alignItems: 'center',
-        paddingVertical: '20%',
+        paddingVertical: '15%',
+        borderRadius: '10%',
         borderWidth: 2,
         borderColor: '#0EB080'
     },
     buttonOutline: {
         backgroundColor: '#F9F9F9',
         borderColor: '#0EB080',
+        borderWidth: 2,
 
     },
     buttonText: {
         color: '#F9F9F9',
         fontWeight: '700',
-        fontSize: 16
+        fontSize: 16,
+        marginTop: "5%",
+
     },
     buttonOutlineText: {
         color: '#0EB080',
         fontWeight: '700',
-        fontSize: 16
+        fontSize: 16,
     }
 })
