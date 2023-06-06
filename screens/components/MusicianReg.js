@@ -85,13 +85,13 @@ const MusicianReg = () => {
                                 onCancel={hideDatePicker}
                                 isDarkModeEnabled={true}
                             />
-                            <TextInput style={styles.ageStyle} placeholder='Age' />
+                            <TextInput style={styles.ageStyle} keyboardType='numeric' placeholder='Age' />
                         </View>
                         <View style={styles.addressContainer}>
                             <TextInput style={styles.addressStyle} placeholder='Address' />
                         </View>
                         <View style={styles.phoneContainer}>
-                            <TextInput style={styles.addressStyle} placeholder='Phone' />
+                            <TextInput style={styles.addressStyle} keyboardType='numeric' placeholder='Phone' />
                         </View>
 
                         <View>
