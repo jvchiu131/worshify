@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, TextInput, View, Animated, Dimensions, Button } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, TextInput, View, Animated, Dimensions, Button, KeyboardAvoidingView } from 'react-native'
 import React, { useState } from 'react'
 import InstGenre from './InstGenre';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -46,7 +46,7 @@ const MusicianReg = () => {
 
 
     return (
-        <View style={styles.container}>
+        <KeyboardAvoidingView style={styles.container} behavior='padding'>
             {isClicked ? (
                 <Animated.View
                     style={{ right: ContentValue }}>
@@ -107,7 +107,7 @@ const MusicianReg = () => {
             )
             }
 
-        </View >
+        </KeyboardAvoidingView >
 
     )
 }
@@ -123,14 +123,6 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 50,
         borderTopRightRadius: 50,
     },
-    root: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'row',
-        width: '100%',
-        borderWidth: 2,
-        borderColor: 'red'
-    },
     headerContainer: {
         bottom: screenHeight / 4.3,
     },
@@ -145,17 +137,18 @@ const styles = StyleSheet.create({
         bottom: screenHeight / 4.6
     },
     inputContainer: {
-        display: 'flex',
-        flex: 'row',
+        flexDirection: 'row',
         alignItems: 'center',
         top: screenHeight / 4,
+        justifyContent: 'center'
     },
     nameContainer: {
         position: 'absolute',
         flex: 1,
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        bottom: screenHeight / 2.3
+        justifyContent: 'space-around',
+        bottom: screenHeight / 2.3,
+        width: screenWidth
     },
     inputStyle: {
         borderRadius: 15,
@@ -169,7 +162,8 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'center',
-        bottom: screenHeight / 2.8
+        bottom: screenHeight / 2.8,
+        width: screenWidth
     },
     emailStyle: {
         borderRadius: 15,
@@ -182,15 +176,9 @@ const styles = StyleSheet.create({
         position: 'absolute',
         flex: 1,
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        bottom: screenHeight / 3.6
-    },
-    bdayStyle: {
-        borderRadius: 15,
-        borderWidth: 1,
-        borderColor: '#606060',
-        paddingVertical: 12,
-        width: '45%'
+        justifyContent: 'space-around',
+        bottom: screenHeight / 3.6,
+        width: screenWidth
     },
     ageStyle: {
         borderRadius: 15,
@@ -205,6 +193,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         bottom: screenHeight / 5,
+        width: screenWidth
     },
     addressStyle: {
         borderRadius: 15,
@@ -233,7 +222,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#0EB080',
         width: screenWidth / 1.5,
         alignItems: 'center',
-        paddingVertical: '2%',
+        paddingVertical: 2,
         borderRadius: 10
     },
     txtStyle: {
@@ -246,6 +235,7 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'center',
-        bottom: screenHeight / 7.4,
+        bottom: screenHeight / 8,
+        width: screenWidth
     }
 })

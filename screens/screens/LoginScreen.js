@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
     },
     wors: {
         color: '#F9F9F9',
-        fontSize: '35%'
+        fontSize: 35
     },
     hify: {
         color: '#0EB080'

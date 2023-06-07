@@ -15,7 +15,7 @@ const RegisterModal = () => {
 
     const handleClient = () => {
         Animated.timing(ContentValue, {
-            toValue: screenWidth / -2,
+            toValue: 0,
             duration: 300,
             useNativeDriver: false,
         }).start()
@@ -24,7 +24,7 @@ const RegisterModal = () => {
 
     const handleMusician = () => {
         Animated.timing(ContentValue, {
-            toValue: screenWidth / -2,
+            toValue: 0,
             duration: 300,
             useNativeDriver: false,
         }).start()
@@ -104,7 +104,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderTopLeftRadius: 50,
         borderTopRightRadius: 50,
-        position: 'absolute',
         width: '100%',
         height: '100%'
     },
@@ -141,7 +140,7 @@ const styles = StyleSheet.create({
         width: '50%',
         alignItems: 'center',
         paddingVertical: '15%',
-        borderRadius: '10%',
+        borderRadius: 10,
         borderWidth: 2,
         borderColor: '#0EB080'
     },

@@ -44,11 +44,11 @@ export default Header
 const styles = StyleSheet.create({
     image: {
         backgroundColor: 'green',
-        height: '50%',
+        height: '45%',
         width: '9%',
         borderWidth: 2,
         borderColor: 'green',
-        borderRadius: '25%'
+        borderRadius: 25
     },
     container: {
         borderColor: '#50575F',
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     },
     textStyle: {
         color: 'white',
-        fontSize: '15%',
+        fontSize: 15,
         fontWeight: '700'
     }
 })

@@ -13,7 +13,7 @@ const { width: screenWidth } = Dimensions.get('screen');
 const InstGenre = () => {
 
     const [selectedInstruments, setSelectedInstruments] = useState([]);
-    const [selectedGenres, setSetSelectedGenres] = useState([]);
+    const [selectedGenres, setSelectedGenres] = useState([]);
     const ContentValue = useState(new Animated.Value(-600))[0]
     const [isClicked, SetIsClicked] = useState(false);
 
@@ -37,10 +37,10 @@ const InstGenre = () => {
 
         if (isGenreSelected) {
             //Remove the button from the selected instruments array
-            setSetSelectedGenres(selectedGenres.filter((id) => id !== GenreId));
+            setSelectedGenres(selectedGenres.filter((id) => id !== GenreId));
         } else {
             //Add the button to the selected buttons array
-            setSetSelectedGenres([...selectedGenres, GenreId]);
+            setSelectedGenres([...selectedGenres, GenreId]);
 
         }
     }
@@ -404,14 +404,14 @@ const styles = StyleSheet.create({
     },
     headerContainer: {
         alignItems: 'center',
-        marginTop: '5%'
+        marginTop: 5
     },
     header: {
         fontWeight: 'bold',
         fontSize: 20
     },
     subheaderTxt: {
-        marginVertical: '5%'
+        marginVertical: 5
     },
     row: {
         flexDirection: 'row',
@@ -431,8 +431,8 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#0EB080',
         borderRadius: 10,
-        marginHorizontal: '10%',
-        paddingVertical: '20%',
+        marginHorizontal: 10,
+        paddingVertical: 20,
     },
     button: {
         borderWidth: 1,
@@ -440,12 +440,12 @@ const styles = StyleSheet.create({
         backgroundColor: '#0EB080',
         width: screenWidth / 1.5,
         alignItems: 'center',
-        paddingVertical: '2%',
+        paddingVertical: 8,
         borderRadius: 10
     },
     BtnRow: {
         alignItems: 'center',
-        marginTop: '8%',
+        marginTop: 8,
         width: screenWidth,
     },
     txtStyle: {
@@ -458,8 +458,8 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#0EB080',
         borderRadius: 10,
-        marginHorizontal: '10%',
-        paddingVertical: '20%',
+        marginHorizontal: 10,
+        paddingVertical: 20,
         backgroundColor: '#0EB080',
     }
 })
