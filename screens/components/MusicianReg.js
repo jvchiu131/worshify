@@ -15,6 +15,7 @@ const MusicianReg = () => {
     const [age, setAge] = useState('');
     const [address, setAddress] = useState('');
     const [password, setPassword] = useState('');
+    const [phone, setPhone] = useState('');
     const [isClicked, setIsClicked] = useState(false);
     const ContentValue = useState(new Animated.Value(-600))[0]
 
@@ -42,7 +43,10 @@ const MusicianReg = () => {
             useNativeDriver: false,
         }).start()
         setIsClicked(true);
+
     }
+
+    const props = { fname: firstName, lname: lastName, email: email, bday: birthday, age: age, address: address, password: password }
 
 
     return (
@@ -51,7 +55,7 @@ const MusicianReg = () => {
                 <Animated.View
                     style={{ right: ContentValue }}>
                     {isClicked ? (
-                        <InstGenre />
+                        <InstGenre {...props} />
                     ) : null}
                 </Animated.View>
             ) : (
@@ -70,12 +74,31 @@ const MusicianReg = () => {
 
                     <View style={styles.inputContainer}>
                         <View style={styles.nameContainer}>
-                            <TextInput style={styles.inputStyle} placeholder='First Name' />
-                            <TextInput style={styles.inputStyle} placeholder='Last Name' />
+                            <TextInput style={styles.inputStyle}
+                                value={firstName}
+                                placeholder='First Name'
+                                onChangeText={text => setFirstName(text)} />
+
+                            <TextInput style={styles.inputStyle}
+                                value={lastName}
+                                placeholder='Last Name'
+                                onChangeText={text => setLastName(text)} />
+
                         </View>
                         <View style={styles.emailContainer}>
-                            <TextInput style={styles.emailStyle} placeholder='Email' />
+                            <TextInput style={styles.emailStyle}
+                                value={email}
+                                placeholder='Email'
+                                onChangeText={text => setEmail(text)} />
                         </View>
+
+                        {/* <View style={styles.passContainer}>
+                            <TextInput style={styles.passStyle}
+                                value={password}
+                                placeholder='Password'
+                                onChange={text => setPassword(text)}
+                                secureTextEntry />
+                        </View> */}
                         <View style={styles.birthContainer}>
                             <Button title='Birthday' onPress={showDatePicker} color={'black'} />
                             <DateTimePickerModal
@@ -85,13 +108,25 @@ const MusicianReg = () => {
                                 onCancel={hideDatePicker}
                                 isDarkModeEnabled={true}
                             />
-                            <TextInput style={styles.ageStyle} keyboardType='numeric' placeholder='Age' />
+                            <TextInput style={styles.ageStyle}
+                                keyboardType='numeric'
+                                placeholder='Age'
+                                value={age}
+                                onChangeText={text => setAge(text)} />
+
                         </View>
                         <View style={styles.addressContainer}>
-                            <TextInput style={styles.addressStyle} placeholder='Address' />
+                            <TextInput style={styles.addressStyle}
+                                placeholder='Address'
+                                value={address}
+                                onChangeText={text => setAddress(text)} />
                         </View>
                         <View style={styles.phoneContainer}>
-                            <TextInput style={styles.addressStyle} keyboardType='numeric' placeholder='Phone' />
+                            <TextInput style={styles.passStyle}
+                                value={password}
+                                placeholder='Password'
+                                onChangeText={text => setPassword(text)}
+                                secureTextEntry />
                         </View>
 
                         <View>
@@ -171,6 +206,21 @@ const styles = StyleSheet.create({
         borderColor: '#606060',
         paddingVertical: 12,
         width: '95%'
+    },
+    passStyle: {
+        borderRadius: 15,
+        borderWidth: 1,
+        borderColor: '#606060',
+        paddingVertical: 12,
+        width: '95%'
+    },
+    passContainer: {
+        position: 'absolute',
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        bottom: screenHeight / 4,
+        width: screenWidth
     },
     birthContainer: {
         position: 'absolute',

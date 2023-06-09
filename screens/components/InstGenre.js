@@ -3,6 +3,10 @@ import React, { useState } from 'react'
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
+import { auth, db } from '../../firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { ref, set } from 'firebase/database';
+
 
 
 const { height: screenHeight } = Dimensions.get('screen');
@@ -10,12 +14,16 @@ const { width: screenWidth } = Dimensions.get('screen');
 
 
 
-const InstGenre = () => {
+const InstGenre = ({ fname, lname, email, bday, age, address, password }) => {
+
+
 
     const [selectedInstruments, setSelectedInstruments] = useState([]);
     const [selectedGenres, setSelectedGenres] = useState([]);
     const ContentValue = useState(new Animated.Value(-600))[0]
     const [isClicked, SetIsClicked] = useState(false);
+
+
 
 
     const handleInstrumentsClick = (buttonId) => {
@@ -28,7 +36,37 @@ const InstGenre = () => {
             //Add the button to the selected buttons array
             setSelectedInstruments([...selectedInstruments, buttonId]);
 
+
+
         }
+    }
+
+    const handleSignup = () => {
+        createUserWithEmailAndPassword(auth, email, password)
+            .then(userCredentials => {
+                const user = userCredentials.user;
+                // console.log(user.email);
+
+
+                //writes data on the database
+                const writeUserData = () => {
+                    set(ref(db, 'users/musician' + user.uid),
+                        {
+                            first_name: fname,
+                            lname: lname,
+                            email: email,
+                            birthday: bday,
+                            age: age,
+                            address: address,
+                            instruments: selectedInstruments,
+                            genre: selectedGenres
+                        }
+                    );
+                }
+                writeUserData();
+            })
+            .catch(error => alert(error.message))
+
     }
 
 
@@ -81,9 +119,9 @@ const InstGenre = () => {
                                         <TouchableOpacity
                                             style={[
                                                 styles.btnStyle,
-                                                selectedGenres.includes(1) ? styles.selectedButton : null,
+                                                selectedGenres.includes("Worship Pop") ? styles.selectedButton : null,
                                             ]}
-                                            onPress={() => handleGenresClick(1)}>
+                                            onPress={() => handleGenresClick("Worship Pop")}>
 
                                             <Entypo name="vinyl" size={24} color="black" />
                                             <Text>Worship Pop</Text>
@@ -96,9 +134,9 @@ const InstGenre = () => {
                                         <TouchableOpacity
                                             style={[
                                                 styles.btnStyle,
-                                                selectedGenres.includes(2) ? styles.selectedButton : null,
+                                                selectedGenres.includes("Christian Rock") ? styles.selectedButton : null,
                                             ]}
-                                            onPress={() => handleGenresClick(2)}>
+                                            onPress={() => handleGenresClick("Christian Rock")}>
 
                                             <Entypo name="vinyl" size={24} color="black" />
                                             <Text>Christian Rock</Text>
@@ -111,9 +149,9 @@ const InstGenre = () => {
                                         <TouchableOpacity
                                             style={[
                                                 styles.btnStyle,
-                                                selectedGenres.includes(3) ? styles.selectedButton : null,
+                                                selectedGenres.includes("Country") ? styles.selectedButton : null,
                                             ]}
-                                            onPress={() => handleGenresClick(3)}>
+                                            onPress={() => handleGenresClick("Country")}>
 
                                             <Entypo name="vinyl" size={24} color="black" />
                                             <Text>Country</Text>
@@ -129,9 +167,9 @@ const InstGenre = () => {
                                         <TouchableOpacity
                                             style={[
                                                 styles.btnStyle,
-                                                selectedGenres.includes(4) ? styles.selectedButton : null,
+                                                selectedGenres.includes("Christian Jazz") ? styles.selectedButton : null,
                                             ]}
-                                            onPress={() => handleGenresClick(4)}>
+                                            onPress={() => handleGenresClick("Christian Jazz")}>
 
                                             <Entypo name="vinyl" size={24} color="black" />
                                             <Text>Christian Jazz</Text>
@@ -144,9 +182,9 @@ const InstGenre = () => {
                                         <TouchableOpacity
                                             style={[
                                                 styles.btnStyle,
-                                                selectedGenres.includes(5) ? styles.selectedButton : null,
+                                                selectedGenres.includes("Gospel Blues") ? styles.selectedButton : null,
                                             ]}
-                                            onPress={() => handleGenresClick(5)}>
+                                            onPress={() => handleGenresClick("Gospel Blues")}>
 
                                             <Entypo name="vinyl" size={24} color="black" />
                                             <Text>Gospel Blues</Text>
@@ -159,9 +197,9 @@ const InstGenre = () => {
                                         <TouchableOpacity
                                             style={[
                                                 styles.btnStyle,
-                                                selectedGenres.includes(6) ? styles.selectedButton : null,
+                                                selectedGenres.includes("Reggae") ? styles.selectedButton : null,
                                             ]}
-                                            onPress={() => handleGenresClick(6)}>
+                                            onPress={() => handleGenresClick("Reggae")}>
 
                                             <Entypo name="vinyl" size={24} color="black" />
                                             <Text>Reggae</Text>
@@ -178,9 +216,9 @@ const InstGenre = () => {
                                         <TouchableOpacity
                                             style={[
                                                 styles.btnStyle,
-                                                selectedGenres.includes(7) ? styles.selectedButton : null,
+                                                selectedGenres.includes("Christian R&B") ? styles.selectedButton : null,
                                             ]}
-                                            onPress={() => handleGenresClick(7)}>
+                                            onPress={() => handleGenresClick("Christian R&B")}>
 
                                             <Entypo name="vinyl" size={24} color="black" />
                                             <Text>Christian R&B</Text>
@@ -191,9 +229,9 @@ const InstGenre = () => {
                                         <TouchableOpacity
                                             style={[
                                                 styles.btnStyle,
-                                                selectedGenres.includes(8) ? styles.selectedButton : null,
+                                                selectedGenres.includes("Electronic") ? styles.selectedButton : null,
                                             ]}
-                                            onPress={() => handleGenresClick(8)}>
+                                            onPress={() => handleGenresClick("Electronic")}>
 
                                             <Entypo name="vinyl" size={24} color="black" />
                                             <Text>Electronic</Text>
@@ -204,9 +242,9 @@ const InstGenre = () => {
                                         <TouchableOpacity
                                             style={[
                                                 styles.btnStyle,
-                                                selectedGenres.includes(9) ? styles.selectedButton : null,
+                                                selectedGenres.includes("Classical") ? styles.selectedButton : null,
                                             ]}
-                                            onPress={() => handleGenresClick(9)}>
+                                            onPress={() => handleGenresClick("Classical")}>
 
                                             <Entypo name="vinyl" size={24} color="black" />
                                             <Text>Classical</Text>
@@ -216,7 +254,7 @@ const InstGenre = () => {
                                 </View>
 
                                 <View style={styles.BtnRow}>
-                                    <TouchableOpacity>
+                                    <TouchableOpacity onPress={handleSignup}>
                                         <View style={styles.button}>
                                             <Text style={styles.txtStyle}>Sign up</Text>
                                         </View>
@@ -242,9 +280,9 @@ const InstGenre = () => {
                                 <TouchableOpacity
                                     style={[
                                         styles.btnStyle,
-                                        selectedInstruments.includes(1) ? styles.selectedButton : null,
+                                        selectedInstruments.includes("Guitar") ? styles.selectedButton : null,
                                     ]}
-                                    onPress={() => handleInstrumentsClick(1)}>
+                                    onPress={() => handleInstrumentsClick("Guitar")}>
 
                                     <MaterialCommunityIcons name="guitar-pick-outline" size={24} color="black" />
                                     <Text>Guitar</Text>
@@ -257,9 +295,9 @@ const InstGenre = () => {
                                 <TouchableOpacity
                                     style={[
                                         styles.btnStyle,
-                                        selectedInstruments.includes(2) ? styles.selectedButton : null,
+                                        selectedInstruments.includes("Bass") ? styles.selectedButton : null,
                                     ]}
-                                    onPress={() => handleInstrumentsClick(2)}>
+                                    onPress={() => handleInstrumentsClick("Bass")}>
 
                                     <MaterialCommunityIcons name="guitar-pick-outline" size={24} color="black" />
                                     <Text>Bass</Text>
@@ -272,9 +310,9 @@ const InstGenre = () => {
                                 <TouchableOpacity
                                     style={[
                                         styles.btnStyle,
-                                        selectedInstruments.includes(3) ? styles.selectedButton : null,
+                                        selectedInstruments.includes("Keyboard") ? styles.selectedButton : null,
                                     ]}
-                                    onPress={() => handleInstrumentsClick(3)}>
+                                    onPress={() => handleInstrumentsClick("Keyboard")}>
 
                                     <MaterialCommunityIcons name="piano" size={24} color="black" />
                                     <Text>Keyboard</Text>
@@ -290,9 +328,9 @@ const InstGenre = () => {
                                 <TouchableOpacity
                                     style={[
                                         styles.btnStyle,
-                                        selectedInstruments.includes(4) ? styles.selectedButton : null,
+                                        selectedInstruments.includes("Drums") ? styles.selectedButton : null,
                                     ]}
-                                    onPress={() => handleInstrumentsClick(4)}>
+                                    onPress={() => handleInstrumentsClick("Drums")}>
 
                                     <FontAwesome5 name="drum" size={24} color="black" />
                                     <Text>Drums</Text>
@@ -305,9 +343,9 @@ const InstGenre = () => {
                                 <TouchableOpacity
                                     style={[
                                         styles.btnStyle,
-                                        selectedInstruments.includes(5) ? styles.selectedButton : null,
+                                        selectedInstruments.includes("Vocals") ? styles.selectedButton : null,
                                     ]}
-                                    onPress={() => handleInstrumentsClick(5)}>
+                                    onPress={() => handleInstrumentsClick("Vocals")}>
 
                                     <Entypo name="modern-mic" size={24} color="black" />
                                     <Text>Vocals</Text>
@@ -320,9 +358,9 @@ const InstGenre = () => {
                                 <TouchableOpacity
                                     style={[
                                         styles.btnStyle,
-                                        selectedInstruments.includes(6) ? styles.selectedButton : null,
+                                        selectedInstruments.includes("Violin") ? styles.selectedButton : null,
                                     ]}
-                                    onPress={() => handleInstrumentsClick(6)}>
+                                    onPress={() => handleInstrumentsClick("Violin")}>
 
                                     <MaterialCommunityIcons name="violin" size={24} color="black" />
                                     <Text>Violin</Text>
@@ -339,9 +377,9 @@ const InstGenre = () => {
                                 <TouchableOpacity
                                     style={[
                                         styles.btnStyle,
-                                        selectedInstruments.includes(7) ? styles.selectedButton : null,
+                                        selectedInstruments.includes("Hand Drums") ? styles.selectedButton : null,
                                     ]}
-                                    onPress={() => handleInstrumentsClick(7)}>
+                                    onPress={() => handleInstrumentsClick("Hand Drums")}>
 
                                     <MaterialCommunityIcons name="hand-back-left-outline" size={24} color="black" />
                                     <Text>Hand Drums</Text>
@@ -352,9 +390,9 @@ const InstGenre = () => {
                                 <TouchableOpacity
                                     style={[
                                         styles.btnStyle,
-                                        selectedInstruments.includes(8) ? styles.selectedButton : null,
+                                        selectedInstruments.includes("Saxophone") ? styles.selectedButton : null,
                                     ]}
-                                    onPress={() => handleInstrumentsClick(8)}>
+                                    onPress={() => handleInstrumentsClick("Saxophone")}>
 
                                     <MaterialCommunityIcons name="saxophone" size={24} color="black" />
                                     <Text>Saxophone</Text>
@@ -365,9 +403,9 @@ const InstGenre = () => {
                                 <TouchableOpacity
                                     style={[
                                         styles.btnStyle,
-                                        selectedInstruments.includes(9) ? styles.selectedButton : null,
+                                        selectedInstruments.includes("Trumpet") ? styles.selectedButton : null,
                                     ]}
-                                    onPress={() => handleInstrumentsClick(9)}>
+                                    onPress={() => handleInstrumentsClick("Trumpet")}>
 
                                     <MaterialCommunityIcons name="trumpet" size={24} color="black" />
                                     <Text>Trumpet</Text>
