@@ -4,13 +4,15 @@ import Icon from '@expo/vector-icons/MaterialCommunityIcons'
 import React, { useState } from 'react'
 import { TouchableOpacity } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../firebase'
 
 
 const LoginModal = () => {
 
 
 
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     const [isFocused, setIsFocused] = useState(false);
@@ -18,7 +20,21 @@ const LoginModal = () => {
 
     const navigation = useNavigation();
 
+    const handleLogin = () => {
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                // Signed in 
+                const user = userCredential.user;
+                console.log(user.email + "successful")
+                navigation.navigate('Home');
 
+                // ...
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+            });
+    }
 
     const handleFocus = () => {
         setIsFocused(true); // Change the color to a different value upon selection
@@ -38,19 +54,19 @@ const LoginModal = () => {
                 <TextInput
                     label="Username"
                     variant="outlined"
-                    value={username}
-                    onChangeText={text => setUsername(text.replace(/\s+/g, ''))}
+                    value={email}
+                    onChangeText={text => setEmail(text.replace(/\s+/g, ''))}
                     onKeyPress={e => {
                         if (e.nativeEvent.key === ' ') {
                             e.preventDefault();
                         }
                     }}
-                    color={isFocused || username ? '#0EB080' : '#606060'}
+                    color={isFocused || email ? '#0EB080' : '#606060'}
                     onFocus={handleFocus}
                     onBlur={handleBlur}
                     trailing={props =>
                         <Icon name="account"
-                            style={{ color: isFocused || username ? '#0EB080' : '#606060' }}
+                            style={{ color: isFocused || email ? '#0EB080' : '#606060' }}
                             {...props} />}
                 />
                 <TextInput
@@ -80,7 +96,7 @@ const LoginModal = () => {
             <View
                 style={styles.buttonContainer}>
                 <TouchableOpacity
-                    onPress={() => { navigation.navigate('Home') }}
+                    onPress={handleLogin}
                     style={styles.button}>
                     <Text style={styles.buttonText}>Login</Text>
                 </TouchableOpacity>

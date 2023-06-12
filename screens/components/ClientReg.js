@@ -1,13 +1,23 @@
 import { StyleSheet, Text, TouchableOpacity, TextInput, View, Animated, Dimensions, Button } from 'react-native'
 import React, { useState } from 'react'
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-
+import { auth, db } from '../../firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { ref, set } from 'firebase/database';
 const { height: screenHeight } = Dimensions.get('screen');
 const { width: screenWidth } = Dimensions.get('screen');
 
 const ClientReg = () => {
 
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [email, setEmail] = useState('')
+    const [birthday, setBirthday] = useState(new Date());
+    const [age, setAge] = useState('');
+    const [address, setAddress] = useState('');
+    const [password, setPassword] = useState('');
+    const [phone, setPhone] = useState('');
 
     const showDatePicker = () => {
         setDatePickerVisibility(true);
@@ -23,9 +33,33 @@ const ClientReg = () => {
         hideDatePicker();
     };
 
-    const handleBtn = () => {
+    const handleSignup = () => {
+        createUserWithEmailAndPassword(auth, email, password)
+            .then(userCredentials => {
+                const user = userCredentials.user;
+                // console.log(user.email);
+
+
+                //writes data on the database
+                const writeUserData = () => {
+                    set(ref(db, 'users/' + user.uid),
+                        {
+                            first_name: firstName,
+                            lname: lastName,
+                            email: email,
+                            birthday: birthday,
+                            age: age,
+                            address: address,
+                            accountType: 'Client'
+                        }
+                    );
+                }
+                writeUserData();
+            })
+            .catch(error => alert(error.message))
 
     }
+
 
     return (
         <View style={styles.container}>
@@ -42,12 +76,31 @@ const ClientReg = () => {
 
             <View style={styles.inputContainer}>
                 <View style={styles.nameContainer}>
-                    <TextInput style={styles.inputStyle} placeholder='First Name' />
-                    <TextInput style={styles.inputStyle} placeholder='Last Name' />
+                    <TextInput style={styles.inputStyle}
+                        value={firstName}
+                        placeholder='First Name'
+                        onChangeText={text => setFirstName(text)} />
+
+                    <TextInput style={styles.inputStyle}
+                        value={lastName}
+                        placeholder='Last Name'
+                        onChangeText={text => setLastName(text)} />
+
                 </View>
                 <View style={styles.emailContainer}>
-                    <TextInput style={styles.emailStyle} placeholder='Email' />
+                    <TextInput style={styles.emailStyle}
+                        value={email}
+                        placeholder='Email'
+                        onChangeText={text => setEmail(text)} />
                 </View>
+
+                {/* <View style={styles.passContainer}>
+                            <TextInput style={styles.passStyle}
+                                value={password}
+                                placeholder='Password'
+                                onChange={text => setPassword(text)}
+                                secureTextEntry />
+                        </View> */}
                 <View style={styles.birthContainer}>
                     <Button title='Birthday' onPress={showDatePicker} color={'black'} />
                     <DateTimePickerModal
@@ -55,21 +108,33 @@ const ClientReg = () => {
                         mode="date"
                         onConfirm={handleConfirm}
                         onCancel={hideDatePicker}
-
+                        isDarkModeEnabled={true}
                     />
-                    <TextInput style={styles.ageStyle} keyboardType='numeric' placeholder='Age' />
+                    <TextInput style={styles.ageStyle}
+                        keyboardType='numeric'
+                        placeholder='Age'
+                        value={age}
+                        onChangeText={text => setAge(text)} />
+
                 </View>
                 <View style={styles.addressContainer}>
-                    <TextInput style={styles.addressStyle} placeholder='Address' />
+                    <TextInput style={styles.addressStyle}
+                        placeholder='Address'
+                        value={address}
+                        onChangeText={text => setAddress(text)} />
                 </View>
                 <View style={styles.phoneContainer}>
-                    <TextInput style={styles.addressStyle} keyboardType='numeric' placeholder='Phone' />
+                    <TextInput style={styles.passStyle}
+                        value={password}
+                        placeholder='Password'
+                        onChangeText={text => setPassword(text)}
+                        secureTextEntry />
                 </View>
 
                 <View>
-                    <TouchableOpacity style={styles.btnContainer} onPress={handleBtn}>
+                    <TouchableOpacity style={styles.btnContainer} onPress={handleSignup}>
                         <View style={styles.button}>
-                            <Text style={styles.txtStyle}>Sign up</Text>
+                            <Text style={styles.txtStyle}>Register</Text>
                         </View>
                     </TouchableOpacity>
                 </View>
@@ -204,6 +269,21 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         bottom: screenHeight / 8,
         width: screenWidth
-    }
+    },
+    passStyle: {
+        borderRadius: 15,
+        borderWidth: 1,
+        borderColor: '#606060',
+        paddingVertical: 12,
+        width: '95%'
+    },
+    passContainer: {
+        position: 'absolute',
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        bottom: screenHeight / 4,
+        width: screenWidth
+    },
 })
 

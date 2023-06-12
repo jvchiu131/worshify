@@ -1,34 +1,52 @@
 import { StyleSheet, Text, View, Dimensions } from 'react-native'
 import React from 'react'
 import Header from '../components/Header'
-import DashboardBtn from '../components/DashboardBtn';
-import CardJob from '../components/CardJob';
-import AdCard from '../components/AdCard';
+import { auth, db } from '../../firebase';
+import { DataSnapshot, onValue, ref, set } from 'firebase/database';
+import { useState } from 'react';
+import { useEffect } from 'react';
+
+
 
 const { height: screenHeight } = Dimensions.get("screen");
 const { width: screenWidth } = Dimensions.get('screen');
 const DashScreen = () => {
+
+    const [isMusician, setIsMusician] = useState(false);
+    const [accountType, setAccountType] = useState("");
+    const user = auth.currentUser;
+    const uid = user.uid;
+
+
+    //handles account type identification
+    useEffect(() => {
+        const userType = ref(db, 'users/' + uid + '/accountType');
+        onValue(userType, (DataSnapshot) => {
+            const accType = DataSnapshot.val().toString();
+            setAccountType(accType);
+        });
+
+        if (accountType === 'Musician') {
+            console.log(user.email + "is musician")
+            console.log(accountType);
+            setIsMusician(true);
+        } else if (accountType === "Client") {
+            console.log(user.email + "is client")
+            console.log(accountType);
+            setIsMusician(false);
+        } else {
+            console.log(user.email + "is admin")
+            console.log(accountType);
+        }
+    }, []);
+
+
 
 
     return (
         <View style={styles.root}>
             <Header />
 
-            <View style={styles.btn}>
-                <DashboardBtn />
-            </View>
-
-            <View style={styles.textContainer}>
-                <Text style={styles.textStyle} >Job Available</Text>
-            </View>
-
-            <View style={styles.cardjob}>
-                <CardJob />
-            </View>
-
-            <View style={styles.adStyle}>
-                <AdCard />
-            </View>
         </View>
     )
 }
