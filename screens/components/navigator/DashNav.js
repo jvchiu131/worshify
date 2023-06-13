@@ -10,7 +10,7 @@ const Stack = createStackNavigator();
 const DashNav = () => {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name='Home' component={DashScreen} />
+            <Stack.Screen name='Dashboard' component={DashScreen} />
             <Stack.Screen name='Find a Musician' component={MusicianSearch} />
             <Stack.Screen name='Find a Gig' component={GigSearch} />
         </Stack.Navigator>

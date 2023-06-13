@@ -5,7 +5,8 @@ import { auth, db } from '../../firebase';
 import { DataSnapshot, onValue, ref, set } from 'firebase/database';
 import { useState } from 'react';
 import { useEffect } from 'react';
-
+import MusicianDashboard from '../components/MusicianDashboard';
+import ClientDashboard from '../components/ClientDashboard';
 
 
 const { height: screenHeight } = Dimensions.get("screen");
@@ -27,18 +28,15 @@ const DashScreen = () => {
         });
 
         if (accountType === 'Musician') {
-            console.log(user.email + "is musician")
+            console.log(user.email + " is musician")
             console.log(accountType);
             setIsMusician(true);
         } else if (accountType === "Client") {
-            console.log(user.email + "is client")
+            console.log(user.email + " is client")
             console.log(accountType);
             setIsMusician(false);
-        } else {
-            console.log(user.email + "is admin")
-            console.log(accountType);
         }
-    }, []);
+    }, [accountType]);
 
 
 
@@ -46,6 +44,13 @@ const DashScreen = () => {
     return (
         <View style={styles.root}>
             <Header />
+
+            {isMusician ? (
+                <MusicianDashboard />
+            ) : (
+                <ClientDashboard />
+            )}
+
 
         </View>
     )

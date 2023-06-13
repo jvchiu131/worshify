@@ -21,7 +21,7 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name='Login' options={{ headerShown: false }} component={LoginScreen} />
-        <Stack.Screen name='Home' component={BottomTab} />
+        <Stack.Screen name='DashScreen' component={BottomTab} />
       </Stack.Navigator>
       <StatusBar style='auto' />
     </NavigationContainer>
