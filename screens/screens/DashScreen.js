@@ -45,11 +45,14 @@ const DashScreen = () => {
         <View style={styles.root}>
             <Header />
 
-            {isMusician ? (
-                <MusicianDashboard />
-            ) : (
-                <ClientDashboard />
-            )}
+            <View>
+                {isMusician ? (
+                    <MusicianDashboard />
+                ) : (
+                    <ClientDashboard />
+                )}
+
+            </View>
 
 
         </View>

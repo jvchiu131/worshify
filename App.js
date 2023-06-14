@@ -1,15 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import LoginScreen from './screens/screens/LoginScreen';
-import DashScreen from './screens/screens/DashScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import ChatNav from './screens/components/navigator/ChatNav';
 import ContactNav from './screens/components/navigator/ContactNav';
-import NotificationScreen from './screens/screens/NotificationScreen';
 import DashNav from './screens/components/navigator/DashNav';
-
+import GigSearch from './screens/screens/GigSearch';
+import MusicianSearch from './screens/screens/MusicianSearch';
 
 
 
@@ -34,9 +32,10 @@ function BottomTab() {
     <>
       <Tab.Navigator screenOptions={{ headerShown: false }}>
         <Tab.Screen name='Home' component={DashNav} />
+        <Tab.Screen name='Gigs' component={GigSearch} />
+        {/* <Tab.Screen name='Profile' component={ChatNav} /> */}
+        <Tab.Screen name='Musicians' component={MusicianSearch} />
         <Tab.Screen options={{ headerShown: false }} name='Messages' component={ContactNav} />
-        <Tab.Screen name='Profile' component={ChatNav} />
-        <Tab.Screen name='Notification' component={NotificationScreen} />
       </Tab.Navigator>
       <StatusBar style='light' />
     </>

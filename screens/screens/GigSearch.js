@@ -1,24 +1,67 @@
-import { StyleSheet, Text, View, Dimensions } from 'react-native'
+import { StyleSheet, Text, View, Dimensions, TouchableOpacity, Animated, TouchableWithoutFeedback } from 'react-native'
 import React from 'react'
 import Header from '../components/Header';
-import SearchInput from '../components/SearchInput';
-import CriteriaChip from '../components/CriteriaChip';
+import { Ionicons } from '@expo/vector-icons';
+import { useState } from 'react'
+import AddGigModal from '../components/AddGigModal';
 
 
 const { height: screenHeight } = Dimensions.get('screen');
 const { width: screenWidth } = Dimensions.get('screen');
 
 const GigSearch = () => {
+
+
+    const animValue = useState(new Animated.Value(-600))[0]
+    const [showModal, setShowModal] = useState(false);
+
+    const moveModal = () => {
+        setShowModal(true)
+        Animated.timing(animValue, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: false
+        }).start()
+
+    }
+
+    const moveBack = () => {
+        Animated.timing(animValue, {
+            toValue: -600,
+            duration: 300,
+            useNativeDriver: false,
+
+        }).start()
+        setTimeout(() => {
+            setShowModal(false)
+        }, 300)
+
+    }
+
+
     return (
         <View style={styles.root}>
             <Header />
-            <View style={styles.seachContainer}>
-                <SearchInput />
+            <View style={styles.container}>
+                <TouchableWithoutFeedback onPressOut={moveBack}>
+                    <Animated.View
+                        style={{ bottom: animValue }}
+                        behavior='padding'>
+                        {showModal ? (
+                            <View style={styles.containerField}>
+                                <AddGigModal />
+                            </View>
+                        ) : (<></>
+                        )}
+                    </Animated.View>
+                </TouchableWithoutFeedback >
+
+                <TouchableOpacity style={styles.btnContainer} onPress={moveModal}>
+                    <Ionicons name="add-circle-sharp" size={55} color="#0EB080" />
+                </TouchableOpacity>
             </View>
 
-            <View style={styles.criteriaContainer}>
-                <CriteriaChip />
-            </View>
+
         </View>
     )
 }
@@ -31,14 +74,28 @@ const styles = StyleSheet.create({
         height: screenHeight,
         alignItems: 'center'
     },
-    seachContainer: {
+    container: {
+        height: '100%',
         width: screenWidth,
         bottom: screenHeight / 5,
-        height: '6.5%',
+
     },
-    criteriaContainer: {
-        width: screenWidth,
-        bottom: screenHeight / 6,
-        height: '20%'
-    }
+    btnContainer: {
+        padding: 5,
+        alignItems: 'flex-end',
+        top: screenHeight / 1.7,
+    },
+    containerField: {
+        width: '100%',
+        borderTopLeftRadius: 25,
+        borderTopRightRadius: 25,
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: screenHeight,
+        position: 'absolute',
+        backgroundColor: '#F9F9F9',
+        borderWidth: 2,
+        borderColor: 'white',
+    },
+
 })

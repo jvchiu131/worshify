@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import React from 'react'
 
-const CardJob = () => {
+const FeaturedGig = () => {
     return (
 
         <TouchableOpacity style={styles.container}>
@@ -17,32 +17,25 @@ const CardJob = () => {
     )
 }
 
-export default CardJob
+export default FeaturedGig
 
 const styles = StyleSheet.create({
     container: {
-        justifyContent: 'flex-start',
+        justifyContent: 'center',
         alignItems: 'center',
-        height: '50%',
-        width: '95%',
-        borderRadius: 10
+        height: '100%',
+        width: '100%',
     },
     imageContainer: {
-        borderWidth: 2,
-        borderColor: 'green',
         height: '60%',
         width: '100%',
         backgroundColor: 'green',
         justifyContent: 'center',
         alignItems: 'center',
-        borderTopLeftRadius: 10,
-        borderTopRightRadius: 10
     },
     textContainer: {
         backgroundColor: '#3C3C43',
         width: '100%',
         height: '40%',
-        borderBottomLeftRadius: 10,
-        borderBottomRightRadius: 10
     }
 })

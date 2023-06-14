@@ -13,7 +13,7 @@ const ClientReg = () => {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('')
-    const [birthday, setBirthday] = useState(new Date());
+    const [birthday, setBirthday] = useState(new Date().toLocaleDateString());
     const [age, setAge] = useState('');
     const [address, setAddress] = useState('');
     const [password, setPassword] = useState('');

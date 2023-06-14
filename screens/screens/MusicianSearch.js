@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, Dimensions } from 'react-native'
 import React from 'react'
 import Header from '../components/Header'
 import SearchInput from '../components/SearchInput'
-import CriteriaChip from '../components/CriteriaChip'
+
 
 const { height: screenHeight } = Dimensions.get('screen');
 const { width: screenWidth } = Dimensions.get('screen');
@@ -15,9 +15,6 @@ const MusicianSearch = () => {
                 <SearchInput />
             </View>
 
-            <View style={styles.criteriaContainer}>
-                <CriteriaChip />
-            </View>
         </View>
     )
 }
