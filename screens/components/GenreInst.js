@@ -6,6 +6,7 @@ import { Entypo } from '@expo/vector-icons';
 import { auth, db } from '../../firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { ref, set } from 'firebase/database';
+import { useEffect } from 'react';
 
 
 
@@ -14,7 +15,7 @@ const { width: screenWidth } = Dimensions.get('screen');
 
 
 
-const GenreInst = () => {
+const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType }) => {
 
 
 
@@ -23,7 +24,14 @@ const GenreInst = () => {
     const ContentValue = useState(new Animated.Value(-600))[0]
     const [isClicked, SetIsClicked] = useState(false);
 
-
+    useEffect(() => {
+        console.log(gigName),
+            console.log(gigAddress),
+            console.log(gigDate),
+            console.log(StartTime),
+            console.log(EndTime),
+            console.log(eventType)
+    })
 
 
     const handleInstrumentsClick = (buttonId) => {
@@ -41,32 +49,10 @@ const GenreInst = () => {
         }
     }
 
-    const handleSignup = () => {
-        createUserWithEmailAndPassword(auth, email, password)
-            .then(userCredentials => {
-                const user = userCredentials.user;
-                // console.log(user.email);
 
 
-                //writes data on the database
-                const writeUserData = () => {
-                    set(ref(db, 'users/' + user.uid),
-                        {
-                            first_name: fname,
-                            lname: lname,
-                            email: email,
-                            birthday: bday,
-                            age: age,
-                            address: address,
-                            instruments: selectedInstruments,
-                            genre: selectedGenres,
-                            accountType: 'Musician'
-                        }
-                    );
-                }
-                writeUserData();
-            })
-            .catch(error => alert(error.message))
+    const handleCreateGig = () => {
+
 
     }
 
@@ -110,7 +96,7 @@ const GenreInst = () => {
                         <>
                             <View style={styles.headerContainer}>
                                 <Text style={styles.header}>Choose <Text style={{ color: '#0EB080' }}>Genre</Text></Text>
-                                <Text style={styles.subheaderTxt}>Select your preferred music genre below</Text>
+                                <Text style={styles.subheaderTxt}>Select your preferred music genre for the Gig</Text>
                             </View>
 
                             <View style={styles.btnContainer}>
@@ -255,9 +241,9 @@ const GenreInst = () => {
                                 </View>
 
                                 <View style={styles.BtnRow}>
-                                    <TouchableOpacity onPress={handleSignup}>
+                                    <TouchableOpacity onPress={handleCreateGig}>
                                         <View style={styles.button}>
-                                            <Text style={styles.txtStyle}>Sign up</Text>
+                                            <Text style={styles.txtStyle}>Create Gig</Text>
                                         </View>
                                     </TouchableOpacity>
                                 </View>
@@ -271,7 +257,7 @@ const GenreInst = () => {
                 <>
                     <View style={styles.headerContainer}>
                         <Text style={styles.header}>Choose <Text style={{ color: '#0EB080' }}>Instruments</Text></Text>
-                        <Text style={styles.subheaderTxt}>Select the instruments you play</Text>
+                        <Text style={styles.subheaderTxt}>Instruments needed for the Gig </Text>
                     </View>
 
                     <View style={styles.btnContainer}>

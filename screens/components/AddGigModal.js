@@ -1,13 +1,15 @@
-import { StyleSheet, Text, View, Animated, Button } from 'react-native'
+import { StyleSheet, Text, View, Animated, Dimensions } from 'react-native'
 import React from 'react'
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import GenreInst from './GenreInst'
 import { TextInput } from 'react-native'
-import DateTimePickerModal from "react-native-modal-datetime-picker";
-import DateTimePicker from '@react-native-community/datetimepicker';
-import RNDateTimePicker from '@react-native-community/datetimepicker'
+import { TimePickerModal } from 'react-native-paper-dates';
 import { TouchableOpacity } from 'react-native'
 import DropDownPicker from 'react-native-dropdown-picker'
+import { DatePickerInput } from 'react-native-paper-dates';
+
+const { height: screenHeight } = Dimensions.get('screen');
+const { width: screenWidth } = Dimensions.get("screen");
 
 const AddGigModal = () => {
 
@@ -16,12 +18,9 @@ const AddGigModal = () => {
     const [GigName, setGigName] = useState();
     const [GigAddress, setGigAddress] = useState();
     const [date, setDate] = useState(new Date());
-    const [startTime, setStartTime] = useState(new Date());
-    const [endTime, setEndTime] = useState(new Date());
-    const [DatebtnClick, setDateBtnClick] = useState(false);
-    const [StartTimeClick, setStartTimeClick] = useState(false);
-    const [EndTimeClick, setEndTimeClick] = useState(false);
-    const [EventType, setEventType] = useState();
+    const [startTime, setStartTime] = useState({});
+    const [endTime, setEndTime] = useState({});
+    const [EventType, setEventType] = useState(null);
     const [open, setOpen] = useState(false);
     const [items, setItems] = useState([
         { label: 'Church Service', value: 'Church Service' },
@@ -30,32 +29,50 @@ const AddGigModal = () => {
         { label: 'Worship Concert', value: 'Worship Concert' },
         { label: 'Wedding', value: 'Wedding' }
     ]);
-    const [value, setValue] = useState(null);
+    const [startVisible, setStartVisible] = useState(false);
+    const [endVisible, setEndVisible] = useState(false);
 
 
+    const onDismiss = useCallback(() => {
+        setStartVisible(false)
+    }, [setStartVisible])
 
-    const handleBtnClick = () => {
+    const onConfirm = useCallback(
+        ({ hours, minutes }) => {
+
+            setStartTime({ hours, minutes })
+            console.log(startTime);
+            setStartVisible(false);
+        },
+        [setStartVisible]
+    );
+
+
+    const onDismissEnd = useCallback(() => {
+        setEndVisible(false)
+    }, [setEndVisible])
+
+    const onConfirmEnd = useCallback(
+        ({ hours, minutes }) => {
+
+            setEndTime({ hours, minutes })
+            console.log(endTime);
+            setEndVisible(false);
+        },
+        [setEndVisible]
+    );
+
+
+    const handleBtn = () => {
         Animated.timing(ContentValue, {
             toValue: 0,
             duration: 300,
             useNativeDriver: false,
         }).start()
-        setIsClicked(true)
+        setIsClicked(true);
     }
 
-    const handleDateClick = () => {
-        setDateBtnClick(true);
-        console.log(date);
-
-    }
-
-    const handleStartTime = () => {
-        setStartTimeClick(true);
-    }
-
-    const handleEndTime = () => {
-        setEndTimeClick(true);
-    }
+    const props = { gigName: GigName, gigAddress: GigAddress, gigDate: date, StartTime: startTime, EndTime: endTime, eventType: EventType };
 
 
 
@@ -63,83 +80,106 @@ const AddGigModal = () => {
     return (
         <View style={styles.root}>
 
-
-
-            <View style={styles.container}>
-
-
-                <View style={styles.GigNameContainer}>
-                    <Text style={styles.txtStyle}>Gig Name</Text>
-                    <TextInput style={styles.inputStyle}
-                        value={GigName}
-                        placeholder='Enter gig name'
-                        onChangeText={text => setGigName(text)} />
-                </View>
-
-                <View style={styles.GigNameContainer}>
-                    <Text style={styles.txtStyle}>Gig Address</Text>
-                    <TextInput style={styles.inputStyle}
-                        value={GigAddress}
-                        placeholder='Enter gig address'
-                        onChangeText={text => setGigAddress(text)} />
-                </View>
-
-
-                <View style={styles.timeContainer}>
-
-
-                    <TouchableOpacity style={styles.btnStyle} onPress={handleDateClick}>
-                        <View>
-                            <Text>
-                                Date
-                            </Text>
-                        </View>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.btnStyle} onPress={handleStartTime}>
-                        <View>
-                            <Text>
-                                Time Start
-                            </Text>
-                        </View>
-                    </TouchableOpacity>
-
-
-                    <TouchableOpacity style={styles.btnStyle} onPress={handleEndTime}>
-                        <View>
-                            <Text>
-                                Time End
-                            </Text>
-                        </View>
-                    </TouchableOpacity>
-
-
-                    {DatebtnClick ? (
-                        <RNDateTimePicker display='spinner' mode='date' value={date} onChange={setDate} />
+            {isClicked ? (
+                <Animated.View
+                    style={{ right: ContentValue }}>
+                    {isClicked ? (
+                        <GenreInst {...props} />
                     ) : null}
+                </Animated.View>
+            ) : (
+                <View style={styles.container}>
 
-                    {StartTimeClick ? (
-                        <RNDateTimePicker display='spinner' mode='time' value={startTime} onChange={setStartTime} />
-                    ) : null}
 
-                    {EndTimeClick ? (
-                        <RNDateTimePicker display='spinner' mode='time' value={endTime} onChange={setEndTime} />
-                    ) : null}
+                    <View style={styles.GigNameContainer}>
+                        <Text style={styles.txtStyles}>Gig Name</Text>
+                        <TextInput style={styles.inputStyle}
+                            value={GigName}
+                            placeholder='Enter gig name'
+                            onChangeText={text => setGigName(text)} />
+                    </View>
 
+                    <View style={styles.GigNameContainer}>
+                        <Text style={styles.txtStyles}>Gig Address</Text>
+                        <TextInput style={styles.inputStyle}
+                            value={GigAddress}
+                            placeholder='Enter gig address'
+                            onChangeText={text => setGigAddress(text)} />
+                    </View>
+
+
+                    <View style={styles.timeContainer}>
+
+
+                        <DatePickerInput
+                            locale="en"
+                            label="Gig Date"
+                            value={date}
+                            onChange={(d) => setDate(d)}
+                            inputMode="start"
+                        />
+
+                        <TouchableOpacity style={styles.btnStyle} onPress={() => setStartVisible(true)}>
+                            <View>
+                                <Text>
+                                    Time Start
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
+
+                        <TimePickerModal
+                            visible={startVisible}
+                            onDismiss={onDismiss}
+                            onConfirm={onConfirm}
+                            hours={12}
+                            minutes={14}
+                        />
+
+
+                        <TouchableOpacity style={styles.btnStyle} onPress={() => setEndVisible(true)}>
+                            <View>
+                                <Text>
+                                    Time End
+                                </Text>
+                            </View>
+                        </TouchableOpacity>
+
+                        <TimePickerModal
+                            visible={endVisible}
+                            onDismiss={onDismissEnd}
+                            onConfirm={onConfirmEnd}
+                            hours={12}
+                            minutes={14}
+                        />
+
+
+                    </View>
+
+
+                    <View style={styles.eventContainer}>
+                        <Text style={styles.txtStyles}>Event Type</Text>
+                        <DropDownPicker
+                            open={open}
+                            value={EventType}
+                            items={items}
+                            setOpen={setOpen}
+                            setValue={setEventType}
+                            setItems={setItems}
+                        />
+                    </View>
+
+
+                    <View>
+                        <TouchableOpacity style={styles.btnContainer} onPress={handleBtn}>
+                            <View style={styles.button}>
+                                <Text style={styles.txtStyle}>Next</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
                 </View>
+            )}
 
 
-                <View style={styles.eventContainer}>
-                    <DropDownPicker
-                        open={open}
-                        value={value}
-                        items={items}
-                        setOpen={setOpen}
-                        setValue={setValue}
-                        setItems={setItems}
-                    />
-                </View>
-            </View>
         </View>
     )
 }
@@ -153,19 +193,17 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         position: 'relative',
-        borderWidth: 2,
-        borderColor: 'red'
+
+
     },
     container: {
-        borderWidth: 2,
-        borderColor: 'green',
+
         height: '100%',
         width: '100%',
         alignItems: 'center'
     },
     GigNameContainer: {
-        borderWidth: 2,
-        borderColor: 'red',
+
         margin: 15,
         width: '100%'
     },
@@ -176,14 +214,14 @@ const styles = StyleSheet.create({
         padding: 5
 
     },
-    txtStyle: {
-        fontWeight: 'bold'
+    txtStyles: {
+        fontWeight: 'bold',
+        color: 'black'
     },
     timeContainer: {
         flexDirection: 'row',
         width: '100%',
-        borderWidth: 2,
-        borderColor: 'red',
+
         justifyContent: 'space-around',
         margin: 15,
         height: '5%'
@@ -199,5 +237,26 @@ const styles = StyleSheet.create({
     eventContainer: {
         borderWidth: 2,
         borderColor: 'red'
-    }
+    },
+    btnContainer: {
+        borderWidth: 2,
+        borderColor: '#0EB080',
+        backgroundColor: '#0EB080',
+        borderRadius: 10,
+        top: screenHeight / 5
+    },
+    button: {
+        borderWidth: 1,
+        borderColor: '#0EB080',
+        backgroundColor: '#0EB080',
+        width: screenWidth / 1.5,
+        alignItems: 'center',
+        paddingVertical: 2,
+        borderRadius: 10
+    },
+    txtStyle: {
+        fontSize: 17,
+        fontWeight: 'bold',
+        color: 'white'
+    },
 })
