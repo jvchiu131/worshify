@@ -25,7 +25,6 @@ const InstGenre = ({ fname, lname, email, bday, age, address, password }) => {
 
 
 
-
     const handleInstrumentsClick = (buttonId) => {
         const isInstrumentSelected = selectedInstruments.includes(buttonId);
 
@@ -50,7 +49,7 @@ const InstGenre = ({ fname, lname, email, bday, age, address, password }) => {
 
                 //writes data on the database
                 const writeUserData = () => {
-                    set(ref(db, 'users/' + user.uid),
+                    set(ref(db, 'users/' + user.uid + '/userDetails'),
                         {
                             first_name: fname,
                             lname: lname,
