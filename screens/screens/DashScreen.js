@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, Dimensions } from 'react-native'
 import React from 'react'
 import Header from '../components/Header'
 import { auth, db } from '../../firebase';
-import { DataSnapshot, onValue, ref, set } from 'firebase/database';
+import { DataSnapshot, child, onValue, ref, set } from 'firebase/database';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import MusicianDashboard from '../components/MusicianDashboard';
@@ -21,7 +21,7 @@ const DashScreen = () => {
 
     //handles account type identification
     useEffect(() => {
-        const userType = ref(db, 'users/' + uid + '/accountType');
+        const userType = ref(db, 'users/accountType/' + uid + '/accountType');
         onValue(userType, (DataSnapshot) => {
             const accType = DataSnapshot.val().toString();
             setAccountType(accType);

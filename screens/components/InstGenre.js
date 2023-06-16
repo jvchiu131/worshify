@@ -49,7 +49,7 @@ const InstGenre = ({ fname, lname, email, bday, age, address, password }) => {
 
                 //writes data on the database
                 const writeUserData = () => {
-                    set(ref(db, 'users/' + user.uid + '/userDetails'),
+                    set(ref(db, 'users/' + '/musician/' + user.uid + '/metadata'),
                         {
                             first_name: fname,
                             lname: lname,
@@ -59,11 +59,20 @@ const InstGenre = ({ fname, lname, email, bday, age, address, password }) => {
                             address: address,
                             instruments: selectedInstruments,
                             genre: selectedGenres,
-                            accountType: 'Musician'
+                            accountType: 'Musician',
+                            uid: user.uid
                         }
                     );
                 }
+
+                const writeUserType = () => {
+                    set(ref(db, 'users/' + '/accountType/' + user.uid),
+                        {
+                            accountType: 'Musician'
+                        });
+                }
                 writeUserData();
+                writeUserType();
             })
             .catch(error => alert(error.message))
 

@@ -85,11 +85,11 @@ const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType
         }
 
         const newGigsRefKey = push(child(ref(db), 'gigs')).key;
-        const UserGigsRef = ref(db, 'users/' + uid + '/gigs');
-        const GigPostsRef = ref(db, 'gigPosts')
-        const newGigsRef = push(UserGigsRef);
+        const UserGigsRef = ref(db, 'users/' + '/client/' + uid + '/gigs/' + newGigsRefKey);
+        const GigPostsRef = ref(db, 'gigPosts/' + uid + '/' + newGigsRefKey);
 
-        set(newGigsRef, {
+
+        set(UserGigsRef, {
             Organizer: fname + lname,
             uid: uid,
             Gig_Name: gigName,
@@ -99,7 +99,22 @@ const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType
             Gig_End: EndTime,
             Event_Type: eventType,
             Instruments_Needed: selectedInstruments,
-            Genre_Needed: selectedGenres
+            Genre_Needed: selectedGenres,
+            postID: newGigsRefKey
+        });
+
+        set(GigPostsRef, {
+            Organizer: fname + lname,
+            uid: uid,
+            Gig_Name: gigName,
+            Gig_Address: gigAddress,
+            Gig_Date: gigDate,
+            Gig_Start: StartTime,
+            Gig_End: EndTime,
+            Event_Type: eventType,
+            Instruments_Needed: selectedInstruments,
+            Genre_Needed: selectedGenres,
+            postID: newGigsRefKey
         });
 
     }

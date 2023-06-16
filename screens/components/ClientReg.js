@@ -42,7 +42,7 @@ const ClientReg = () => {
 
                 //writes data on the database
                 const writeUserData = () => {
-                    set(ref(db, 'users/' + user.uid),
+                    set(ref(db, 'users/' + '/client/' + user.uid + '/metadata'),
                         {
                             first_name: firstName,
                             lname: lastName,
@@ -50,11 +50,20 @@ const ClientReg = () => {
                             birthday: birthday,
                             age: age,
                             address: address,
-                            accountType: 'Client'
+                            accountType: 'Client',
+                            uid: user.uid
                         }
                     );
                 }
+
+                const writeUserType = () => {
+                    set(ref(db, 'users/' + '/accountType/' + user.uid),
+                        {
+                            accountType: 'Client'
+                        });
+                }
                 writeUserData();
+                writeUserType();
             })
             .catch(error => alert(error.message))
 
