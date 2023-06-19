@@ -14,16 +14,16 @@ const { width: screenWidth } = Dimensions.get('screen');
 const DashScreen = () => {
 
     const [isMusician, setIsMusician] = useState(false);
-    const [accountType, setAccountType] = useState("");
+    const [accountType, setAccountType] = useState();
     const user = auth.currentUser;
     const uid = user.uid;
 
 
     //handles account type identification
     useEffect(() => {
-        const userType = ref(db, 'users/accountType/' + uid + '/accountType');
+        const userType = ref(db, 'users/' + '/accountType/' + uid + '/accountType');
         onValue(userType, (DataSnapshot) => {
-            const accType = DataSnapshot.val().toString();
+            const accType = DataSnapshot.val();
             setAccountType(accType);
         });
 

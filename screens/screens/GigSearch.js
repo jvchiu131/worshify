@@ -1,9 +1,11 @@
 import { StyleSheet, Text, View, Dimensions, TouchableOpacity, Animated, TouchableWithoutFeedback } from 'react-native'
-import React from 'react'
+import { auth, db } from '../../firebase';
+import { DataSnapshot, child, onValue, ref, set } from 'firebase/database';
+import { useState } from 'react';
+import { useEffect } from 'react';
+import ClientGigSearch from '../components/ClientGigSearch';
+import MusicianGigSearch from '../components/MusicianGigSearch';
 import Header from '../components/Header';
-import { Ionicons } from '@expo/vector-icons';
-import { useState } from 'react'
-import AddGigModal from '../components/AddGigModal';
 
 
 const { height: screenHeight } = Dimensions.get('screen');
@@ -12,31 +14,30 @@ const { width: screenWidth } = Dimensions.get('screen');
 const GigSearch = () => {
 
 
-    const animValue = useState(new Animated.Value(-600))[0]
-    const [showModal, setShowModal] = useState(false);
+    const [isMusician, setIsMusician] = useState(false);
+    const [accountType, setAccountType] = useState();
+    const user = auth.currentUser;
+    const uid = user.uid;
 
-    const moveModal = () => {
-        setShowModal(true)
-        Animated.timing(animValue, {
-            toValue: 0,
-            duration: 300,
-            useNativeDriver: false
-        }).start()
 
-    }
+    //handles account type identification
+    useEffect(() => {
+        const userType = ref(db, 'users/' + '/accountType/' + uid + '/accountType');
+        onValue(userType, (DataSnapshot) => {
+            const accType = DataSnapshot.val();
+            setAccountType(accType);
+        });
 
-    const moveBack = () => {
-        Animated.timing(animValue, {
-            toValue: -600,
-            duration: 300,
-            useNativeDriver: false,
-
-        }).start()
-        setTimeout(() => {
-            setShowModal(false)
-        }, 300)
-
-    }
+        if (accountType === 'Musician') {
+            console.log(user.email + " is musician")
+            console.log(accountType);
+            setIsMusician(true);
+        } else if (accountType === "Client") {
+            console.log(user.email + " is client")
+            console.log(accountType);
+            setIsMusician(false);
+        }
+    }, [accountType]);
 
 
     return (
@@ -44,34 +45,20 @@ const GigSearch = () => {
             <Header />
 
             <View>
-                <View style={styles.container}>
-                    <TouchableWithoutFeedback onPressOut={moveBack}>
-                        <Animated.View
-                            style={{ bottom: animValue }}
-                            behavior='padding'>
-                            {showModal ? (
-                                <View style={styles.containerField}>
-                                    <AddGigModal />
-                                </View>
-                            ) : (<></>
-                            )}
-                        </Animated.View>
-                    </TouchableWithoutFeedback >
+                {isMusician ? (
+                    <MusicianGigSearch />
+                ) : (
+                    <ClientGigSearch />
+                )}
 
-
-                    <TouchableOpacity style={styles.btnContainer} onPress={moveModal}>
-                        <Ionicons name="add-circle-sharp" size={55} color="#0EB080" />
-                    </TouchableOpacity>
-
-
-                </View>
             </View>
-
-
 
         </View>
     )
 }
+
+
+
 
 export default GigSearch
 

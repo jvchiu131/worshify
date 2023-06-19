@@ -27,6 +27,8 @@ const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType
     const user = auth.currentUser;
     const uid = user.uid;
 
+
+    //getting the 
     useEffect(() => {
         const FirstName = ref(db, 'users/' + user.uid + '/first_name');
         onValue(FirstName, (DataSnapshot) => {
@@ -57,34 +59,14 @@ const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType
     }
 
 
-    //     // import { getDatabase, ref, set } from "firebase/database";
-
-    // function writeUserData(userId, name, email, imageUrl) {
-    //     const db = getDatabase();
-    //     set(ref(db, 'users/' + userId), {
-    //       username: name,
-    //       email: email,
-    //       profile_picture : imageUrl
-    //     });
-    //   }
-
-
-
+    //handles gig creation
     const handleCreateGig = () => {
-        const gigData = {
-            Organizer: fname + lname,
-            uid: uid,
-            Gig_Name: gigName,
-            Gig_Address: gigAddress,
-            Gig_Date: gigDate,
-            Gig_Start: StartTime,
-            Gig_End: EndTime,
-            Event_Type: eventType,
-            Instruments_Needed: selectedInstruments,
-            Genre_Needed: selectedGenres
-        }
 
+
+        //Generates GigPost Key
         const newGigsRefKey = push(child(ref(db), 'gigs')).key;
+
+
         const UserGigsRef = ref(db, 'users/' + '/client/' + uid + '/gigs/' + newGigsRefKey);
         const GigPostsRef = ref(db, 'gigPosts/' + uid + '/' + newGigsRefKey);
 
