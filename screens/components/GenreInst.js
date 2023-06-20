@@ -68,7 +68,7 @@ const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType
 
 
         const UserGigsRef = ref(db, 'users/' + '/client/' + uid + '/gigs/' + newGigsRefKey);
-        const GigPostsRef = ref(db, 'gigPosts/' + uid + '/' + newGigsRefKey);
+        const GigPostsRef = ref(db, 'gigPosts/' + '/' + newGigsRefKey);
 
 
         set(UserGigsRef, {
