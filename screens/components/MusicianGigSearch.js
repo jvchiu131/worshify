@@ -4,7 +4,10 @@ import { db, auth } from '../../firebase'
 import { useState, useEffect } from 'react'
 import { DataSnapshot, child, onValue, ref, set } from 'firebase/database'
 import { EvilIcons } from '@expo/vector-icons';
-
+import { storage } from '../../firebase'
+import { ref as ref_storage, getDownloadURL, listAll } from 'firebase/storage';
+import { MaterialIcons } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons';
 
 
 const { height: screenHeight } = Dimensions.get('screen');
@@ -16,10 +19,10 @@ const MusicianGigSearch = () => {
 
 
 
-
     useEffect(() => {
         const dbRef = ref(db, 'gigPosts');
-        const gigDetails = []
+        const gigDetails = [];
+
         onValue(dbRef, (snapshot) => {
             snapshot.forEach((childSnapshot) => {
                 gigDetails.push({
@@ -33,11 +36,11 @@ const MusicianGigSearch = () => {
                     StartTime: childSnapshot.val().Gig_Start,
                     EndTime: childSnapshot.val().Gig_End,
                     InstrumentsNeeded: childSnapshot.val().Instruments_Needed,
-                    GigImage: childSnapshot.val().Gig_Image
+                    GigImage: childSnapshot.val().Gig_Image,
+                    GigDate: childSnapshot.val().Gig_Date
                 });
             })
             setGigData(gigDetails);
-
         })
 
     }, [])
@@ -45,8 +48,9 @@ const MusicianGigSearch = () => {
 
 
 
-
     const renderItem = ({ item }) => {
+
+
         return (
             <TouchableOpacity style={styles.renderStyle}>
 
@@ -60,11 +64,21 @@ const MusicianGigSearch = () => {
                             <Text style={styles.titleStyle}>{item.GigName}</Text>
                         </View>
                         <View style={styles.addressContainer}>
-                            <EvilIcons name="location" size={20} color="#0EB080" />
+                            <EvilIcons name="location" size={15} color="#0EB080" />
                             <Text style={styles.txtStyle}>{item.GigAddress}</Text>
                         </View>
 
-                        <Text style={styles.txtStyle}>{item.Event_Type}</Text>
+                        <View style={styles.dateContainer}>
+                            <View style={styles.dateTimeContainer}>
+                                <MaterialIcons name="date-range" size={15} color="#0EB080" style={{ marginRight: 5 }} />
+                                <Text style={styles.txtStyle}>{item.GigDate}</Text>
+                            </View>
+                            <View style={styles.dateTimeContainer}>
+                                <FontAwesome5 name="clock" size={15} color="#0EB080" style={{ marginRight: 5 }} />
+                                <Text style={styles.txtStyle}>{item.StartTime} - {item.EndTime}</Text>
+                            </View>
+                        </View>
+
                     </View>
                 </View>
             </TouchableOpacity>
@@ -101,6 +115,17 @@ const MusicianGigSearch = () => {
 export default MusicianGigSearch
 
 const styles = StyleSheet.create({
+    dateContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 10,
+        justifyContent: 'space-between',
+
+    },
+    dateTimeContainer: {
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
     header: {
         margin: 15
     },
@@ -111,12 +136,12 @@ const styles = StyleSheet.create({
     },
     addressContainer: {
         flexDirection: 'row',
-        borderWidth: 2,
-        borderColor: 'red'
+        justifyContent: 'flex-start',
+        marginTop: 5
     },
     txtStyle: {
         color: 'white',
-        fontSize: 10
+        fontSize: 11
     },
     root: {
         height: screenHeight,
@@ -125,15 +150,16 @@ const styles = StyleSheet.create({
     },
     container: {
         flexDirection: 'row',
-        justifyContent: 'space-evenly'
+        justifyContent: 'space-evenly',
     },
     renderStyle: {
         marginHorizontal: 2
     },
     titleStyle: {
         color: 'white',
-        fontSize: 15,
-        fontWeight: 'bold'
+        fontSize: 13,
+        fontWeight: 'bold',
+        width: '107%'
     },
     titleContainer: {
         margin: 2

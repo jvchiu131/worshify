@@ -2,15 +2,21 @@ import { StyleSheet, Text, View, Animated, Dimensions, Image, Platform } from 'r
 import React from 'react'
 import { useState, useCallback } from 'react'
 import GenreInst from './GenreInst'
+import { storage } from '../../firebase'
+import { ref as ref_storage, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { TextInput } from 'react-native'
-import { TimePickerModal } from 'react-native-paper-dates';
 import { TouchableOpacity } from 'react-native'
 import DropDownPicker from 'react-native-dropdown-picker'
-// import { DatePickerInput } from 'react-native-paper-dates';
 import { MaterialIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { Pressable } from 'react-native'
+import uuid from 'uuid';
+
+
+
+
+//Screen dimensions
 const { height: screenHeight } = Dimensions.get('screen');
 const { width: screenWidth } = Dimensions.get("screen");
 
@@ -39,34 +45,6 @@ const AddGigModal = () => {
     const [showPicker, setShowPicker] = useState(false);
 
 
-    const onDismiss = useCallback(() => {
-        setStartVisible(false)
-    }, [setStartVisible])
-
-    const onConfirm = useCallback(
-        ({ hours, minutes }) => {
-
-            setStartTime({ hours, minutes })
-            console.log(startTime);
-            setStartVisible(false);
-        },
-        [setStartVisible]
-    );
-
-
-    const onDismissEnd = useCallback(() => {
-        setEndVisible(false)
-    }, [setEndVisible])
-
-    const onConfirmEnd = useCallback(
-        ({ hours, minutes }) => {
-
-            setEndTime({ hours, minutes })
-            console.log(endTime);
-            setEndVisible(false);
-        },
-        [setEndVisible]
-    );
 
 
     const handleBtn = () => {
@@ -88,13 +66,42 @@ const AddGigModal = () => {
         });
 
         if (!result.canceled) {
-            setImage(result.assets[0].uri);
+            const uploadURL = await uploadImageAsync(result.assets[0].uri);
+            setImage(uploadURL);
             setImgUploaded(false);
-        }
 
+        }
         setImgUploaded(true);
 
     };
+
+
+    async function uploadImageAsync(uri) {
+        // Why are we using XMLHttpRequest? See:
+        // https://github.com/expo/expo/issues/2402#issuecomment-443726662
+        const blob = await new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.onload = function () {
+                resolve(xhr.response);
+            };
+            xhr.onerror = function (e) {
+                console.log(e);
+                reject(new TypeError("Network request failed"));
+            };
+            xhr.responseType = "blob";
+            xhr.open("GET", uri, true);
+            xhr.send(null);
+        });
+        const uniqueId = uuid.v4()
+        const storageRef = ref_storage(storage, `gigPosts/` + `/image-${uniqueId}`);
+        const result = await uploadBytes(storageRef, blob);
+
+        // We're done with the blob, close and release it
+        blob.close();
+
+        return await getDownloadURL(storageRef);
+    }
+
 
     const props = { gigName: GigName, gigAddress: GigAddress, gigDate: date, StartTime: startTime, EndTime: endTime, eventType: EventType, img: image };
 
@@ -232,7 +239,7 @@ const AddGigModal = () => {
                                 <TextInput
                                     placeholder='Choose Start Time'
                                     placeholderTextColor='#11182744'
-                                    value={startTime.toTimeString()}
+                                    value={startTime}
                                     onChangeText={setStartTime}
                                     editable={false}
                                     style={styles.dateStyle}
@@ -246,7 +253,7 @@ const AddGigModal = () => {
                             <DateTimePicker
                                 mode='time'
                                 display='spinner'
-                                value={startTime.toTimeString()}
+                                value={startTime}
                                 onChange={onChangeStartTime}
                                 is24Hour={false}
                             />
@@ -259,7 +266,7 @@ const AddGigModal = () => {
                                 <TextInput
                                     placeholder='Choose End Time'
                                     placeholderTextColor='#11182744'
-                                    value={endTime.toTimeString()}
+                                    value={endTime}
                                     onChangeText={setEndTime}
                                     editable={false}
                                     style={styles.dateStyle}
@@ -273,43 +280,10 @@ const AddGigModal = () => {
                             <DateTimePicker
                                 mode='time'
                                 display='spinner'
-                                value={endTime.toTimeString()}
+                                value={endTime}
                                 onChange={onChangeEndTime}
                             />
                         )}
-
-                        {/* <TouchableOpacity style={styles.btnStyle} onPress={() => setStartVisible(true)}>
-                            <View>
-                                <Text>
-                                    Time Start
-                                </Text>
-                            </View>
-                        </TouchableOpacity>
-
-                        <TimePickerModal
-                            visible={startVisible}
-                            onDismiss={onDismiss}
-                            onConfirm={onConfirm}
-                            hours={12}
-                            minutes={14}
-                        />
-
-
-                        <TouchableOpacity style={styles.btnStyle} onPress={() => setEndVisible(true)}>
-                            <View>
-                                <Text>
-                                    Time End
-                                </Text>
-                            </View>
-                        </TouchableOpacity>
-
-                        <TimePickerModal
-                            visible={endVisible}
-                            onDismiss={onDismissEnd}
-                            onConfirm={onConfirmEnd}
-                            hours={12}
-                            minutes={14}
-                        /> */}
 
 
                     </View>
@@ -331,7 +305,6 @@ const AddGigModal = () => {
                     <TouchableOpacity style={styles.imgContainer} onPress={pickImage}>
 
                         {imgUploaded ? (
-
                             image && <Image source={{ uri: image }} style={styles.imgStyle} />
 
                         ) : (
@@ -397,10 +370,11 @@ const styles = StyleSheet.create({
     timeContainer: {
         flexDirection: 'row',
         width: '100%',
-        justifyContent: 'space-around',
+        justifyContent: 'space-between',
         marginTop: 2,
         height: '5%',
-        marginBottom: 25
+        marginBottom: 25,
+
     },
     btnStyle: {
         borderWidth: 2,
@@ -456,6 +430,6 @@ const styles = StyleSheet.create({
         borderColor: '#0EB080',
         borderRadius: 10,
         height: '100%',
-        width: '110%'
+        width: '80%'
     }
-})
+});

@@ -56,7 +56,7 @@ const ClientGigSearch = () => {
 
 
                     <TouchableOpacity style={styles.btnContainer} onPress={moveModal}>
-                        <Ionicons name="add-circle-sharp" size={55} color="#0EB080" />
+                        <Ionicons name="add-circle-sharp" size={70} color="#0EB080" />
                     </TouchableOpacity>
 
 
@@ -87,9 +87,8 @@ const styles = StyleSheet.create({
         padding: 5,
         alignItems: 'flex-end',
         top: screenHeight / 1.7,
-        width: '16%',
-        left: 340,
-
+        width: '20%',
+        left: 270,
     },
     containerField: {
         width: '100%',

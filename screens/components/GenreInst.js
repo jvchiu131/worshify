@@ -4,8 +4,9 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { auth, db } from '../../firebase';
-import { ref, set, push, child, onValue, DataSnapshot } from 'firebase/database';
+import { ref as ref_db, set, push, child, onValue, DataSnapshot } from 'firebase/database';
 import { useEffect } from 'react';
+
 
 
 
@@ -15,8 +16,6 @@ const { width: screenWidth } = Dimensions.get('screen');
 
 
 const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType, img }) => {
-
-
 
     const [selectedInstruments, setSelectedInstruments] = useState([]);
     const [selectedGenres, setSelectedGenres] = useState([]);
@@ -28,17 +27,19 @@ const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType
     const uid = user.uid;
 
 
-    //getting the 
+
+    //getting the First and Last name
     useEffect(() => {
-        const FirstName = ref(db, 'users/' + user.uid + '/first_name');
+        const FirstName = ref_db(db, 'users/' + user.uid + '/first_name');
         onValue(FirstName, (DataSnapshot) => {
             setFname(DataSnapshot.val())
         });
 
-        const LastName = ref(db, 'users/' + user.uid + '/lname');
+        const LastName = ref_db(db, 'users/' + user.uid + '/lname');
         onValue(LastName, (DataSnapshot) => {
             setLname(DataSnapshot.val())
         });
+        // console.log(img);
     })
 
 
@@ -59,16 +60,21 @@ const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType
     }
 
 
+
+
+
     //handles gig creation
     const handleCreateGig = () => {
 
 
         //Generates GigPost Key
-        const newGigsRefKey = push(child(ref(db), 'gigs')).key;
+        const newGigsRefKey = push(child(ref_db(db), 'gigs')).key;
+        const UserGigsRef = ref_db(db, 'users/' + '/client/' + uid + '/gigs/' + newGigsRefKey);
+        const GigPostsRef = ref_db(db, 'gigPosts/' + '/' + newGigsRefKey);
 
 
-        const UserGigsRef = ref(db, 'users/' + '/client/' + uid + '/gigs/' + newGigsRefKey);
-        const GigPostsRef = ref(db, 'gigPosts/' + '/' + newGigsRefKey);
+
+
 
 
         set(UserGigsRef, {
@@ -86,6 +92,7 @@ const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType
             Gig_Image: img,
         });
 
+
         set(GigPostsRef, {
             Organizer: fname + lname,
             uid: uid,
@@ -101,7 +108,10 @@ const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType
             Gig_Image: img,
         });
 
+
     }
+
+
 
 
     const handleGenresClick = (GenreId) => {
