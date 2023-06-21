@@ -14,7 +14,7 @@ const { width: screenWidth } = Dimensions.get('screen');
 
 
 
-const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType }) => {
+const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType, img }) => {
 
 
 
@@ -82,7 +82,8 @@ const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType
             Event_Type: eventType,
             Instruments_Needed: selectedInstruments,
             Genre_Needed: selectedGenres,
-            postID: newGigsRefKey
+            postID: newGigsRefKey,
+            Gig_Image: img,
         });
 
         set(GigPostsRef, {
@@ -96,7 +97,8 @@ const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType
             Event_Type: eventType,
             Instruments_Needed: selectedInstruments,
             Genre_Needed: selectedGenres,
-            postID: newGigsRefKey
+            postID: newGigsRefKey,
+            Gig_Image: img,
         });
 
     }

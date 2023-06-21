@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Animated, Dimensions } from 'react-native'
+import { StyleSheet, Text, View, Animated, Dimensions, Image, Platform } from 'react-native'
 import React from 'react'
 import { useState, useCallback } from 'react'
 import GenreInst from './GenreInst'
@@ -6,20 +6,24 @@ import { TextInput } from 'react-native'
 import { TimePickerModal } from 'react-native-paper-dates';
 import { TouchableOpacity } from 'react-native'
 import DropDownPicker from 'react-native-dropdown-picker'
-import { DatePickerInput } from 'react-native-paper-dates';
-
+// import { DatePickerInput } from 'react-native-paper-dates';
+import { MaterialIcons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
+import DateTimePicker from '@react-native-community/datetimepicker'
+import { Pressable } from 'react-native'
 const { height: screenHeight } = Dimensions.get('screen');
 const { width: screenWidth } = Dimensions.get("screen");
 
 const AddGigModal = () => {
 
+    const [image, setImage] = useState(null);
     const [isClicked, setIsClicked] = useState(false);
     const ContentValue = useState(new Animated.Value(-600))[0]
     const [GigName, setGigName] = useState();
     const [GigAddress, setGigAddress] = useState();
     const [date, setDate] = useState(new Date());
-    const [startTime, setStartTime] = useState({});
-    const [endTime, setEndTime] = useState({});
+    const [startTime, setStartTime] = useState(new Date());
+    const [endTime, setEndTime] = useState(new Date());
     const [EventType, setEventType] = useState(null);
     const [open, setOpen] = useState(false);
     const [items, setItems] = useState([
@@ -31,6 +35,8 @@ const AddGigModal = () => {
     ]);
     const [startVisible, setStartVisible] = useState(false);
     const [endVisible, setEndVisible] = useState(false);
+    const [imgUploaded, setImgUploaded] = useState(false)
+    const [showPicker, setShowPicker] = useState(false);
 
 
     const onDismiss = useCallback(() => {
@@ -72,9 +78,91 @@ const AddGigModal = () => {
         setIsClicked(true);
     }
 
-    const props = { gigName: GigName, gigAddress: GigAddress, gigDate: date, StartTime: startTime, EndTime: endTime, eventType: EventType };
+    //handles image upload
+    const pickImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [16, 9],
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            setImage(result.assets[0].uri);
+            setImgUploaded(false);
+        }
+
+        setImgUploaded(true);
+
+    };
+
+    const props = { gigName: GigName, gigAddress: GigAddress, gigDate: date, StartTime: startTime, EndTime: endTime, eventType: EventType, img: image };
+
+    const toggleDatepicker = () => {
+        setShowPicker(!showPicker)
+    };
+
+    const onChange = ({ type }, selectedDate) => {
+        if (type == 'set') {
+            const currentDate = selectedDate;
+            setDate(currentDate);
+
+            if (Platform.OS === 'android') {
+                toggleDatepicker()
+                setDate(currentDate.toDateString());
+            }
+
+        } else {
+            toggleDatepicker();
+        }
+    };
 
 
+    const toggleTimepickerStart = () => {
+        setStartVisible(!startVisible)
+    };
+
+    const onChangeStartTime = ({ type }, selectedTime) => {
+        if (type == 'set') {
+            const currentTime = selectedTime;
+            setStartTime(currentTime);
+
+            if (Platform.OS === 'android') {
+                toggleTimepickerStart()
+                setStartTime(formatTime(currentTime).toString());
+            }
+
+        } else {
+            toggleTimepickerStart();
+        }
+    };
+
+    const toggleTimepickerEnd = () => {
+        setEndVisible(!endVisible)
+    };
+
+    const onChangeEndTime = ({ type }, selectedTime) => {
+        if (type == 'set') {
+            const currentTime = selectedTime;
+            setEndTime(currentTime);
+
+            if (Platform.OS === 'android') {
+                toggleTimepickerEnd()
+                setEndTime(formatTime(currentTime).toString());
+            }
+
+        } else {
+            toggleTimepickerEnd();
+        }
+    };
+
+    const formatTime = (rawTime) => {
+        let time = new Date(rawTime);
+        let hours = time.getHours();
+        let minutes = time.getMinutes();
+
+        return `${hours}:${minutes}`;
+    }
 
 
     return (
@@ -110,16 +198,87 @@ const AddGigModal = () => {
 
                     <View style={styles.timeContainer}>
 
+                        {!showPicker && (
+                            <Pressable
+                                onPress={toggleDatepicker}>
+                                <TextInput
+                                    placeholder='Choose Gig Date'
+                                    placeholderTextColor='#11182744'
+                                    value={date}
+                                    onChangeText={setDate}
+                                    editable={false}
+                                    style={styles.dateStyle}
+                                />
+                            </Pressable>
 
-                        <DatePickerInput
-                            locale="en"
-                            label="Gig Date"
-                            value={date}
-                            onChange={(d) => setDate(d)}
-                            inputMode="start"
-                        />
+                        )}
 
-                        <TouchableOpacity style={styles.btnStyle} onPress={() => setStartVisible(true)}>
+
+                        {showPicker && (
+                            <DateTimePicker
+                                mode='date'
+                                display='spinner'
+                                value={date}
+                                onChange={onChange}
+                                is24Hour={false}
+                            />
+                        )}
+
+
+
+                        {!startVisible && (
+                            <Pressable
+                                onPress={toggleTimepickerStart}>
+                                <TextInput
+                                    placeholder='Choose Start Time'
+                                    placeholderTextColor='#11182744'
+                                    value={startTime.toTimeString()}
+                                    onChangeText={setStartTime}
+                                    editable={false}
+                                    style={styles.dateStyle}
+                                />
+                            </Pressable>
+
+                        )}
+
+
+                        {startVisible && (
+                            <DateTimePicker
+                                mode='time'
+                                display='spinner'
+                                value={startTime.toTimeString()}
+                                onChange={onChangeStartTime}
+                                is24Hour={false}
+                            />
+                        )}
+
+
+                        {!endVisible && (
+                            <Pressable
+                                onPress={toggleTimepickerEnd}>
+                                <TextInput
+                                    placeholder='Choose End Time'
+                                    placeholderTextColor='#11182744'
+                                    value={endTime.toTimeString()}
+                                    onChangeText={setEndTime}
+                                    editable={false}
+                                    style={styles.dateStyle}
+                                />
+                            </Pressable>
+
+                        )}
+
+
+                        {endVisible && (
+                            <DateTimePicker
+                                mode='time'
+                                display='spinner'
+                                value={endTime.toTimeString()}
+                                onChange={onChangeEndTime}
+                            />
+                        )}
+
+                        {/* <TouchableOpacity style={styles.btnStyle} onPress={() => setStartVisible(true)}>
                             <View>
                                 <Text>
                                     Time Start
@@ -150,7 +309,7 @@ const AddGigModal = () => {
                             onConfirm={onConfirmEnd}
                             hours={12}
                             minutes={14}
-                        />
+                        /> */}
 
 
                     </View>
@@ -167,6 +326,24 @@ const AddGigModal = () => {
                             setItems={setItems}
                         />
                     </View>
+
+
+                    <TouchableOpacity style={styles.imgContainer} onPress={pickImage}>
+
+                        {imgUploaded ? (
+
+                            image && <Image source={{ uri: image }} style={styles.imgStyle} />
+
+                        ) : (
+                            <>
+                                <MaterialIcons name="add-photo-alternate" size={24} color="black" />
+                                <Text>
+                                    Add Photo
+                                </Text>
+                            </>
+                        )}
+
+                    </TouchableOpacity>
 
 
                     <View>
@@ -203,8 +380,7 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     GigNameContainer: {
-
-        margin: 15,
+        margin: 10,
         width: '100%'
     },
     inputStyle: {
@@ -221,10 +397,10 @@ const styles = StyleSheet.create({
     timeContainer: {
         flexDirection: 'row',
         width: '100%',
-
         justifyContent: 'space-around',
-        margin: 15,
-        height: '5%'
+        marginTop: 2,
+        height: '5%',
+        marginBottom: 25
     },
     btnStyle: {
         borderWidth: 2,
@@ -235,15 +411,14 @@ const styles = StyleSheet.create({
         width: '25%'
     },
     eventContainer: {
-        borderWidth: 2,
-        borderColor: 'red'
+        margin: 5
     },
     btnContainer: {
         borderWidth: 2,
         borderColor: '#0EB080',
         backgroundColor: '#0EB080',
         borderRadius: 10,
-        top: screenHeight / 5
+        top: screenHeight / 50
     },
     button: {
         borderWidth: 1,
@@ -259,4 +434,28 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: 'white'
     },
+    imgContainer: {
+        borderWidth: 2,
+        borderRadius: 15,
+        borderColor: '#0EB080',
+        width: '80%',
+        height: '20%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 20,
+    },
+    imgStyle: {
+        borderRadius: 15,
+        width: '100%',
+        height: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    dateStyle: {
+        borderWidth: 2,
+        borderColor: '#0EB080',
+        borderRadius: 10,
+        height: '100%',
+        width: '110%'
+    }
 })
