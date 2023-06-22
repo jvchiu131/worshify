@@ -1,13 +1,13 @@
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, Dimensions, ImageBackground, Image } from 'react-native'
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, Dimensions, ImageBackground, Modal } from 'react-native'
 import React from 'react'
-import { db, auth } from '../../firebase'
+import { db } from '../../firebase'
 import { useState, useEffect } from 'react'
-import { DataSnapshot, child, onValue, ref, set } from 'firebase/database'
+import { onValue, ref } from 'firebase/database'
 import { EvilIcons } from '@expo/vector-icons';
-import { storage } from '../../firebase'
-import { ref as ref_storage, getDownloadURL, listAll } from 'firebase/storage';
+
 import { MaterialIcons } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
+import GigDetails from './GigDetails'
 
 
 const { height: screenHeight } = Dimensions.get('screen');
@@ -16,7 +16,21 @@ const { width: screenWidth } = Dimensions.get('screen');
 const MusicianGigSearch = () => {
 
     const [gigData, setGigData] = useState([])
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedItem, setSelectedItem] = useState(null);
 
+
+    const showModal = () => setModalVisible(true);
+    const hideModal = () => setModalVisible(false);
+
+    const handleItemPress = (key) => {
+        setSelectedItem(key);
+        showModal();
+        console.log(key)
+    };
+
+
+    const props = { postID: selectedItem };
 
 
     useEffect(() => {
@@ -52,7 +66,7 @@ const MusicianGigSearch = () => {
 
 
         return (
-            <TouchableOpacity style={styles.renderStyle}>
+            <TouchableOpacity style={styles.renderStyle} onPress={() => handleItemPress(item.postID)}>
 
                 <View style={styles.container}>
                     <View style={styles.imgContainer}>
@@ -101,6 +115,14 @@ const MusicianGigSearch = () => {
             <View style={styles.header}>
                 <Text style={styles.availGigs}>Available Gigs</Text>
             </View>
+
+            <Modal
+                visible={modalVisible}
+                animationType='slide'
+                onRequestClose={hideModal}
+            >
+                <GigDetails {...props} />
+            </Modal>
 
 
             <FlatList

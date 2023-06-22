@@ -60,22 +60,14 @@ const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType
     }
 
 
-
-
-
     //handles gig creation
+    //add gig details at the same time in PostGigs and UserGigs
     const handleCreateGig = () => {
-
 
         //Generates GigPost Key
         const newGigsRefKey = push(child(ref_db(db), 'gigs')).key;
         const UserGigsRef = ref_db(db, 'users/' + '/client/' + uid + '/gigs/' + newGigsRefKey);
         const GigPostsRef = ref_db(db, 'gigPosts/' + '/' + newGigsRefKey);
-
-
-
-
-
 
         set(UserGigsRef, {
             Organizer: fname + lname,
