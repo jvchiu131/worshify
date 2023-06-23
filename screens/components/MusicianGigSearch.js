@@ -1,10 +1,11 @@
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, Dimensions, ImageBackground, Modal } from 'react-native'
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, Dimensions, ImageBackground, Modal, } from 'react-native'
 import React from 'react'
 import { db } from '../../firebase'
 import { useState, useEffect } from 'react'
 import { onValue, ref } from 'firebase/database'
 import { EvilIcons } from '@expo/vector-icons';
 
+import { Appbar } from 'react-native-paper';
 import { MaterialIcons } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
 import GigDetails from './GigDetails'
@@ -18,7 +19,7 @@ const MusicianGigSearch = () => {
     const [gigData, setGigData] = useState([])
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
-
+    const [isLoading, setIsLoading] = useState(false);
 
     const showModal = () => setModalVisible(true);
     const hideModal = () => setModalVisible(false);
@@ -33,11 +34,13 @@ const MusicianGigSearch = () => {
     const props = { postID: selectedItem };
 
 
+
     useEffect(() => {
+
         const dbRef = ref(db, 'gigPosts');
-        const gigDetails = [];
 
         onValue(dbRef, (snapshot) => {
+            let gigDetails = [];
             snapshot.forEach((childSnapshot) => {
                 gigDetails.push({
                     key: childSnapshot.key,
@@ -52,18 +55,19 @@ const MusicianGigSearch = () => {
                     InstrumentsNeeded: childSnapshot.val().Instruments_Needed,
                     GigImage: childSnapshot.val().Gig_Image,
                     GigDate: childSnapshot.val().Gig_Date
-                });
+                })
             })
-            setGigData(gigDetails);
-        })
+            setGigData(gigDetails)
+        });
 
     }, [])
 
 
 
 
-    const renderItem = ({ item }) => {
 
+
+    const renderItem = ({ item }) => {
 
         return (
             <TouchableOpacity style={styles.renderStyle} onPress={() => handleItemPress(item.postID)}>
@@ -121,6 +125,7 @@ const MusicianGigSearch = () => {
                 animationType='slide'
                 onRequestClose={hideModal}
             >
+                <Appbar.BackAction onPress={hideModal} style={styles.appBarStyle} />
                 <GigDetails {...props} />
             </Modal>
 
@@ -137,6 +142,9 @@ const MusicianGigSearch = () => {
 export default MusicianGigSearch
 
 const styles = StyleSheet.create({
+    appBarStyle: {
+        backgroundColor: 'white'
+    },
     dateContainer: {
         flexDirection: 'row',
         alignItems: 'center',
