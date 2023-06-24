@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native'
 import { useRoute } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 
 const { width: screenWidth } = Dimensions.get('screen');
 const { height: screenHeight } = Dimensions.get('screen');
@@ -21,8 +22,7 @@ const Header = () => {
 
 
                 <TouchableOpacity style={styles.image} onPress={() => { navigation.navigate('Profile') }}>
-                    <View >
-                    </View>
+                    <FontAwesome name="user-circle-o" size={24} color="white" />
                 </TouchableOpacity>
 
                 <View>
@@ -43,12 +43,9 @@ export default Header
 
 const styles = StyleSheet.create({
     image: {
-        backgroundColor: 'green',
         height: '45%',
         width: '9%',
-        borderWidth: 2,
-        borderColor: 'green',
-        borderRadius: 25
+        // #0EB080
     },
     container: {
         borderColor: '#50575F',
