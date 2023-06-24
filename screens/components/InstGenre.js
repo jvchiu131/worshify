@@ -71,8 +71,26 @@ const InstGenre = ({ fname, lname, email, bday, age, address, password }) => {
                             accountType: 'Musician'
                         });
                 }
+
+                const writeLoggedUserData = () => {
+                    set(ref(db, 'users/' + '/logged_users/' + user.uid),
+                        {
+                            first_name: fname,
+                            lname: lname,
+                            email: email,
+                            birthday: bday,
+                            age: age,
+                            address: address,
+                            instruments: selectedInstruments,
+                            genre: selectedGenres,
+                            accountType: 'Musician',
+                            uid: user.uid
+                        }
+                    );
+                }
                 writeUserData();
                 writeUserType();
+                writeLoggedUserData();
             })
             .catch(error => alert(error.message))
 

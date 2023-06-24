@@ -1,10 +1,12 @@
-import { StyleSheet, Text, View, Dimensions, TouchableOpacity } from 'react-native'
-import React from 'react'
-import { useNavigation } from '@react-navigation/native'
-import { useRoute } from '@react-navigation/native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { StyleSheet, Text, View, Dimensions, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
+import ProfileScreen from '../screens/ProfileScreen';
+
 
 const { width: screenWidth } = Dimensions.get('screen');
 const { height: screenHeight } = Dimensions.get('screen');
@@ -20,19 +22,17 @@ const Header = () => {
         <SafeAreaView>
             <View style={styles.container}>
 
-
-                <TouchableOpacity style={styles.image} onPress={() => { navigation.navigate('Profile') }}>
+                <TouchableOpacity onPress={() => { navigation.navigate('Profile') }}>
                     <FontAwesome name="user-circle-o" size={24} color="white" />
                 </TouchableOpacity>
+
 
                 <View>
                     <Text style={styles.textStyle}>{currentHeaderTitle}</Text>
                 </View>
-
                 <TouchableOpacity onPress={() => { navigation.navigate('Notification') }}>
                     <Ionicons name="notifications" size={24} color="white" />
                 </TouchableOpacity>
-
 
             </View>
         </SafeAreaView>
@@ -42,9 +42,15 @@ const Header = () => {
 export default Header
 
 const styles = StyleSheet.create({
+    drawerSectionStyle: {
+        height: screenHeight,
+        borderWidth: 2,
+        borderColor: 'red',
+        backgroundColor: 'white',
+    },
     image: {
         height: '45%',
-        width: '9%',
+        width: '50%',
         // #0EB080
     },
     container: {

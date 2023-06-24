@@ -62,8 +62,24 @@ const ClientReg = () => {
                             accountType: 'Client'
                         });
                 }
+
+                const writeLoggedUserData = () => {
+                    set(ref(db, 'users/' + '/logged_users/' + user.uid),
+                        {
+                            first_name: firstName,
+                            lname: lastName,
+                            email: email,
+                            birthday: birthday,
+                            age: age,
+                            address: address,
+                            accountType: 'Client',
+                            uid: user.uid
+                        }
+                    );
+                }
                 writeUserData();
                 writeUserType();
+                writeLoggedUserData();
             })
             .catch(error => alert(error.message))
 

@@ -3,22 +3,27 @@ import { StyleSheet, Text, View } from 'react-native';
 import LoginScreen from './screens/screens/LoginScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import ContactNav from './screens/components/navigator/ContactNav';
 import DashNav from './screens/components/navigator/DashNav';
 import GigSearch from './screens/screens/GigSearch';
 import MusicianSearch from './screens/screens/MusicianSearch';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import ProfileScreen from './screens/screens/ProfileScreen';
+import NotificationScreen from './screens/screens/NotificationScreen';
 
 
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
+
 export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name='Login' options={{ headerShown: false }} component={LoginScreen} />
+        <Stack.Screen name='Profile' component={ProfileScreen} />
+        <Stack.Screen name='Notification' component={NotificationScreen} />
         <Stack.Screen name='DashScreen' component={BottomTab} />
       </Stack.Navigator>
       <StatusBar style='auto' />
@@ -26,6 +31,8 @@ export default function App() {
 
   );
 }
+
+
 
 function BottomTab() {
   return (
