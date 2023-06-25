@@ -4,11 +4,12 @@ import { db } from '../../firebase'
 import { useState, useEffect } from 'react'
 import { onValue, ref } from 'firebase/database'
 import { EvilIcons } from '@expo/vector-icons';
+import GigDetails from './GigDetails'
 
 import { Appbar } from 'react-native-paper';
 import { MaterialIcons } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
-import GigDetails from './GigDetails'
+
 
 
 const { height: screenHeight } = Dimensions.get('screen');
@@ -19,7 +20,6 @@ const MusicianGigSearch = () => {
     const [gigData, setGigData] = useState([])
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
 
     const showModal = () => setModalVisible(true);
     const hideModal = () => setModalVisible(false);

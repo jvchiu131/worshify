@@ -14,7 +14,6 @@ const MusicianSearch = () => {
             <View style={styles.seachContainer}>
                 <SearchInput />
             </View>
-
         </View>
     )
 }

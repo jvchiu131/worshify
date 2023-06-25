@@ -67,6 +67,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#151414',
         height: screenHeight,
         alignItems: 'center',
+        width: screenWidth,
 
     },
     container: {

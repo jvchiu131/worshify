@@ -1,16 +1,20 @@
-import { StyleSheet, Text, View, Dimensions, TouchableOpacity, Animated, TouchableWithoutFeedback, FlatList, ImageBackground } from 'react-native'
-import React from 'react'
+import {
+    StyleSheet, Text, View, Dimensions, TouchableOpacity, Animated,
+    TouchableWithoutFeedback, FlatList, ImageBackground, RefreshControl,
+    Modal
+} from 'react-native'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Ionicons } from '@expo/vector-icons';
-import { useState, useEffect } from 'react'
 import AddGigModal from './AddGigModal';
 import { db } from '../../firebase';
 import { ref as db_ref, onValue } from 'firebase/database';
 import { auth } from '../../firebase';
 import { EvilIcons } from '@expo/vector-icons';
-
 import { Appbar } from 'react-native-paper';
 import { MaterialIcons } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
+import ClientGigDetails from './ClientGigDetails';
+
 
 //Screen dimensions
 const { height: screenHeight } = Dimensions.get('screen');
@@ -21,18 +25,32 @@ const { width: screenWidth } = Dimensions.get('screen');
 const ClientGigSearch = () => {
 
 
-    const animValue = useState(new Animated.Value(-600))[0]
+    const animValue = useState(new Animated.Value(-600))[0];
     const [showModal, setShowModal] = useState(false);
     const [gigData, setGigData] = useState([]);
+    const [refreshing, setRefreshing] = useState(false);
+    const [selectedItem, setSelectedItem] = useState([]);
+    const [modalVisible, setModalVisible] = useState(false);
     const user = auth.currentUser;
     const uid = user.uid;
 
 
 
+    const showGigModal = () => setModalVisible(true);
+    const hideGigModal = () => setModalVisible(false);
+
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        setTimeout(() => {
+            setRefreshing(false);
+        }, 2000)
+    }, [])
+
+
     const moveModal = () => {
         setShowModal(true)
         Animated.timing(animValue, {
-            toValue: 0,
+            toValue: 800,
             duration: 300,
             useNativeDriver: false
         }).start()
@@ -41,7 +59,7 @@ const ClientGigSearch = () => {
 
     const moveBack = () => {
         Animated.timing(animValue, {
-            toValue: -600,
+            toValue: 0,
             duration: 300,
             useNativeDriver: false,
 
@@ -52,6 +70,12 @@ const ClientGigSearch = () => {
 
     }
 
+    const handleItemPress = (key) => {
+        setSelectedItem(key);
+        showGigModal();
+    };
+
+    const props = { postID: selectedItem };
 
 
     useEffect(() => {
@@ -136,36 +160,50 @@ const ClientGigSearch = () => {
     return (
         <View style={styles.root}>
 
-            <View>
-                <View style={styles.container}>
-                    <FlatList
-                        data={gigData}
-                        renderItem={renderItem}
-                        keyExtractor={(item) => item.key}
-                        ItemSeparatorComponent={renderSeparator} />
-
-                    {/* styling of flatlist isn't finished */}
-
-                    <TouchableWithoutFeedback onPressOut={moveBack}>
-                        <Animated.View
-                            style={{ bottom: animValue }}
-                            behavior='padding'>
-                            {showModal ? (
-                                <View style={styles.containerField}>
-                                    <AddGigModal />
-                                </View>
-                            ) : (<></>
-                            )}
-                        </Animated.View>
-                    </TouchableWithoutFeedback >
-
-                    <TouchableOpacity style={styles.btnContainer} onPress={moveModal}>
-                        <Ionicons name="add-circle-sharp" size={70} color="#0EB080" />
-                    </TouchableOpacity>
-
-
-                </View>
+            <View style={styles.header}>
+                <Text style={styles.availGigs}>My Gigs</Text>
             </View>
+
+            <FlatList
+                data={gigData}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.key}
+                ItemSeparatorComponent={renderSeparator}
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={'white'} colors={'white'} />
+                } />
+
+            <View style={{ zIndex: 20 }}>
+                <TouchableWithoutFeedback onPressOut={moveBack}>
+                    <Animated.View
+                        style={{ bottom: animValue }}
+                        behavior='padding'>
+                        {showModal ? (
+                            <View style={styles.containerField}>
+                                <AddGigModal />
+                            </View>
+                        ) : (<></>
+                        )}
+                    </Animated.View>
+                </TouchableWithoutFeedback >
+
+                <Modal
+                    visible={modalVisible}
+                    animationType='slide'
+                    onRequestClose={hideGigModal}
+                >
+                    <Appbar.Header style={styles.appBarStyle}>
+                        <Appbar.BackAction onPress={hideGigModal} color='white' />
+                    </Appbar.Header>
+
+                    <ClientGigDetails {...props} />
+                </Modal>
+            </View>
+
+            <TouchableOpacity onPress={moveModal} style={styles.btnContainer}>
+                <Ionicons name="add-circle-sharp" size={70} color="#0EB080" />
+            </TouchableOpacity>
+
 
 
 
@@ -176,23 +214,28 @@ const ClientGigSearch = () => {
 export default ClientGigSearch
 
 const styles = StyleSheet.create({
+    appBarStyle: {
+        backgroundColor: '#151414',
+
+    },
     root: {
         backgroundColor: '#151414',
         height: screenHeight,
-        alignItems: 'center',
+        width: screenWidth,
+        bottom: screenHeight / 4.4,
 
     },
     container: {
-        height: '100%',
-        width: screenWidth,
-        bottom: screenHeight / 5,
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
     },
     btnContainer: {
         padding: 5,
         alignItems: 'flex-end',
-        top: screenHeight / 1.7,
+        bottom: screenHeight / 3.5,
         width: '20%',
-        left: 270,
+        left: 280,
+        zIndex: 1
     },
     containerField: {
         width: '100%',
@@ -203,7 +246,8 @@ const styles = StyleSheet.create({
         height: screenHeight,
         position: 'absolute',
         backgroundColor: '#F9F9F9',
-
+        borderWidth: 2,
+        borderColor: 'red',
 
     },
 
