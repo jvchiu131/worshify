@@ -27,7 +27,6 @@ const MusicianGigSearch = () => {
     const handleItemPress = (key) => {
         setSelectedItem(key);
         showModal();
-        console.log(key)
     };
 
 
