@@ -170,7 +170,7 @@ const ClientGigSearch = () => {
                 keyExtractor={(item) => item.key}
                 ItemSeparatorComponent={renderSeparator}
                 refreshControl={
-                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={'white'} colors={'white'} />
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} progressBackgroundColor='white' />
                 } />
 
             <View style={{ zIndex: 20 }}>
@@ -198,7 +198,7 @@ const ClientGigSearch = () => {
 
                     <ClientGigDetails {...props} />
                 </Modal>
-            </View>
+            </View >
 
             <TouchableOpacity onPress={moveModal} style={styles.btnContainer}>
                 <Ionicons name="add-circle-sharp" size={70} color="#0EB080" />
@@ -207,7 +207,7 @@ const ClientGigSearch = () => {
 
 
 
-        </View>
+        </View >
     )
 }
 

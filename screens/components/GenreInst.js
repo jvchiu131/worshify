@@ -54,10 +54,9 @@ const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType
             //Add the button to the selected buttons array
             setSelectedInstruments([...selectedInstruments, buttonId]);
 
-
-
         }
     }
+
 
 
     //handles gig creation
@@ -78,8 +77,8 @@ const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType
             Gig_Start: StartTime,
             Gig_End: EndTime,
             Event_Type: eventType,
-            Instruments_Needed: selectedInstruments,
-            Genre_Needed: selectedGenres,
+            Instruments_Needed: { ...selectedInstruments },
+            Genre_Needed: { ...selectedGenres },
             postID: newGigsRefKey,
             Gig_Image: img,
         });
@@ -94,8 +93,8 @@ const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType
             Gig_Start: StartTime,
             Gig_End: EndTime,
             Event_Type: eventType,
-            Instruments_Needed: selectedInstruments,
-            Genre_Needed: selectedGenres,
+            Instruments_Needed: { ...selectedInstruments },
+            Genre_Needed: { ...selectedGenres },
             postID: newGigsRefKey,
             Gig_Image: img,
         });

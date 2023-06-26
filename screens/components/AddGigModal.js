@@ -136,7 +136,7 @@ const AddGigModal = () => {
 
             if (Platform.OS === 'android') {
                 toggleTimepickerStart()
-                setStartTime(formatTime(currentTime).toString());
+                setStartTime(formatTime(currentTime));
             }
 
         } else {
@@ -155,7 +155,7 @@ const AddGigModal = () => {
 
             if (Platform.OS === 'android') {
                 toggleTimepickerEnd()
-                setEndTime(formatTime(currentTime).toString());
+                setEndTime(formatTime(currentTime));
             }
 
         } else {
@@ -165,8 +165,8 @@ const AddGigModal = () => {
 
     const formatTime = (rawTime) => {
         let time = new Date(rawTime);
-        let hours = time.getHours();
-        let minutes = time.getMinutes();
+        let hours = time.getHours.toString();
+        let minutes = time.getMinutes.toString();
 
         return `${hours}:${minutes}`;
     }

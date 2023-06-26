@@ -32,10 +32,6 @@ const MusicianDashboard = () => {
                         <RecommendedGigs />
                     </View>
                 </View>
-
-                <View style={styles.adContainer}>
-                    <AdCard />
-                </View>
             </View>
 
 
@@ -61,8 +57,10 @@ const styles = StyleSheet.create({
         height: '23%',
     },
     recommendedContainer: {
-        height: '30%',
-        top: screenHeight / 20
+        height: '35%',
+        top: screenHeight / 20,
+        width: '100%',
+
     },
     txtContainer: {
         width: '50%',
@@ -76,7 +74,7 @@ const styles = StyleSheet.create({
     },
     recCardContainer: {
         height: '85%',
-        width: '75%'
+        width: '100%',
     },
     txtStyle: {
         color: "white",

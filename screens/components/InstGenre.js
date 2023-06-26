@@ -57,8 +57,8 @@ const InstGenre = ({ fname, lname, email, bday, age, address, password }) => {
                             birthday: bday,
                             age: age,
                             address: address,
-                            instruments: selectedInstruments,
-                            genre: selectedGenres,
+                            instruments: { ...selectedInstruments },
+                            genre: { ...selectedGenres },
                             accountType: 'Musician',
                             uid: user.uid
                         }
@@ -81,8 +81,8 @@ const InstGenre = ({ fname, lname, email, bday, age, address, password }) => {
                             birthday: bday,
                             age: age,
                             address: address,
-                            instruments: selectedInstruments,
-                            genre: selectedGenres,
+                            instruments: { ...selectedInstruments },
+                            genre: { ...selectedGenres },
                             accountType: 'Musician',
                             uid: user.uid
                         }
