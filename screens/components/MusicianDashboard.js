@@ -51,6 +51,7 @@ const styles = StyleSheet.create({
     container: {
         height: "100%",
         bottom: screenHeight / 4.9,
+
     },
     featuredContainer: {
         width: screenWidth,
@@ -58,7 +59,7 @@ const styles = StyleSheet.create({
     },
     recommendedContainer: {
         height: '35%',
-        top: screenHeight / 20,
+        top: screenHeight / 15,
         width: '100%',
 
     },

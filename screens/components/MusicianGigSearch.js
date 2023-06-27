@@ -134,6 +134,7 @@ const MusicianGigSearch = () => {
                 renderItem={renderItem}
                 keyExtractor={(item) => item.key}
                 ItemSeparatorComponent={renderSeparator} />
+
         </View>
     )
 }
