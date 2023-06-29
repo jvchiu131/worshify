@@ -1,171 +1,175 @@
-import { StyleSheet, Text, TouchableOpacity, TextInput, View, Animated, Dimensions, Button } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, TextInput, View, Animated, Dimensions, KeyboardAvoidingView, Pressable } from 'react-native'
 import React, { useState } from 'react'
-import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { auth, db } from '../../firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { ref, set } from 'firebase/database';
+import ProfilePicReg from './ProfilePicReg';
+import DateTimePicker from '@react-native-community/datetimepicker'
+
+
 const { height: screenHeight } = Dimensions.get('screen');
 const { width: screenWidth } = Dimensions.get('screen');
 
 const ClientReg = () => {
 
-    const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('')
-    const [birthday, setBirthday] = useState(new Date().toLocaleDateString());
+    const [birthday, setBirthday] = useState(new Date());
     const [age, setAge] = useState('');
     const [address, setAddress] = useState('');
     const [password, setPassword] = useState('');
     const [phone, setPhone] = useState('');
+    const [isClicked, setIsClicked] = useState(false);
+    const [showPicker, setShowPicker] = useState(false);
+    const [birthPlaceholder, setBirthPlaceholder] = useState('');
+    const ContentValue = useState(new Animated.Value(-600))[0]
 
-    const showDatePicker = () => {
-        setDatePickerVisibility(true);
+
+
+    const toggleDatepicker = () => {
+        setShowPicker(!showPicker)
     };
 
-    const hideDatePicker = () => {
-        setDatePickerVisibility(false);
+    const onChange = ({ type }, selectedDate) => {
+        if (type == 'set') {
+            const currentDate = selectedDate;
+            setBirthday(currentDate);
+            setBirthPlaceholder(currentDate.toDateString());
+
+            if (Platform.OS === 'android') {
+                toggleDatepicker()
+                setBirthday(currentDate);
+                setBirthPlaceholder(currentDate.toDateString());
+            }
+
+        } else {
+            toggleDatepicker();
+        }
     };
 
-    const handleConfirm = (date) => {
-        console.warn("A date has been picked: ", date);
-        setBirthday(date);
-        hideDatePicker();
-    };
 
-    const handleSignup = () => {
-        createUserWithEmailAndPassword(auth, email, password)
-            .then(userCredentials => {
-                const user = userCredentials.user;
-                // console.log(user.email);
-
-
-                //writes data on the database
-                const writeUserData = () => {
-                    set(ref(db, 'users/' + '/client/' + user.uid + '/metadata'),
-                        {
-                            first_name: firstName,
-                            lname: lastName,
-                            email: email,
-                            birthday: birthday,
-                            age: age,
-                            address: address,
-                            accountType: 'Client',
-                            uid: user.uid
-                        }
-                    );
-                }
-
-                const writeUserType = () => {
-                    set(ref(db, 'users/' + '/accountType/' + user.uid),
-                        {
-                            accountType: 'Client'
-                        });
-                }
-
-                const writeLoggedUserData = () => {
-                    set(ref(db, 'users/' + '/logged_users/' + user.uid),
-                        {
-                            first_name: firstName,
-                            lname: lastName,
-                            email: email,
-                            birthday: birthday,
-                            age: age,
-                            address: address,
-                            accountType: 'Client',
-                            uid: user.uid
-                        }
-                    );
-                }
-                writeUserData();
-                writeUserType();
-                writeLoggedUserData();
-            })
-            .catch(error => alert(error.message))
-
+    const handleBtn = () => {
+        Animated.timing(ContentValue, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: false,
+        }).start()
+        setIsClicked(true);
     }
 
 
+    const props = { fname: firstName, lname: lastName, email: email, bday: birthday, age: age, address: address, password: password }
+
+
+
+
     return (
-        <View style={styles.container}>
-            <View style={styles.headerContainer}>
-                <Text style={styles.header}>Create an Account as <Text style={{ color: '#0EB080' }}>Client</Text></Text>
-            </View>
-            <View style={styles.subheaderContainer}>
-                <Text style={styles.subHeader}>Do you already have an account?
-                    <TouchableOpacity>
-                        <Text style={{ color: '#0EB080' }}> Sign In</Text>
-                    </TouchableOpacity>
-                </Text>
-            </View>
+        <KeyboardAvoidingView style={styles.container} behavior='padding'>
+            {isClicked ? (
+                <Animated.View
+                    style={{ right: ContentValue }}>
+                    {isClicked ? (
+                        <ProfilePicReg {...props} />
+                    ) : null}
+                </Animated.View>
+            ) : (
+                <>
+                    <View style={styles.headerContainer}>
+                        <Text style={styles.header}>Create an Account as <Text style={{ color: '#0EB080' }}>Client</Text></Text>
+                    </View>
+                    <View style={styles.subheaderContainer}>
+                        <Text style={styles.subHeader}>Do you already have an account?
+                            <TouchableOpacity>
+                                <Text style={{ color: '#0EB080' }}> Sign In</Text>
+                            </TouchableOpacity>
+                        </Text>
+                    </View>
 
-            <View style={styles.inputContainer}>
-                <View style={styles.nameContainer}>
-                    <TextInput style={styles.inputStyle}
-                        value={firstName}
-                        placeholder='First Name'
-                        onChangeText={text => setFirstName(text)} />
+                    <View style={styles.inputContainer}>
+                        <View style={styles.nameContainer}>
+                            <TextInput style={styles.inputStyle}
+                                value={firstName}
+                                placeholder='First Name'
+                                onChangeText={text => setFirstName(text)} />
 
-                    <TextInput style={styles.inputStyle}
-                        value={lastName}
-                        placeholder='Last Name'
-                        onChangeText={text => setLastName(text)} />
+                            <TextInput style={styles.inputStyle}
+                                value={lastName}
+                                placeholder='Last Name'
+                                onChangeText={text => setLastName(text)} />
 
-                </View>
-                <View style={styles.emailContainer}>
-                    <TextInput style={styles.emailStyle}
-                        value={email}
-                        placeholder='Email'
-                        onChangeText={text => setEmail(text)} />
-                </View>
+                        </View>
+                        <View style={styles.emailContainer}>
+                            <TextInput style={styles.emailStyle}
+                                value={email}
+                                placeholder='Email'
+                                onChangeText={text => setEmail(text)} />
+                        </View>
 
-                {/* <View style={styles.passContainer}>
+                        {/* <View style={styles.passContainer}>
                             <TextInput style={styles.passStyle}
                                 value={password}
                                 placeholder='Password'
                                 onChange={text => setPassword(text)}
                                 secureTextEntry />
                         </View> */}
-                <View style={styles.birthContainer}>
-                    <Button title='Birthday' onPress={showDatePicker} color={'black'} />
-                    <DateTimePickerModal
-                        isVisible={isDatePickerVisible}
-                        mode="date"
-                        onConfirm={handleConfirm}
-                        onCancel={hideDatePicker}
-                        isDarkModeEnabled={true}
-                    />
-                    <TextInput style={styles.ageStyle}
-                        keyboardType='numeric'
-                        placeholder='Age'
-                        value={age}
-                        onChangeText={text => setAge(text)} />
+                        <View style={styles.birthContainer}>
+                            <View style={styles.ageStyle}>
+                                {!showPicker && (
+                                    <Pressable
+                                        onPress={toggleDatepicker}>
+                                        <TextInput
+                                            placeholder='Birth Date'
+                                            placeholderTextColor='#11182744'
+                                            value={birthPlaceholder}
+                                            onChangeText={setBirthPlaceholder}
+                                            editable={false}
+                                        />
+                                    </Pressable>
 
-                </View>
-                <View style={styles.addressContainer}>
-                    <TextInput style={styles.addressStyle}
-                        placeholder='Address'
-                        value={address}
-                        onChangeText={text => setAddress(text)} />
-                </View>
-                <View style={styles.phoneContainer}>
-                    <TextInput style={styles.passStyle}
-                        value={password}
-                        placeholder='Password'
-                        onChangeText={text => setPassword(text)}
-                        secureTextEntry />
-                </View>
+                                )}
 
-                <View>
-                    <TouchableOpacity style={styles.btnContainer} onPress={handleSignup}>
-                        <View style={styles.button}>
-                            <Text style={styles.txtStyle}>Register</Text>
+                                {showPicker && (
+                                    <DateTimePicker
+                                        mode='date'
+                                        display='spinner'
+                                        value={birthday}
+                                        onChange={onChange}
+                                        is24Hour={false}
+                                    />
+                                )}
+                            </View>
+
+                            <TextInput style={styles.ageStyle}
+                                keyboardType='numeric'
+                                placeholder='Age'
+                                value={age}
+                                onChangeText={text => setAge(text)} />
+
                         </View>
-                    </TouchableOpacity>
-                </View>
+                        <View style={styles.addressContainer}>
+                            <TextInput style={styles.addressStyle}
+                                placeholder='Address'
+                                value={address}
+                                onChangeText={text => setAddress(text)} />
+                        </View>
+                        <View style={styles.phoneContainer}>
+                            <TextInput style={styles.passStyle}
+                                value={password}
+                                placeholder='Password'
+                                onChangeText={text => setPassword(text)}
+                                secureTextEntry />
+                        </View>
 
-            </View>
-        </View>
+                        <View>
+                            <TouchableOpacity style={styles.btnContainer} onPress={handleBtn}>
+                                <View style={styles.button}>
+                                    <Text style={styles.txtStyle}>Next</Text>
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+
+                    </View>
+                </>
+            )}
+        </KeyboardAvoidingView>
     )
 }
 
@@ -235,7 +239,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-around',
         bottom: screenHeight / 3.6,
-        width: screenWidth
+        width: screenWidth,
     },
     ageStyle: {
         borderRadius: 15,

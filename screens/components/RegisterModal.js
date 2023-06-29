@@ -98,6 +98,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         position: 'relative',
+
     },
     container: {
         justifyContent: 'center',
@@ -105,7 +106,8 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 50,
         borderTopRightRadius: 50,
         width: '100%',
-        height: '100%'
+        height: '100%',
+
     },
     regContainer: {
         justifyContent: 'center',
