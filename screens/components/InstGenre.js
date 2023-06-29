@@ -14,7 +14,7 @@ const { width: screenWidth } = Dimensions.get('screen');
 
 
 
-const InstGenre = ({ fname, lname, email, bday, age, address, password }) => {
+const InstGenre = ({ fname, lname, email, bday, age, address, password, img }) => {
 
 
 
@@ -60,7 +60,8 @@ const InstGenre = ({ fname, lname, email, bday, age, address, password }) => {
                             instruments: { ...selectedInstruments },
                             genre: { ...selectedGenres },
                             accountType: 'Musician',
-                            uid: user.uid
+                            uid: user.uid,
+                            profile_pic: img
                         }
                     );
                 }
@@ -84,7 +85,8 @@ const InstGenre = ({ fname, lname, email, bday, age, address, password }) => {
                             instruments: { ...selectedInstruments },
                             genre: { ...selectedGenres },
                             accountType: 'Musician',
-                            uid: user.uid
+                            uid: user.uid,
+                            profile_pic: img
                         }
                     );
                 }

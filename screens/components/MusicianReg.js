@@ -1,7 +1,9 @@
-import { StyleSheet, Text, TouchableOpacity, TextInput, View, Animated, Dimensions, Button, KeyboardAvoidingView } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, TextInput, View, Animated, Dimensions, Button, KeyboardAvoidingView, Pressable } from 'react-native'
 import React, { useState } from 'react'
 import InstGenre from './InstGenre';
-import DateTimePickerModal from "react-native-modal-datetime-picker";
+import DateTimePicker from '@react-native-community/datetimepicker'
+import MusicianProfilePic from './MusicianProfilePic';
+
 
 const { height: screenHeight } = Dimensions.get('screen');
 const { width: screenWidth } = Dimensions.get('screen');
@@ -10,31 +12,38 @@ const MusicianReg = () => {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('')
-    const [birthday, setBirthday] = useState(new Date().toLocaleDateString());
-    const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+    const [birthday, setBirthday] = useState(new Date());
     const [age, setAge] = useState('');
     const [address, setAddress] = useState('');
     const [password, setPassword] = useState('');
     const [phone, setPhone] = useState('');
-    const [isClicked, setIsClicked] = useState(false);
     const ContentValue = useState(new Animated.Value(-600))[0]
+    const [isClicked, setIsClicked] = useState(false);
+    const [showPicker, setShowPicker] = useState(false);
+    const [birthPlaceholder, setBirthPlaceholder] = useState('');
 
 
 
-    const showDatePicker = () => {
-        setDatePickerVisibility(true);
+    const toggleDatepicker = () => {
+        setShowPicker(!showPicker)
     };
 
-    const hideDatePicker = () => {
-        setDatePickerVisibility(false);
-    };
+    const onChange = ({ type }, selectedDate) => {
+        if (type == 'set') {
+            const currentDate = selectedDate;
+            setBirthday(currentDate);
+            setBirthPlaceholder(currentDate.toDateString());
 
-    const handleConfirm = (date) => {
-        console.warn("A date has been picked: ", date);
-        setBirthday(date);
-        hideDatePicker();
-    };
+            if (Platform.OS === 'android') {
+                toggleDatepicker()
+                setBirthday(currentDate);
+                setBirthPlaceholder(currentDate.toDateString());
+            }
 
+        } else {
+            toggleDatepicker();
+        }
+    };
 
     const handleBtn = () => {
         Animated.timing(ContentValue, {
@@ -55,7 +64,7 @@ const MusicianReg = () => {
                 <Animated.View
                     style={{ right: ContentValue }}>
                     {isClicked ? (
-                        <InstGenre {...props} />
+                        <MusicianProfilePic {...props} />
                     ) : null}
                 </Animated.View>
             ) : (
@@ -100,14 +109,31 @@ const MusicianReg = () => {
                                 secureTextEntry />
                         </View> */}
                         <View style={styles.birthContainer}>
-                            <Button title='Birthday' onPress={showDatePicker} color={'black'} />
-                            <DateTimePickerModal
-                                isVisible={isDatePickerVisible}
-                                mode="date"
-                                onConfirm={handleConfirm}
-                                onCancel={hideDatePicker}
-                                isDarkModeEnabled={true}
-                            />
+                            <View style={styles.ageStyle}>
+                                {!showPicker && (
+                                    <Pressable
+                                        onPress={toggleDatepicker}>
+                                        <TextInput
+                                            placeholder='Birth Date'
+                                            placeholderTextColor='#11182744'
+                                            value={birthPlaceholder}
+                                            onChangeText={setBirthPlaceholder}
+                                            editable={false}
+                                        />
+                                    </Pressable>
+
+                                )}
+
+                                {showPicker && (
+                                    <DateTimePicker
+                                        mode='date'
+                                        display='spinner'
+                                        value={birthday}
+                                        onChange={onChange}
+                                        is24Hour={false}
+                                    />
+                                )}
+                            </View>
                             <TextInput style={styles.ageStyle}
                                 keyboardType='numeric'
                                 placeholder='Age'
