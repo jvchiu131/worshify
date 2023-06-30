@@ -6,6 +6,8 @@ import { Appbar } from 'react-native-paper';
 import { auth, db } from '../../firebase';
 import { child, onValue, ref } from 'firebase/database';
 import { FontAwesome5 } from '@expo/vector-icons';
+import ClientGigSearch from '../components/ClientGigSearch';
+import MusicianDetails from '../components/MusicianDetails';
 
 const { height: screenHeight } = Dimensions.get('screen');
 const { width: screenWidth } = Dimensions.get('screen');
@@ -17,20 +19,66 @@ const ProfileScreen = () => {
     const navigation = useNavigation();
     const user = auth.currentUser;
     const uid = user.uid;
-    const [fName, setFname] = useState('');
-    const [lName, setLname] = useState('');
+    const [isMusician, setIsMusician] = useState(false);
+    const [accountType, setAccountType] = useState('');
+    const [instruments, setInstruments] = useState([]);
+    const [genre, setGenre] = useState([]);
+
+    const [userDetails, setUserDetails] = useState([]);
 
 
     useEffect(() => {
-        const fNameRef = ref(db, 'users/' + '/logged_users/' + uid + '/first_name');
-        onValue(fNameRef, (snapshot) => {
-            setFname(snapshot.val());
+
+        const dbRef = ref(db, 'users/logged_users/' + uid)
+        onValue(dbRef, (snapshot) => {
+            const userData = {
+                firstName: snapshot.val().first_name,
+                lastName: snapshot.val().lname,
+                email: snapshot.val().email,
+                profilePic: snapshot.val().profile_pic,
+                address: snapshot.val().address,
+                accountType: snapshot.val().accountType,
+            }
+            setUserDetails(userData);
         })
 
-        const lNameRef = ref(db, 'users/' + '/logged_users/' + uid + '/lname');
-        onValue(lNameRef, (snapshot) => {
-            setLname(snapshot.val());
+
+    }, [])
+
+    useEffect(() => {
+        const pathRef = child(ref(db), 'users/logged_users/' + uid + '/instruments')
+        onValue(pathRef, (snapshot) => {
+            let data = [];
+            snapshot.forEach((child) => {
+                data.push(child.val());
+            })
+            setInstruments(data);
         })
+    }, [])
+
+    useEffect(() => {
+        const pathRef = child(ref(db), 'users/logged_users/' + uid + '/genre')
+        onValue(pathRef, (snapshot) => {
+            let data = [];
+            snapshot.forEach((child) => {
+                data.push(child.val());
+            })
+            setGenre(data);
+        })
+    }, [])
+
+
+
+    useEffect(() => {
+        const accountTypeRef = ref(db, 'users/accountType/' + uid + '/accountType')
+        onValue(accountTypeRef, (snapshot) => {
+            const userType = snapshot.val();
+            setAccountType(userType);
+        })
+
+        if (accountType === 'Musician') {
+            setIsMusician(true);
+        }
     })
 
 
@@ -39,7 +87,7 @@ const ProfileScreen = () => {
             <Appbar.Header style={styles.header}>
                 <Appbar.BackAction color='white' onPress={() => navigation.goBack()} />
 
-                <Text style={styles.txtStyle}>{fName} {lName}</Text>
+                <Text style={styles.txtStyle}>{userDetails.firstName} {userDetails.lastName}</Text>
 
                 <TouchableOpacity>
                     <FontAwesome5 name="edit" size={24} color="white" style={{ padding: 15 }} />
@@ -49,6 +97,18 @@ const ProfileScreen = () => {
                 <ProfileCard />
             </View>
 
+
+            <View style={styles.profileDetailStyle}>
+                {isMusician ? (
+                    <View>
+                        <MusicianDetails />
+                    </View>
+                ) : (
+                    <View>
+                        <Text>Client</Text>
+                    </View>
+                )}
+            </View>
         </View>
 
 
@@ -58,6 +118,12 @@ const ProfileScreen = () => {
 export default ProfileScreen
 
 const styles = StyleSheet.create({
+    profileDetailStyle: {
+        borderWidth: 2,
+        borderColor: 'red',
+        height: '100%',
+        bottom: screenHeight / 10
+    },
     root: {
         height: screenHeight,
         width: screenWidth,
