@@ -21,8 +21,7 @@ const ProfileScreen = () => {
     const uid = user.uid;
     const [isMusician, setIsMusician] = useState(false);
     const [accountType, setAccountType] = useState('');
-    const [instruments, setInstruments] = useState([]);
-    const [genre, setGenre] = useState([]);
+
 
     const [userDetails, setUserDetails] = useState([]);
 
@@ -43,28 +42,6 @@ const ProfileScreen = () => {
         })
 
 
-    }, [])
-
-    useEffect(() => {
-        const pathRef = child(ref(db), 'users/logged_users/' + uid + '/instruments')
-        onValue(pathRef, (snapshot) => {
-            let data = [];
-            snapshot.forEach((child) => {
-                data.push(child.val());
-            })
-            setInstruments(data);
-        })
-    }, [])
-
-    useEffect(() => {
-        const pathRef = child(ref(db), 'users/logged_users/' + uid + '/genre')
-        onValue(pathRef, (snapshot) => {
-            let data = [];
-            snapshot.forEach((child) => {
-                data.push(child.val());
-            })
-            setGenre(data);
-        })
     }, [])
 
 
@@ -119,8 +96,6 @@ export default ProfileScreen
 
 const styles = StyleSheet.create({
     profileDetailStyle: {
-        borderWidth: 2,
-        borderColor: 'red',
         height: '100%',
         bottom: screenHeight / 10
     },
