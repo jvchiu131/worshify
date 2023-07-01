@@ -7,7 +7,7 @@ import { Appbar } from 'react-native-paper';
 import AddPortfolio from './AddPortfolio';
 
 
-const MusicianDetails = ({ userId }) => {
+const UserMusicianDetails = () => {
 
     const user = auth.currentUser;
     const uid = user.uid;
@@ -20,7 +20,7 @@ const MusicianDetails = ({ userId }) => {
     const [modalVisible, setModalVisible] = useState(false);
 
     useEffect(() => {
-        const pathRef = child(ref(db), 'users/logged_users/' + userId + '/instruments')
+        const pathRef = child(ref(db), 'users/logged_users/' + uid + '/instruments')
         onValue(pathRef, (snapshot) => {
             let data = [];
             snapshot.forEach((child) => {
@@ -34,7 +34,7 @@ const MusicianDetails = ({ userId }) => {
     }, [])
 
     useEffect(() => {
-        const pathRef = child(ref(db), 'users/logged_users/' + userId + '/genre')
+        const pathRef = child(ref(db), 'users/logged_users/' + uid + '/genre')
         onValue(pathRef, (snapshot) => {
             let data = [];
             snapshot.forEach((child) => {
@@ -49,7 +49,7 @@ const MusicianDetails = ({ userId }) => {
 
 
     useEffect(() => {
-        const portRef = child(ref(db), 'users/logged_users/' + userId + '/portfolioPic')
+        const portRef = child(ref(db), 'users/logged_users/' + uid + '/portfolioPic')
 
         onValue(portRef, (snapshot) => {
             let data = []
@@ -138,34 +138,38 @@ const MusicianDetails = ({ userId }) => {
                         <>
                             <TouchableOpacity style={styles.portfolioSaveStyle} onPress={showModal}>
                                 <EvilIcons name="image" size={24} color="black" />
-                                <Text>No Portfolio yet</Text>
+                                <Text> Add Images</Text>
                             </TouchableOpacity>
+                            <Modal
+                                visible={modalVisible}
+                                animationType='slide'
+                                onRequestClose={hideModal}
+                            >
+                                <Appbar.BackAction onPress={hideModal} style={styles.appBarStyle} />
+                                <AddPortfolio />
+
+                            </Modal>
                         </>
 
                     )}
                 </View>
             </View>
 
-
-
-
         </View>
-
 
     )
 }
 
-export default MusicianDetails
+export default UserMusicianDetails
 
 const styles = StyleSheet.create({
-
     portfolioViewContainer: {
         borderWidth: 2,
         borderColor: '#0EB080',
-        width: 200,
-        height: '100%',
+        width: 250,
+        height: '20%',
         borderRadius: 15,
-        overflow: 'hidden',
+        overflow: 'hidden'
     },
     portfolioImgStyle: {
         height: '100%',
@@ -181,7 +185,6 @@ const styles = StyleSheet.create({
     },
     portfolioStyle: {
         alignItems: 'center',
-        height: '100%',
     },
     txtStyle: {
         borderWidth: 1,
@@ -201,7 +204,7 @@ const styles = StyleSheet.create({
         width: '100%',
         backgroundColor: 'white',
         borderTopLeftRadius: 25,
-        borderTopRightRadius: 25,
+        borderTopRightRadius: 25
     },
     genreContainer: {
         borderTopWidth: 0.5,
@@ -217,7 +220,6 @@ const styles = StyleSheet.create({
         borderTopWidth: 0.5,
         borderTopColor: '#000000',
         padding: 20,
-        height: '23%'
 
     },
     titleContainer: {

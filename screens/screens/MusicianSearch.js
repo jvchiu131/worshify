@@ -7,6 +7,7 @@ import { Appbar } from 'react-native-paper';
 import Header from '../components/Header'
 import { EvilIcons } from '@expo/vector-icons';
 import MusicianProfile from '../components/MusicianProfile'
+import { Ionicons } from '@expo/vector-icons';
 
 
 const { height: screenHeight } = Dimensions.get('screen');
@@ -112,6 +113,11 @@ const MusicianSearch = () => {
             >
                 <Appbar.Header style={styles.appBarHeader}>
                     <Appbar.BackAction onPress={hideModal} color='white' />
+
+                    <TouchableOpacity>
+                        <Ionicons name="chatbox-ellipses-outline" size={24} color="white" style={{ padding: 20 }} />
+                    </TouchableOpacity>
+
                 </Appbar.Header>
 
                 <MusicianProfile {...props} />
@@ -127,6 +133,7 @@ export default MusicianSearch
 const styles = StyleSheet.create({
     appBarHeader: {
         backgroundColor: '#151414',
+        justifyContent: 'space-between',
     },
     addressText: {
         color: 'white',

@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, TouchableOpacity, ImageBackground, FlatList, Dimensions } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import ProfileCard from './ProfileCard'
-
+import MusicianDetails from './MusicianDetails';
 
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('screen');
@@ -21,6 +21,10 @@ const MusicianProfile = ({ userId }) => {
                 <ProfileCard {...props} />
             </View>
 
+            <View>
+                <MusicianDetails {...props} />
+            </View>
+
         </View>
     )
 }
@@ -34,10 +38,9 @@ const styles = StyleSheet.create({
         width: screenWidth,
     },
     container: {
-        borderWidth: 2,
-        borderColor: 'red',
         alignItems: 'center',
         height: '30%',
         padding: 15
-    }
+    },
+
 })
