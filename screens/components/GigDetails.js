@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, ImageBackground, Dimensions, TouchableOpacity } from 'react-native'
 import React, { useState, useEffect } from 'react'
-import { child, onValue, ref, remove, set, update } from 'firebase/database';
+import { child, onValue, ref, remove, update } from 'firebase/database';
 import { db, auth } from '../../firebase';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
@@ -85,8 +85,6 @@ const GigDetails = ({ postID }) => {
             .then(() => { setLoading(false) })
             .catch((error) => console.log(error))
     }
-
-
 
 
 

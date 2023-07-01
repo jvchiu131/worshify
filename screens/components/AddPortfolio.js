@@ -25,6 +25,8 @@ const AddPortfolio = () => {
     const uid = user.uid
 
 
+
+
     async function uploadImageAsync(uri) {
         // Why are we using XMLHttpRequest? See:
         // https://github.com/expo/expo/issues/2402#issuecomment-443726662

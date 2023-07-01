@@ -1,23 +1,19 @@
-import { StyleSheet, Text, View, Dimensions, ScrollView, TouchableOpacity, Modal, } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import { StyleSheet, Text, View, Dimensions, ScrollView, TouchableOpacity, Modal, FlatList, ImageBackground } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import { db, auth } from '../../firebase';
-import { ref, onValue, child } from 'firebase/database';
+import { ref, onValue, child, exists, hasChildren, once } from 'firebase/database';
 import { EvilIcons } from '@expo/vector-icons';
 import { Appbar } from 'react-native-paper';
 import AddPortfolio from './AddPortfolio';
-
-
-
-const { height: screenHeight, width: screenWidth } = Dimensions.get('screen');
 
 
 const MusicianDetails = () => {
 
     const user = auth.currentUser;
     const uid = user.uid;
-
     const [instruments, setInstruments] = useState([]);
     const [genre, setGenre] = useState([]);
+    const [portfolio, setPortfolio] = useState([]);
     const [childrenExist, setChildrenExist] = useState(false);
     const showModal = () => setModalVisible(true);
     const hideModal = () => setModalVisible(false);
@@ -52,6 +48,49 @@ const MusicianDetails = () => {
     }, [])
 
 
+    useEffect(() => {
+        const portRef = child(ref(db), 'users/logged_users/' + uid + '/portfolioPic')
+
+        onValue(portRef, (snapshot) => {
+            let data = []
+            if (snapshot.exists() && snapshot.hasChildren()) {
+                setChildrenExist(true);
+            }
+
+            snapshot.forEach((child) => {
+                data.push(child.val())
+            })
+
+
+            setPortfolio(data);
+            console.log(portfolio)
+        })
+
+
+    }, [])
+
+
+    const renderItem = ({ item }) => {
+        return (
+            <View style={styles.portfolioViewContainer}>
+                <ImageBackground source={{ uri: item }} style={styles.portfolioImgStyle} >
+                </ImageBackground>
+            </View>
+        )
+    }
+
+    const renderSeparator = () => {
+        return (
+            <View style={{
+                marginHorizontal: 10,
+                height: 0.5
+            }} />
+
+        )
+    }
+
+
+
 
     return (
 
@@ -66,6 +105,7 @@ const MusicianDetails = () => {
                     <Text style={styles.txtStyle}>{genre[2]}</Text>
                 </View>
             </View>
+
             <View style={styles.instrumentsContainer}>
                 <View style={styles.titleContainer}>
                     <Text>Instruments</Text>
@@ -85,7 +125,15 @@ const MusicianDetails = () => {
 
                 <View style={styles.portfolioStyle}>
                     {childrenExist ? (
-                        <View></View>
+                        <View>
+                            <FlatList
+                                data={portfolio}
+                                renderItem={renderItem}
+                                keyExtractor={(item) => item.key}
+                                ItemSeparatorComponent={renderSeparator}
+                                horizontal
+                            />
+                        </View>
                     ) : (
                         <>
                             <TouchableOpacity style={styles.portfolioSaveStyle} onPress={showModal}>
@@ -115,6 +163,18 @@ const MusicianDetails = () => {
 export default MusicianDetails
 
 const styles = StyleSheet.create({
+    portfolioViewContainer: {
+        borderWidth: 2,
+        borderColor: '#0EB080',
+        width: 250,
+        height: '20%',
+        borderRadius: 15,
+        overflow: 'hidden'
+    },
+    portfolioImgStyle: {
+        height: '100%',
+        width: '100%',
+    },
     portfolioSaveStyle: {
         borderWidth: 2,
         borderColor: '#0EB080',
@@ -124,7 +184,7 @@ const styles = StyleSheet.create({
         height: '55%'
     },
     portfolioStyle: {
-        alignItems: 'center'
+        alignItems: 'center',
     },
     txtStyle: {
         borderWidth: 1,

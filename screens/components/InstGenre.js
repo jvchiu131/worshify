@@ -49,7 +49,7 @@ const InstGenre = ({ fname, lname, email, bday, age, address, password, img }) =
 
                 //writes data on the database
                 const writeUserData = () => {
-                    set(ref(db, 'users/' + '/musician/' + user.uid + '/metadata'),
+                    set(ref(db, 'users/' + '/musician/' + user.uid),
                         {
                             first_name: fname,
                             lname: lname,

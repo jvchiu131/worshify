@@ -74,7 +74,7 @@ const ProfilePicReg = ({ fname, lname, email, bday, age, address, password }) =>
 
                 //writes data on the database
                 const writeUserData = () => {
-                    set(ref(db, 'users/' + '/client/' + user.uid + '/metadata'),
+                    set(ref(db, 'users/' + '/client/' + user.uid),
                         {
                             first_name: fname,
                             lname: lname,
