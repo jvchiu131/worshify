@@ -110,7 +110,10 @@ const MusicianSearch = () => {
                 animationType='slide'
                 onRequestClose={hideModal}
             >
-                <Appbar.BackAction onPress={hideModal} style={styles.appBarStyle} />
+                <Appbar.Header style={styles.appBarHeader}>
+                    <Appbar.BackAction onPress={hideModal} color='white' />
+                </Appbar.Header>
+
                 <MusicianProfile {...props} />
             </Modal>
 
@@ -122,6 +125,9 @@ const MusicianSearch = () => {
 export default MusicianSearch
 
 const styles = StyleSheet.create({
+    appBarHeader: {
+        backgroundColor: '#151414',
+    },
     addressText: {
         color: 'white',
         fontSize: 10

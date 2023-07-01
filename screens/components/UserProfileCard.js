@@ -13,7 +13,7 @@ const { width: screenWidth } = Dimensions.get('screen');
 
 
 
-const ProfileCard = ({ userId }) => {
+const UserProfileCard = () => {
 
     const user = auth.currentUser;
     const uid = user.uid;
@@ -24,7 +24,7 @@ const ProfileCard = ({ userId }) => {
 
     useEffect(() => {
 
-        const dbRef = ref(db, 'users/logged_users/' + userId)
+        const dbRef = ref(db, 'users/logged_users/' + uid)
         onValue(dbRef, (snapshot) => {
             const userData = {
                 firstName: snapshot.val().first_name,
@@ -33,8 +33,6 @@ const ProfileCard = ({ userId }) => {
                 profilePic: snapshot.val().profile_pic,
                 address: snapshot.val().address,
                 accountType: snapshot.val().accountType,
-                genre: snapshot.val().genre,
-                instruments: snapshot.val().instruments,
             }
             setUserDetails(userData);
         })
@@ -78,7 +76,7 @@ const ProfileCard = ({ userId }) => {
     )
 }
 
-export default ProfileCard
+export default UserProfileCard
 
 const styles = StyleSheet.create({
     accountTypeStyle: {
@@ -108,9 +106,10 @@ const styles = StyleSheet.create({
         marginLeft: 7
     },
     rootContainer: {
-        height: '100%',
-        width: '100%',
+        height: '70%',
+        width: '90%',
         borderRadius: 10,
+        bottom: screenHeight / 20,
         backgroundColor: '#1E1E1E',
         padding: 10
     },

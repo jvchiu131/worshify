@@ -1,14 +1,25 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View, TouchableOpacity, ImageBackground, FlatList, Dimensions } from 'react-native'
+import React, { useState, useEffect } from 'react'
+import ProfileCard from './ProfileCard'
+
+
+
+const { height: screenHeight, width: screenWidth } = Dimensions.get('screen');
+
+
 
 const MusicianProfile = ({ userId }) => {
 
 
-
+    const props = { userId: userId }
 
 
     return (
-        <View>
+        <View style={styles.root}>
+
+            <View style={styles.container}>
+                <ProfileCard {...props} />
+            </View>
 
         </View>
     )
@@ -16,4 +27,17 @@ const MusicianProfile = ({ userId }) => {
 
 export default MusicianProfile
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+    root: {
+        backgroundColor: '#151414',
+        height: screenHeight,
+        width: screenWidth,
+    },
+    container: {
+        borderWidth: 2,
+        borderColor: 'red',
+        alignItems: 'center',
+        height: '30%',
+        padding: 15
+    }
+})

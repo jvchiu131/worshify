@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, Image, Dimensions, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
-import ProfileCard from '../components/ProfileCard';
+import UserProfileCard from '../components/UserProfileCard';
 import { Appbar } from 'react-native-paper';
 import { auth, db } from '../../firebase';
 import { child, onValue, ref } from 'firebase/database';
@@ -71,7 +71,7 @@ const ProfileScreen = () => {
                 </TouchableOpacity>
             </Appbar.Header>
             <View style={styles.cardContainer}>
-                <ProfileCard />
+                <UserProfileCard />
             </View>
 
 
