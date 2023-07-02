@@ -5,7 +5,6 @@ import {
 } from 'react-native'
 import React, { useState, useEffect, useCallback } from 'react'
 import { Ionicons } from '@expo/vector-icons';
-import AddGigModal from './AddGigModal';
 import { db } from '../../firebase';
 import { ref as db_ref, onValue } from 'firebase/database';
 import { auth } from '../../firebase';
@@ -15,96 +14,20 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
 import ClientGigDetails from './ClientGigDetails';
 
-
 //Screen dimensions
 const { height: screenHeight } = Dimensions.get('screen');
 const { width: screenWidth } = Dimensions.get('screen');
+const UserClientDetails = () => {
 
 
+    const user = auth.currentUser
+    const uid = user.uid
 
-const ClientGigSearch = () => {
-
-
-    const animValue = useState(new Animated.Value(-600))[0];
-    const [showModal, setShowModal] = useState(false);
     const [gigData, setGigData] = useState([]);
-    const [refreshing, setRefreshing] = useState(false);
     const [selectedItem, setSelectedItem] = useState([]);
-    const [modalVisible, setModalVisible] = useState(false);
-    const user = auth.currentUser;
-    const uid = user.uid;
-
-
-
     const showGigModal = () => setModalVisible(true);
     const hideGigModal = () => setModalVisible(false);
-
-    const onRefresh = useCallback(() => {
-        setRefreshing(true);
-        setTimeout(() => {
-            setRefreshing(false);
-        }, 2000)
-    }, [])
-
-
-    const moveModal = () => {
-        setShowModal(true)
-        Animated.timing(animValue, {
-            toValue: 700,
-            duration: 300,
-            useNativeDriver: false
-        }).start()
-
-    }
-
-    const moveBack = () => {
-        Animated.timing(animValue, {
-            toValue: 0,
-            duration: 300,
-            useNativeDriver: false,
-
-        }).start()
-        setTimeout(() => {
-            setShowModal(false)
-        }, 300)
-
-    }
-
-    const handleItemPress = (key) => {
-        setSelectedItem(key);
-        showGigModal();
-    };
-
-    const props = { postID: selectedItem };
-
-
-    useEffect(() => {
-
-        const dbRef = db_ref(db, 'users/client/' + uid + '/gigs');
-
-        onValue(dbRef, (snapshot) => {
-            let gigDetails = [];
-            snapshot.forEach((childSnapshot) => {
-                gigDetails.push({
-                    key: childSnapshot.key,
-                    Event_Type: childSnapshot.val().Event_Type,
-                    GigAddress: childSnapshot.val().Gig_Address,
-                    postID: childSnapshot.val().postID,
-                    GigName: childSnapshot.val().Gig_Name,
-                    uid: childSnapshot.val().uid,
-                    GenreNeeded: childSnapshot.Genre_Needed,
-                    StartTime: childSnapshot.val().Gig_Start,
-                    EndTime: childSnapshot.val().Gig_End,
-                    InstrumentsNeeded: childSnapshot.val().Instruments_Needed,
-                    GigImage: childSnapshot.val().Gig_Image,
-                    GigDate: childSnapshot.val().Gig_Date
-                })
-            })
-            setGigData(gigDetails)
-        });
-
-    }, [])
-
+    const [modalVisible, setModalVisible] = useState(false);
 
 
     const renderItem = ({ item }) => {
@@ -144,7 +67,6 @@ const ClientGigSearch = () => {
         )
     }
 
-
     const renderSeparator = () => {
         return (
             <View style={{
@@ -154,12 +76,47 @@ const ClientGigSearch = () => {
         )
     }
 
+    const handleItemPress = (key) => {
+        setSelectedItem(key);
+        showGigModal();
+    };
+
+    const props = { postID: selectedItem };
+
+
+    useEffect(() => {
+
+        const dbRef = db_ref(db, 'users/client/' + uid + '/gigs');
+
+        onValue(dbRef, (snapshot) => {
+            let gigDetails = [];
+            snapshot.forEach((childSnapshot) => {
+                gigDetails.push({
+                    key: childSnapshot.key,
+                    Event_Type: childSnapshot.val().Event_Type,
+                    GigAddress: childSnapshot.val().Gig_Address,
+                    postID: childSnapshot.val().postID,
+                    GigName: childSnapshot.val().Gig_Name,
+                    uid: childSnapshot.val().uid,
+                    GenreNeeded: childSnapshot.Genre_Needed,
+                    StartTime: childSnapshot.val().Gig_Start,
+                    EndTime: childSnapshot.val().Gig_End,
+                    InstrumentsNeeded: childSnapshot.val().Instruments_Needed,
+                    GigImage: childSnapshot.val().Gig_Image,
+                    GigDate: childSnapshot.val().Gig_Date
+                })
+            })
+            setGigData(gigDetails)
+        });
+
+    }, [])
+
+
 
 
 
     return (
         <View style={styles.root}>
-
             <View style={styles.header}>
                 <Text style={styles.availGigs}>My Gigs</Text>
             </View>
@@ -169,69 +126,50 @@ const ClientGigSearch = () => {
                 renderItem={renderItem}
                 keyExtractor={(item) => item.key}
                 ItemSeparatorComponent={renderSeparator}
-                refreshControl={
-                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} progressBackgroundColor='white' />
-                } />
-
-            <View style={{ zIndex: 20 }}>
-                <TouchableWithoutFeedback onPressOut={moveBack}>
-                    <Animated.View
-                        style={{ bottom: animValue }}
-                        behavior='padding'>
-                        {showModal ? (
-                            <View style={styles.containerField}>
-                                <AddGigModal />
-                            </View>
-                        ) : (<></>
-                        )}
-                    </Animated.View>
-                </TouchableWithoutFeedback >
-
-                <Modal
-                    visible={modalVisible}
-                    animationType='slide'
-                    onRequestClose={hideGigModal}
-                >
-                    <Appbar.Header style={styles.appBarStyle}>
-                        <Appbar.BackAction onPress={hideGigModal} color='white' />
-                    </Appbar.Header>
-
-                    <ClientGigDetails {...props} />
-                </Modal>
-            </View >
-
-            <TouchableOpacity onPress={moveModal} style={styles.btnContainer}>
-                <Ionicons name="add-circle-sharp" size={70} color="#0EB080" />
-            </TouchableOpacity>
+            />
 
 
+            <Modal
+                visible={modalVisible}
+                animationType='slide'
+                onRequestClose={hideGigModal}
+            >
+                <Appbar.Header style={styles.appBarStyle}>
+                    <Appbar.BackAction onPress={hideGigModal} color='white' />
+                </Appbar.Header>
 
-
-        </View >
+                <ClientGigDetails {...props} />
+            </Modal>
+        </View>
     )
 }
 
-export default ClientGigSearch
+export default UserClientDetails
 
 const styles = StyleSheet.create({
     appBarStyle: {
         backgroundColor: '#151414',
-
     },
     root: {
-        backgroundColor: '#151414',
-        height: screenHeight,
-        width: screenWidth,
-        bottom: screenHeight / 4.4,
+        height: '75%',
         padding: 15,
-
+        borderRadius: 15
+    },
+    header: {
+        margin: 15
+    },
+    availGigs: {
+        fontSize: 17,
+        color: 'white',
+        fontWeight: 'bold'
     },
     container: {
-        flexDirection: 'row',
-        justifyContent: 'space-evenly',
+        // flexDirection: 'row',
+        // justifyContent: 'space-evenly',
+        justifyContent: 'center',
         backgroundColor: '#222222',
         borderRadius: 20,
-        padding: 10
+        padding: 25,
     },
     btnContainer: {
         padding: 5,
@@ -278,16 +216,16 @@ const styles = StyleSheet.create({
     },
     txtStyle: {
         color: 'white',
-        fontSize: 11
+        fontSize: 12
     },
     renderStyle: {
         marginHorizontal: 2,
     },
     titleStyle: {
-        color: 'white',
-        fontSize: 13,
+        color: '#0EB080',
+        fontSize: 20,
         fontWeight: 'bold',
-        width: '107%'
+        width: '107%',
     },
     titleContainer: {
         margin: 2
@@ -296,8 +234,8 @@ const styles = StyleSheet.create({
         width: '60%',
     },
     imgContainer: {
-        height: '100%',
-        width: '30%',
+        height: '70%',
+        width: '100%',
         borderRadius: 10,
         overflow: 'hidden',
         borderWidth: 1,
@@ -305,7 +243,6 @@ const styles = StyleSheet.create({
     },
     imgStyle: {
         width: '100%',
-        height: 70,
+        height: '100%',
     }
-
 })

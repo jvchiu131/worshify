@@ -6,8 +6,9 @@ import { Appbar } from 'react-native-paper';
 import { auth, db } from '../../firebase';
 import { child, onValue, ref } from 'firebase/database';
 import { FontAwesome5 } from '@expo/vector-icons';
-import ClientGigSearch from '../components/ClientGigSearch';
 import UserMusicianDetails from '../components/UserMusicianDetails';
+import UserClientDetails from '../components/UserClientDetails';
+
 
 const { height: screenHeight } = Dimensions.get('screen');
 const { width: screenWidth } = Dimensions.get('screen');
@@ -82,7 +83,7 @@ const ProfileScreen = () => {
                     </View>
                 ) : (
                     <View>
-                        <Text>Client</Text>
+                        <UserClientDetails />
                     </View>
                 )}
             </View>
