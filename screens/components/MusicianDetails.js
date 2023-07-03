@@ -63,7 +63,6 @@ const MusicianDetails = ({ userId }) => {
 
 
             setPortfolio(data);
-            console.log(portfolio)
         })
 
 

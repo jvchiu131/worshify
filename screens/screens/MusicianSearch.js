@@ -8,6 +8,8 @@ import Header from '../components/Header'
 import { EvilIcons } from '@expo/vector-icons';
 import MusicianProfile from '../components/MusicianProfile'
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native'
+
 
 
 const { height: screenHeight } = Dimensions.get('screen');
@@ -18,15 +20,24 @@ const MusicianSearch = () => {
     const [musician, setMusician] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
+    const navigation = useNavigation();
+
+
 
     const showModal = () => setModalVisible(true);
     const hideModal = () => setModalVisible(false);
 
+
     const handleItemPress = (key) => {
+        console.log('item presseedd', key)
         setSelectedItem(key);
-        showModal();
+        // showModal();
+        navigation.navigate('MusicianProfile', { userId: key });
     };
 
+    // const handleNavigation = () => {
+    //     navigation.navigate('MusicianProfile', { userId: selectedItem });
+    // }
 
     useEffect(() => {
         const musicianRef = ref(db, 'users/musician/')
@@ -45,8 +56,12 @@ const MusicianSearch = () => {
             })
 
             setMusician(musicianData);
+
+
         })
     }, [])
+
+
 
 
     const props = {
@@ -103,25 +118,9 @@ const MusicianSearch = () => {
                     data={musician}
                     renderItem={renderItem}
                     ItemSeparatorComponent={renderSeparator}
-                    keyExtractor={(item) => item.key} />
+                    keyExtractor={(item) => item.uid}
+                />
             </View>
-
-            <Modal
-                visible={modalVisible}
-                animationType='slide'
-                onRequestClose={hideModal}
-            >
-                <Appbar.Header style={styles.appBarHeader}>
-                    <Appbar.BackAction onPress={hideModal} color='white' />
-
-                    <TouchableOpacity>
-                        <Ionicons name="chatbox-ellipses-outline" size={24} color="white" style={{ padding: 20 }} />
-                    </TouchableOpacity>
-
-                </Appbar.Header>
-
-                <MusicianProfile {...props} />
-            </Modal>
 
 
         </View>

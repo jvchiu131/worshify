@@ -10,8 +10,8 @@ import MusicianSearch from './screens/screens/MusicianSearch';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import ProfileScreen from './screens/screens/ProfileScreen';
 import NotificationScreen from './screens/screens/NotificationScreen';
-
-
+import ChatScreen from './screens/screens/ChatScreen';
+import MusicianProfile from './screens/components/MusicianProfile';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -25,6 +25,8 @@ export default function App() {
         <Stack.Screen name='Profile' component={ProfileScreen} />
         <Stack.Screen name='Notification' component={NotificationScreen} />
         <Stack.Screen name='DashScreen' component={BottomTab} />
+        <Stack.Screen name='Chat' component={ChatScreen} />
+        <Stack.Screen name='MusicianProfile' component={MusicianProfile} />
       </Stack.Navigator>
       <StatusBar style='auto' />
     </NavigationContainer>
@@ -40,7 +42,6 @@ function BottomTab() {
       <Tab.Navigator screenOptions={{ headerShown: false }}>
         <Tab.Screen name='Home' component={DashNav} />
         <Tab.Screen name='Gigs' component={GigSearch} />
-        {/* <Tab.Screen name='Profile' component={ChatNav} /> */}
         <Tab.Screen name='Musicians' component={MusicianSearch} />
         <Tab.Screen options={{ headerShown: false }} name='Messages' component={ContactNav} />
       </Tab.Navigator>

@@ -21,7 +21,6 @@ const ProfileCard = ({ userId }) => {
 
     const [userDetails, setUserDetails] = useState([]);
 
-
     useEffect(() => {
 
         const dbRef = ref(db, 'users/logged_users/' + userId)
