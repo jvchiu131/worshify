@@ -7,8 +7,10 @@ import { Appbar } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { db } from '../../firebase';
-import { ref, set, push, update } from 'firebase/database';
+import { ref, set, push, update, get, onValue, child } from 'firebase/database';
 import { auth } from '../../firebase';
+import { useId } from 'react';
+
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('screen');
 
@@ -22,14 +24,35 @@ const MusicianProfile = () => {
     const { userId } = route.params
     const user = auth.currentUser
     const uid = user.uid
-
+    const [participants, setParticipants] = useState([]);
 
     const props = { userId };
 
 
+    const checkChat = () => {
+        const chatRefKey = push(ref(db, 'chats')).key;
+        const chatRef = ref(db, 'chatParticipants/' + chatRefKey)
+        onValue(chatRef, (snapshot) => {
+            setParticipants(snapshot.val())
+            console.log(snapshot.val())
+        })
+        console.log(participants)
 
-    const createChat = () => {
-        const chatRefKey = push(child(ref(db), 'chats')).key;
+        if (!participants || !(uid in participants) || !(userId in participants)) {
+            createChat(chatRefKey)
+            console.log('participants arent in a chat')
+
+        } else {
+            console.log('Chat already created')
+        }
+
+    }
+
+
+
+
+    const createChat = (chatRefKey) => {
+        // const chatRefKey = push(child(ref(db), 'chats')).key;
         const chatRef = ref(db, 'chatParticipants/' + chatRefKey)
         const userChat = ref(db, 'userChats/' + uid)
         const secondUserChat = ref(db, 'userChats/' + userId)
@@ -38,11 +61,11 @@ const MusicianProfile = () => {
             [userId]: true
         })
 
-        update(userChat, {
-            chatUID: chatRefKey
+        set(userChat, {
+            [uid]: chatRefKey
         })
-        update(secondUserChat, {
-            chatUID: chatRefKey
+        set(secondUserChat, {
+            [userId]: chatRefKey
         })
     }
 
@@ -53,7 +76,7 @@ const MusicianProfile = () => {
             <Appbar.Header style={styles.appBarHeader}>
                 <Appbar.BackAction onPress={navigation.goBack} color='white' />
                 <Ionicons name="chatbox-ellipses-outline" size={24} color="white" style={{ padding: 20 }}
-                    onPress={() => navigation.navigate('Chat', { ...props })} />
+                    onPress={() => { navigation.navigate('Chat', { ...props }); checkChat() }} />
             </Appbar.Header>
 
             <View style={styles.container}>

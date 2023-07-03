@@ -23,22 +23,24 @@ const RecommendedGigs = () => {
 
 
     useEffect(() => {
-        const userInstrumentRef = ref(db, 'users/musician/' + uid + '/metadata/instruments');
+        const userInstrumentRef = ref(db, 'users/musician/' + uid + '/instruments');
         onValue(userInstrumentRef, (snapshot) => {
             const instrumentsData = snapshot.val();
             setUserInstruments(instrumentsData);
 
         })
 
+
     }, [uid])
 
     useEffect(() => {
-        const userGenreRef = ref(db, 'users/musician/' + uid + '/metadata/genre');
+        const userGenreRef = ref(db, 'users/musician/' + uid + '/genre');
         onValue(userGenreRef, (snapshot) => {
             const genreData = snapshot.val();
             setUserGenre(genreData);
 
         })
+
     }, [uid])
 
     const renderSeparator = () => {
@@ -82,6 +84,8 @@ const RecommendedGigs = () => {
                 const instrumentsGig = gig.InstrumentsNeeded;
                 const genreGig = gig.GenreNeeded;
 
+                console.log(userGenre)
+                console.log(userInstrument)
                 setGigGenre(genreGig);
                 setGigInstrument(instrumentsGig);
 

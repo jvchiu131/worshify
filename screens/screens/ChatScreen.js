@@ -1,9 +1,13 @@
 import { StyleSheet, Text, View, Dimensions } from 'react-native'
-import React from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Appbar } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { useRoute } from '@react-navigation/native';
+import { GiftedChat } from 'react-native-gifted-chat';
+import { auth } from '../../firebase';
+import { onValue, ref, set } from 'firebase/database';
+
 
 const { height: screenHeight } = Dimensions.get('screen');
 const { width: screenWidth } = Dimensions.get('screen');
@@ -14,6 +18,7 @@ const ChatScreen = () => {
     const route = useRoute()
 
     const { userId } = route.params
+    const [messages, setMessages] = useState([]);
 
 
     return (
