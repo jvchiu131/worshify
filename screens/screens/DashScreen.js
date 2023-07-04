@@ -28,12 +28,10 @@ const DashScreen = () => {
         });
 
         if (accountType === 'Musician') {
-            console.log(user.email + " is musician")
-            console.log(accountType);
+
             setIsMusician(true);
         } else if (accountType === "Client") {
-            console.log(user.email + " is client")
-            console.log(accountType);
+
             setIsMusician(false);
         }
     }, [accountType]);

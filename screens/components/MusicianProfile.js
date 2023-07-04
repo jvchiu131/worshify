@@ -7,10 +7,9 @@ import { Appbar } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { db } from '../../firebase';
-import { ref, set, push, update, get, onValue, child } from 'firebase/database';
+import { ref, set, push, update, get, onValue, child, off } from 'firebase/database';
 import { auth } from '../../firebase';
-import { useId } from 'react';
-
+import { v4 as uuidv4 } from 'uuid';
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('screen');
 
@@ -25,49 +24,94 @@ const MusicianProfile = () => {
     const user = auth.currentUser
     const uid = user.uid
     const [participants, setParticipants] = useState([]);
+    const [chatRefKey, setChatRefKey] = useState(null);
+    const [chatExist, setChatExist] = useState(false);
 
-    const props = { userId };
+    const props = { userId, chatExist };
 
 
+    //checks if user already has a chat with this user
     const checkChat = () => {
-        const chatRefKey = push(ref(db, 'chats')).key;
-        const chatRef = ref(db, 'chatParticipants/' + chatRefKey)
+        const chatRef = ref(db, 'chatParticipants')
+        let participantData = [];
         onValue(chatRef, (snapshot) => {
-            setParticipants(snapshot.val())
-            console.log(snapshot.val())
+            participantData = [];
+            if (snapshot.exists()) {
+                snapshot.forEach((child) => {
+                    participantData.push({
+                        key: child.key,
+                        uid: child.val()[uid],
+                        userId: child.val()[userId]
+                    })
+
+                    setParticipants(participantData)
+                })
+
+            } else {
+                //  if parent node "chatParticipants" doesn't exist, will create an initial data
+                console.log('chat doesnt exist')
+            }
+
         })
-        console.log(participants)
 
-        if (!participants || !(uid in participants) || !(userId in participants)) {
-            createChat(chatRefKey)
-            console.log('participants arent in a chat')
 
+    }
+    useEffect(() => {
+        checkChat();
+    }, [])
+
+    useEffect(() => {
+        // Check if chat exists for participants
+        const chatExists = participants.some((item) => {
+            const participantUid = item.uid;
+            const participantUserId = item.userId;
+            const participantKey = item.key;
+            console.log(participantUid)
+            console.log(participantUserId)
+            console.log(participantKey)
+            setChatRefKey(participantKey)
+
+            return participantUid === true && participantUserId === true;
+        });
+        if (chatExists) {
+            setChatExist(true);
+            console.log('chat exists')
         } else {
-            console.log('Chat already created')
+            console.log('chat doesnt exist with this user')
+            setChatExist(false);
         }
-
-    }
-
+    }, [participants])
 
 
+    // //create chat to users with non existing chat
+    // const createChat = () => {
+    //     const chatRef = ref(db, 'chatParticipants');
+    //     const chatRefKey = push(chatRef).key;
+    //     const newChatRef = ref(db, 'chatParticipants/' + chatRefKey);
+    //     const userChat = ref(db, 'userChats/' + uid);
+    //     const secondUserChat = ref(db, 'userChats/' + userId);
 
-    const createChat = (chatRefKey) => {
-        // const chatRefKey = push(child(ref(db), 'chats')).key;
-        const chatRef = ref(db, 'chatParticipants/' + chatRefKey)
-        const userChat = ref(db, 'userChats/' + uid)
-        const secondUserChat = ref(db, 'userChats/' + userId)
-        set(chatRef, {
-            [uid]: true,
-            [userId]: true
-        })
+    //     if (!chatExist) {
+    //         const chatData = {
+    //             [uid]: true,
+    //             [userId]: true
+    //         }
+    //         const userChatData = {
+    //             [chatRefKey]: chatRefKey,
+    //         }
+    //         const secondUserChatData = {
+    //             [chatRefKey]: chatRefKey,
+    //         }
+    //         set(newChatRef, chatData);
+    //         update(userChat, userChatData);
+    //         update(secondUserChat, secondUserChatData);
 
-        set(userChat, {
-            [uid]: chatRefKey
-        })
-        set(secondUserChat, {
-            [userId]: chatRefKey
-        })
-    }
+    //         setChatRefKey(chatRefKey)
+    //         setChatExist(true);
+    //     }
+
+
+    // };
 
 
     return (
@@ -75,8 +119,10 @@ const MusicianProfile = () => {
 
             <Appbar.Header style={styles.appBarHeader}>
                 <Appbar.BackAction onPress={navigation.goBack} color='white' />
-                <Ionicons name="chatbox-ellipses-outline" size={24} color="white" style={{ padding: 20 }}
-                    onPress={() => { navigation.navigate('Chat', { ...props }); checkChat() }} />
+                <TouchableOpacity onPress={() => { navigation.navigate('Chat', { ...props }); }}>
+                    <Ionicons name="chatbox-ellipses-outline" size={24} color="white" style={{ padding: 20 }} />
+                </TouchableOpacity>
+
             </Appbar.Header>
 
             <View style={styles.container}>

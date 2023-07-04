@@ -118,7 +118,7 @@ const MusicianSearch = () => {
                     data={musician}
                     renderItem={renderItem}
                     ItemSeparatorComponent={renderSeparator}
-                    keyExtractor={(item) => item.uid}
+                    keyExtractor={(item) => item.key}
                 />
             </View>
 
