@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useRoute } from '@react-navigation/native';
 import { GiftedChat } from 'react-native-gifted-chat';
 import { auth } from '../../firebase';
-import { onValue, ref, set, get, push, update } from 'firebase/database';
+import { onValue, ref, set, push, update, off, orderByChild, query, child } from 'firebase/database';
 import { db } from '../../firebase';
 
 const { height: screenHeight } = Dimensions.get('screen');
@@ -18,56 +18,82 @@ const ChatScreen = () => {
     const route = useRoute()
     const user = auth.currentUser;
     const uid = user.uid;
-    const [chatRefKey, setChatRefKey] = useState();
-    const { userId, chatExist } = route.params;
+    const [newChatRefKey, setChatRefKey] = useState();
+    const { userId, chatExist, chatRefKey } = route.params;
     const [messages, setMessages] = useState([]);
     const [userDetail, setUserDetail] = useState([]);
     const [userPic, setUserPic] = useState([])
+
+
+
     useEffect(() => {
         const userRef = ref(db, 'users/logged_users/' + uid);
+        console.log(chatExist)
 
         onValue(userRef, (snapshot) => {
             setUserDetail(snapshot.val().first_name)
             setUserPic(snapshot.val().profile_pic)
 
+            console.log(snapshot.val().first_name)
+            console.log(snapshot.val().profile_pic)
         })
         console.log(userDetail)
+        console.log(chatRefKey)
+    }, [uid])
 
 
 
-    }, [])
+    useEffect(() => {
+
+        if (chatExist) {
+            const chatRoomRef = query(ref(db, 'chatroom/' + chatRefKey), orderByChild('createdAt'));
+            onValue(chatRoomRef, (snapshot) => {
+                const messageList = []
+                snapshot.forEach((child) => {
+                    const { createdAt, text, user } = child.val();
+                    messageList.push({
+                        _id: child.key,
+                        createdAt: new Date(createdAt),
+                        text,
+                        user,
+                    });
+                });
+                setMessages(messageList.reverse());
+            });
+            return () => {
+                off(chatRoomRef) // Unsubscribe from chatroomsRef updates
+            };
+        } else if (!chatExist) {
+            createChat()
+        }
 
 
-    const onSend = useCallback(async (messages = []) => {
+    }, [uid]);
+
+
+    const onSend = useCallback((messages = []) => {
         //checks if the user isn't in a conversation
         if (!chatExist) {
             createChat();
             return;
         }
-        const chatRoomRef = ref(db, 'chatroom/' + chatRefKey);
+        const chatRoomRef = push(ref(db, 'chatroom/' + chatRefKey));
+        const { _id, createdAt, text, user } = messages[0]
+        update(chatRoomRef, {
+            _id,
+            createdAt,
+            text,
+            user,
+        });
 
-        // Save the new messages to the chat room reference
-        const updatedMessages = GiftedChat.append(messages, messages);
-        const messageData = updatedMessages.map(message => ({
-            _id: message._id,
-            createdAt: message.createdAt.toISOString(),
-            text: message.text,
-            user: {
-                _id: message.uid,
-                name: message.userDetail,
-            },
-        }));
-        await update(chatRoomRef, { messages: messageData });
-
-        // Update the local state with the new messages
-        setMessages(previousMessages => GiftedChat.append(previousMessages, messages));
+        setMessages(previousMessage => GiftedChat.append(previousMessage, messages));
     }, [])
 
 
 
     //create chat to users with non existing chat
     const createChat = () => {
-        //stop chat creation if it already exists
+        // stop chat creation if it already exists
         if (chatExist) {
             return;
         }
@@ -77,6 +103,7 @@ const ChatScreen = () => {
         const newChatRef = ref(db, 'chatParticipants/' + chatRefKey);
         const userChat = ref(db, 'userChats/' + uid);
         const secondUserChat = ref(db, 'userChats/' + userId);
+        console.log(chatRefKey);
 
         const chatData = {
             [uid]: true,
@@ -97,22 +124,6 @@ const ChatScreen = () => {
     };
 
 
-    // useEffect(() => {
-
-    //     const loadData = async () => {
-    //         const myChatroom = await fetchMessages();
-    //     }
-    // })
-
-
-    // const fetchMessages = async () => {
-    //     const snapshot = await get(ref(db, 'chatroom/' + chatRefKey))
-    //     return snapshot;
-    // }
-
-
-
-
 
     return (
         <View style={styles.root}>
@@ -131,7 +142,7 @@ const ChatScreen = () => {
                         user={{
                             _id: uid,
                             name: userDetail,
-                            avatar: userPic
+
                         }}
                     />
                 </View>

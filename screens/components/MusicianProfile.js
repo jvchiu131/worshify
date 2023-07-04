@@ -27,7 +27,7 @@ const MusicianProfile = () => {
     const [chatRefKey, setChatRefKey] = useState(null);
     const [chatExist, setChatExist] = useState(false);
 
-    const props = { userId, chatExist };
+    const props = { userId, chatExist, chatRefKey };
 
 
     //checks if user already has a chat with this user
@@ -66,9 +66,7 @@ const MusicianProfile = () => {
             const participantUid = item.uid;
             const participantUserId = item.userId;
             const participantKey = item.key;
-            console.log(participantUid)
-            console.log(participantUserId)
-            console.log(participantKey)
+
             setChatRefKey(participantKey)
 
             return participantUid === true && participantUserId === true;
@@ -76,6 +74,7 @@ const MusicianProfile = () => {
         if (chatExists) {
             setChatExist(true);
             console.log('chat exists')
+            // console.log(chatRefKey)
         } else {
             console.log('chat doesnt exist with this user')
             setChatExist(false);
@@ -83,35 +82,7 @@ const MusicianProfile = () => {
     }, [participants])
 
 
-    // //create chat to users with non existing chat
-    // const createChat = () => {
-    //     const chatRef = ref(db, 'chatParticipants');
-    //     const chatRefKey = push(chatRef).key;
-    //     const newChatRef = ref(db, 'chatParticipants/' + chatRefKey);
-    //     const userChat = ref(db, 'userChats/' + uid);
-    //     const secondUserChat = ref(db, 'userChats/' + userId);
 
-    //     if (!chatExist) {
-    //         const chatData = {
-    //             [uid]: true,
-    //             [userId]: true
-    //         }
-    //         const userChatData = {
-    //             [chatRefKey]: chatRefKey,
-    //         }
-    //         const secondUserChatData = {
-    //             [chatRefKey]: chatRefKey,
-    //         }
-    //         set(newChatRef, chatData);
-    //         update(userChat, userChatData);
-    //         update(secondUserChat, secondUserChatData);
-
-    //         setChatRefKey(chatRefKey)
-    //         setChatExist(true);
-    //     }
-
-
-    // };
 
 
     return (
