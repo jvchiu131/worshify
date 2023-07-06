@@ -35,10 +35,8 @@ const MusicianSearch = () => {
         navigation.navigate('MusicianProfile', { userId: key });
     };
 
-    // const handleNavigation = () => {
-    //     navigation.navigate('MusicianProfile', { userId: selectedItem });
-    // }
 
+    //reference to musician 
     useEffect(() => {
         const musicianRef = ref(db, 'users/musician/')
         onValue(musicianRef, (snapshot) => {
@@ -60,8 +58,6 @@ const MusicianSearch = () => {
 
         })
     }, [])
-
-
 
 
     const props = {

@@ -14,29 +14,27 @@ const { width: screenWidth } = Dimensions.get('screen');
 
 const ChatScreen = () => {
 
-    const navigation = useNavigation()
-    const route = useRoute()
+    const navigation = useNavigation();
+    const route = useRoute();
     const user = auth.currentUser;
     const uid = user.uid;
-    const { userId, chatExist, chatRefKey } = route.params;
+    const { userId, chatExist, chatRefKey, chatRef } = route.params;
     const [messages, setMessages] = useState([]);
     const [userDetail, setUserDetail] = useState([]);
-    const [userPic, setUserPic] = useState([])
+    const [userPic, setUserPic] = useState([]);
+
 
 
 
     useEffect(() => {
         const userRef = ref(db, 'users/logged_users/' + uid);
         console.log(chatExist)
-
         onValue(userRef, (snapshot) => {
             setUserDetail(snapshot.val().first_name)
             setUserPic(snapshot.val().profile_pic)
 
             console.log(snapshot.val().first_name)
-
         })
-
     }, [uid])
 
 

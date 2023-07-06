@@ -52,6 +52,9 @@ const MusicianProfile = () => {
         checkChat();
     }, [])
 
+
+
+
     //checks if user already has a chat with this user
     const checkChat = () => {
         const chatRef = ref(db, 'chatParticipants')
@@ -79,6 +82,7 @@ const MusicianProfile = () => {
     }
 
 
+
     useEffect(() => {
         let foundParticipantKey = null
 
@@ -88,7 +92,6 @@ const MusicianProfile = () => {
             const participantUserId = item.userId;
             const participantKey = item.key;
             foundParticipantKey = participantKey;
-
             return participantUid === true && participantUserId === true;
         });
         if (chatExists) {

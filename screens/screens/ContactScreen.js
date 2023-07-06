@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Dimensions, TouchableOpacity, FlatList } from 'react-native'
+import { StyleSheet, Text, View, Dimensions, TouchableOpacity, FlatList, ImageBackground } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import Header from '../components/Header';
@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { db } from '../../firebase';
 import { onValue, ref, child, push } from 'firebase/database';
 import { auth } from '../../firebase';
+
 
 
 
@@ -20,7 +21,13 @@ const ContactScreen = () => {
     const [contacts, setContacts] = useState([]);
     const navigation = useNavigation();
     const [userId, setUserId] = useState([]);
+    const [userDetails, setUserDetails] = useState([]);
 
+    const handleItemPress = (key) => {
+        console.log('item presseedd', key)
+        // showModal();
+        navigation.navigate('Chat', { chatRef: key });
+    };
 
     //extracting user chat rooms
     useEffect(() => {
@@ -32,10 +39,8 @@ const ContactScreen = () => {
                     key: child.key,
                     element: child.val()
                 })
-
             })
             setContacts(userChatData);
-            console.log(contacts);
         })
     }, [])
 
@@ -45,11 +50,14 @@ const ContactScreen = () => {
             const chatParticipantsRef = ref(db, 'chatParticipants/' + item.element);
             onValue(chatParticipantsRef, (snapshot) => {
                 let userChat = []
-                userChat.push(snapshot.val())
+                snapshot.forEach((child) => {
+                    if (child.key !== uid) {
+                        userChat.push(child.key)
+                    }
+                })
                 setUserId(userChat);
                 console.log(userId)
             })
-
         })
     }, [])
 
@@ -57,23 +65,53 @@ const ContactScreen = () => {
 
 
 
+
+    useEffect(() => {
+        const userRef = ref(db, 'users/logged_users/' + userId);
+        onValue(userRef, (snapshot) => {
+            let userData = []
+            snapshot.forEach((child) => {
+                userData.push({
+                    key: child.key,
+                    firstName: child.val().first_name,
+                    lastName: child.val().lname,
+                    profilePic: child.val().profile_pic
+                })
+            })
+            setUserDetails(userData);
+            // console.log(userData);
+        })
+    }, [])
+
+
     const renderItem = ({ item }) => {
+
+
         return (
-            <View style={styles.itemContainer}>
-                <Text>{item.element}</Text>
-            </View>
+            <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemPress(item.element)}>
+                <View style={styles.imgContainer}>
+                    <ImageBackground source={{ uri: item.profilePic }} style={styles.imgStyle}>
+
+                    </ImageBackground>
+                </View>
+                <Text style={{ color: 'white' }}>{item.element} {item.lastName}</Text>
+            </TouchableOpacity>
         )
     }
+
+
 
     const renderSeparator = () => {
         return (
             <View style={{
                 marginTop: 20,
-                height: 0.5
+                height: 20
             }} />
         )
 
     }
+
+
 
     return (
 
@@ -100,6 +138,10 @@ const ContactScreen = () => {
 export default ContactScreen
 
 const styles = StyleSheet.create({
+    imgStyle: {
+        height: 20,
+        width: 20
+    },
     txtContainer: {
         borderWidth: 2,
         borderColor: 'red'
@@ -109,9 +151,11 @@ const styles = StyleSheet.create({
         borderColor: 'red'
     },
     itemContainer: {
-        borderW: 2,
-        borderColor: 'red',
-        flexDirection: 'row'
+        backgroundColor: '#1E1E1E',
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 10,
+        borderRadius: 20
     },
     root: {
         justifyContent: 'flex-start',

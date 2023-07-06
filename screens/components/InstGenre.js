@@ -42,9 +42,11 @@ const InstGenre = ({ fname, lname, email, bday, age, address, password, img }) =
 
     const handleSignup = () => {
         createUserWithEmailAndPassword(auth, email, password)
+
             .then(userCredentials => {
                 const user = userCredentials.user;
                 // console.log(user.email);
+
 
 
                 //writes data on the database
