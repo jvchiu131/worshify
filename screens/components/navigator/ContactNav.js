@@ -11,9 +11,8 @@ const ContactNav = () => {
     return (
         <>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
-                <Stack.Screen name='Messages' component={ContactScreen} />
+                <Stack.Screen name='Contact' component={ContactScreen} />
                 <Stack.Screen name='Chat' component={ChatScreen} />
-
             </Stack.Navigator>
         </>
     )

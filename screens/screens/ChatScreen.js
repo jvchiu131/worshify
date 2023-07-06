@@ -18,7 +18,6 @@ const ChatScreen = () => {
     const route = useRoute()
     const user = auth.currentUser;
     const uid = user.uid;
-    const [newChatRefKey, setChatRefKey] = useState();
     const { userId, chatExist, chatRefKey } = route.params;
     const [messages, setMessages] = useState([]);
     const [userDetail, setUserDetail] = useState([]);
@@ -35,17 +34,19 @@ const ChatScreen = () => {
             setUserPic(snapshot.val().profile_pic)
 
             console.log(snapshot.val().first_name)
-            console.log(snapshot.val().profile_pic)
-        })
-        console.log(userDetail)
-        console.log(chatRefKey)
-    }, [uid])
 
+        })
+
+    }, [uid])
 
 
     useEffect(() => {
 
-        if (chatExist) {
+        if (!chatExist) {
+            // createChat()
+            console.log('chat exist')
+
+        } else if (chatExist) {
             const chatRoomRef = query(ref(db, 'chatroom/' + chatRefKey), orderByChild('createdAt'));
             onValue(chatRoomRef, (snapshot) => {
                 const messageList = []
@@ -63,20 +64,14 @@ const ChatScreen = () => {
             return () => {
                 off(chatRoomRef) // Unsubscribe from chatroomsRef updates
             };
-        } else if (!chatExist) {
-            createChat()
         }
 
 
-    }, [uid]);
+    }, []);
 
 
     const onSend = useCallback((messages = []) => {
-        //checks if the user isn't in a conversation
-        if (!chatExist) {
-            createChat();
-            return;
-        }
+        setMessages(previousMessage => GiftedChat.append(previousMessage, messages));
         const chatRoomRef = push(ref(db, 'chatroom/' + chatRefKey));
         const { _id, createdAt, text, user } = messages[0]
         update(chatRoomRef, {
@@ -85,8 +80,6 @@ const ChatScreen = () => {
             text,
             user,
         });
-
-        setMessages(previousMessage => GiftedChat.append(previousMessage, messages));
     }, [])
 
 
@@ -96,30 +89,31 @@ const ChatScreen = () => {
         // stop chat creation if it already exists
         if (chatExist) {
             return;
-        }
+        } else {
 
-        const chatRef = ref(db, 'chatParticipants');
-        const chatRefKey = push(chatRef).key;
-        const newChatRef = ref(db, 'chatParticipants/' + chatRefKey);
-        const userChat = ref(db, 'userChats/' + uid);
-        const secondUserChat = ref(db, 'userChats/' + userId);
-        console.log(chatRefKey);
+            const chatRef = ref(db, 'chatParticipants');
+            const newChatRefKey = push(chatRef).key;
+            const newChatRef = ref(db, 'chatParticipants/' + newChatRefKey);
+            const userChat = ref(db, 'userChats/' + uid);
+            const secondUserChat = ref(db, 'userChats/' + userId);
 
-        const chatData = {
-            [uid]: true,
-            [userId]: true
-        }
-        const userChatData = {
-            [chatRefKey]: chatRefKey,
-        }
-        const secondUserChatData = {
-            [chatRefKey]: chatRefKey,
-        }
-        set(newChatRef, chatData);
-        update(userChat, userChatData);
-        update(secondUserChat, secondUserChatData);
+            const chatData = {
+                [uid]: true,
+                [userId]: true
+            }
+            const userChatData = {
+                [newChatRefKey]: newChatRefKey,
+            }
+            const secondUserChatData = {
+                [newChatRefKey]: newChatRefKey,
+            }
+            set(newChatRef, chatData);
+            update(userChat, userChatData);
+            update(secondUserChat, secondUserChatData);
 
-        setChatRefKey(chatRefKey)
+            console.log(chatRefKey);
+
+        }
 
     };
 

@@ -1,8 +1,12 @@
-import { StyleSheet, Text, View, Dimensions, TouchableOpacity } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View, Dimensions, TouchableOpacity, FlatList } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import Header from '../components/Header';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { db } from '../../firebase';
+import { onValue, ref, child, push } from 'firebase/database';
+import { auth } from '../../firebase';
+
 
 
 const { height: ScreenHeight } = Dimensions.get('screen');
@@ -11,41 +15,81 @@ const { width: ScreenWidth } = Dimensions.get('screen');
 
 const ContactScreen = () => {
 
+    const user = auth.currentUser;
+    const uid = user.uid;
+    const [contacts, setContacts] = useState([]);
     const navigation = useNavigation();
+    const [userId, setUserId] = useState([]);
+
+
+    //extracting user chat rooms
+    useEffect(() => {
+        const userChatRef = ref(db, 'userChats/' + uid);
+        onValue(userChatRef, (snapshot) => {
+            let userChatData = []
+            snapshot.forEach((child) => {
+                userChatData.push({
+                    key: child.key,
+                    element: child.val()
+                })
+
+            })
+            setContacts(userChatData);
+            console.log(contacts);
+        })
+    }, [])
+
+
+    useEffect(() => {
+        contacts.map((item) => {
+            const chatParticipantsRef = ref(db, 'chatParticipants/' + item.element);
+            onValue(chatParticipantsRef, (snapshot) => {
+                let userChat = []
+                userChat.push(snapshot.val())
+                setUserId(userChat);
+                console.log(userId)
+            })
+
+        })
+    }, [])
 
 
 
+
+
+    const renderItem = ({ item }) => {
+        return (
+            <View style={styles.itemContainer}>
+                <Text>{item.element}</Text>
+            </View>
+        )
+    }
+
+    const renderSeparator = () => {
+        return (
+            <View style={{
+                marginTop: 20,
+                height: 0.5
+            }} />
+        )
+
+    }
 
     return (
 
         <View style={styles.root}>
             <Header />
             <View style={styles.container}>
-                <TouchableOpacity style={styles.listContainer}
-                    onPress={() => { navigation.navigate('Chat') }}>
-                    <View style={styles.elementContainer}>
-                        <View style={styles.imageStyle}>
+                <View>
 
-                        </View>
-                        <View style={styles.textContainer}>
-                            <Text style={styles.textName}>Shaira Cango</Text>
-                            <Text style={styles.textStyle}>Hi! I'm good.</Text>
-                        </View>
-                    </View>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.listContainer}
-                    onPress={() => { navigation.navigate('Chat') }}>
-                    <View style={styles.elementContainer}>
-                        <View style={styles.imageStyle}>
-
-                        </View>
-                        <View style={styles.textContainer}>
-                            <Text style={styles.textName}>JV Chiu</Text>
-                            <Text style={styles.textStyle}>Din ka kas?.</Text>
-                        </View>
-                    </View>
-                </TouchableOpacity>
+                </View>
+                <View>
+                    <FlatList
+                        data={contacts}
+                        renderItem={renderItem}
+                        ItemSeparatorComponent={renderSeparator}
+                        keyExtractor={(item) => item.key} />
+                </View>
             </View>
         </View>
 
@@ -56,7 +100,17 @@ const ContactScreen = () => {
 export default ContactScreen
 
 const styles = StyleSheet.create({
-    elementContainer: {
+    txtContainer: {
+        borderWidth: 2,
+        borderColor: 'red'
+    },
+    imgContainer: {
+        borderWidth: 2,
+        borderColor: 'red'
+    },
+    itemContainer: {
+        borderW: 2,
+        borderColor: 'red',
         flexDirection: 'row'
     },
     root: {
@@ -65,6 +119,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#151414',
         height: ScreenHeight,
         width: ScreenWidth,
+        borderWidth: 2,
+        borderColor: 'red'
     },
     container: {
         width: ScreenWidth,
@@ -72,29 +128,6 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: 'red'
     },
-    listContainer: {
-        paddingHorizontal: '5%',
-        marginVertical: '3%',
-    },
-    imageStyle: {
-        height: 50,
-        width: 50,
-        borderRadius: 50,
-        backgroundColor: 'white'
-    },
-    textContainer: {
-        color: 'white',
-        justifyContent: 'center',
-        marginLeft: '5%',
-    },
-    textStyle: {
-        color: 'white',
-    },
-    textName: {
-        fontWeight: 'bold',
-        color: 'white',
-        marginVertical: '5%'
-    }
 
 
 })

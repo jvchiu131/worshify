@@ -43,7 +43,7 @@ function BottomTab() {
         <Tab.Screen name='Home' component={DashNav} />
         <Tab.Screen name='Gigs' component={GigSearch} />
         <Tab.Screen name='Musicians' component={MusicianSearch} />
-        <Tab.Screen options={{ headerShown: false }} name='Messages' component={ContactNav} />
+        <Tab.Screen options={{ headerShown: false }} name='Contacts' component={ContactNav} />
       </Tab.Navigator>
       <StatusBar style='light' />
     </>
