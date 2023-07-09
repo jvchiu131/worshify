@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Dimensions, TouchableOpacity, Animated } from 'react-native'
+import { StyleSheet, Text, View, Dimensions, TouchableOpacity, Animated, Modal } from 'react-native'
 import React, { useState } from 'react'
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -6,8 +6,8 @@ import { Entypo } from '@expo/vector-icons';
 import { auth, db } from '../../firebase';
 import { ref as ref_db, set, push, child, onValue, DataSnapshot } from 'firebase/database';
 import { useEffect } from 'react';
-
-
+import GigOverview from './GigOverview';
+import { Appbar } from 'react-native-paper';
 
 
 const { height: screenHeight } = Dimensions.get('screen');
@@ -23,10 +23,17 @@ const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType
     const [isClicked, SetIsClicked] = useState(false);
     const [fname, setFname] = useState();
     const [lname, setLname] = useState();
+    const [modalVisible, setModalVisible] = useState(false);
     const user = auth.currentUser;
     const uid = user.uid;
 
+    const handleModalBtn = () => {
+        setModalVisible(true);
+    }
 
+    const handleModalClose = () => {
+        setModalVisible(false);
+    }
 
     //getting the First and Last name
     useEffect(() => {
@@ -40,7 +47,7 @@ const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType
             setLname(DataSnapshot.val())
         });
         // console.log(img);
-    })
+    }, [])
 
 
 
@@ -101,6 +108,8 @@ const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType
 
 
     }
+
+    const props = { InstrumentsNeeded: selectedInstruments, GenreNeeded: selectedGenres, uid: uid, gigName: gigName, gigAddress: gigAddress, gigDate: gigDate, StartTime: StartTime, EndTime: EndTime, eventType: eventType, img: img }
 
 
 
@@ -289,12 +298,22 @@ const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType
                                 </View>
 
                                 <View style={styles.BtnRow}>
-                                    <TouchableOpacity onPress={handleCreateGig}>
+                                    {/* state changed */}
+                                    <TouchableOpacity onPress={handleModalBtn}>
                                         <View style={styles.button}>
-                                            <Text style={styles.txtStyle}>Create Gig</Text>
+                                            <Text style={styles.txtStyle}>View Overview</Text>
                                         </View>
                                     </TouchableOpacity>
                                 </View>
+
+                                <Modal animationType='slide'
+                                    visible={modalVisible}
+                                    onRequestClose={handleModalClose}>
+                                    <Appbar.Header style={styles.appbarStyle}>
+                                        <Appbar.BackAction onPress={handleModalClose} color='white' />
+                                    </Appbar.Header>
+                                    <GigOverview {...props} />
+                                </Modal>
 
                             </View>
                         </>
@@ -467,6 +486,9 @@ const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType
 export default GenreInst
 
 const styles = StyleSheet.create({
+    appbarStyle: {
+        backgroundColor: '#0EB080',
+    },
     container: {
         alignItems: 'center',
         width: '100%',

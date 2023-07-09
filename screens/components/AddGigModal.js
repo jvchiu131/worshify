@@ -131,7 +131,7 @@ const AddGigModal = () => {
 
     const onChangeStartTime = ({ type }, selectedTime) => {
         if (type == 'set') {
-            const currentTime = selectedTime;
+            const currentTime = new Date(selectedTime);
             setStartTime(currentTime);
 
             if (Platform.OS === 'android') {
@@ -150,7 +150,7 @@ const AddGigModal = () => {
 
     const onChangeEndTime = ({ type }, selectedTime) => {
         if (type == 'set') {
-            const currentTime = selectedTime;
+            const currentTime = new Date(selectedTime);
             setEndTime(currentTime);
 
             if (Platform.OS === 'android') {
@@ -165,8 +165,8 @@ const AddGigModal = () => {
 
     const formatTime = (rawTime) => {
         let time = new Date(rawTime);
-        let hours = time.getHours.toString();
-        let minutes = time.getMinutes.toString();
+        let hours = time.getHours();
+        let minutes = time.getMinutes();
 
         return `${hours}:${minutes}`;
     }
