@@ -22,12 +22,39 @@ const UserClientDetails = () => {
 
     const user = auth.currentUser
     const uid = user.uid
-
     const [gigData, setGigData] = useState([]);
     const [selectedItem, setSelectedItem] = useState([]);
     const showGigModal = () => setModalVisible(true);
     const hideGigModal = () => setModalVisible(false);
     const [modalVisible, setModalVisible] = useState(false);
+
+
+    useEffect(() => {
+
+        const dbRef = db_ref(db, 'archiveGigs/' + uid);
+
+        onValue(dbRef, (snapshot) => {
+            let gigDetails = [];
+            snapshot.forEach((childSnapshot) => {
+                gigDetails.push({
+                    key: childSnapshot.key,
+                    Event_Type: childSnapshot.val().Event_Type,
+                    GigAddress: childSnapshot.val().GigAddress,
+                    postID: childSnapshot.val().postID,
+                    GigName: childSnapshot.val().GigName,
+                    uid: childSnapshot.val().uid,
+                    GigImage: childSnapshot.val().GigImage,
+                    GigDate: childSnapshot.val().GigDate,
+                    StartTime: childSnapshot.val().Gig_Start,
+                    EndTime: childSnapshot.val().Gig_End,
+                })
+            })
+            setGigData(gigDetails)
+        });
+
+        console.log(gigData)
+
+    }, [])
 
 
     const renderItem = ({ item }) => {
@@ -84,41 +111,12 @@ const UserClientDetails = () => {
     const props = { postID: selectedItem };
 
 
-    useEffect(() => {
-
-        const dbRef = db_ref(db, 'users/client/' + uid + '/gigs');
-
-        onValue(dbRef, (snapshot) => {
-            let gigDetails = [];
-            snapshot.forEach((childSnapshot) => {
-                gigDetails.push({
-                    key: childSnapshot.key,
-                    Event_Type: childSnapshot.val().Event_Type,
-                    GigAddress: childSnapshot.val().Gig_Address,
-                    postID: childSnapshot.val().postID,
-                    GigName: childSnapshot.val().Gig_Name,
-                    uid: childSnapshot.val().uid,
-                    GenreNeeded: childSnapshot.Genre_Needed,
-                    StartTime: childSnapshot.val().Gig_Start,
-                    EndTime: childSnapshot.val().Gig_End,
-                    InstrumentsNeeded: childSnapshot.val().Instruments_Needed,
-                    GigImage: childSnapshot.val().Gig_Image,
-                    GigDate: childSnapshot.val().Gig_Date
-                })
-            })
-            setGigData(gigDetails)
-        });
-
-    }, [])
-
-
-
 
 
     return (
         <View style={styles.root}>
             <View style={styles.header}>
-                <Text style={styles.availGigs}>My Gigs</Text>
+                <Text style={styles.availGigs}>Archived Gigs</Text>
             </View>
 
             <FlatList
@@ -164,9 +162,9 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     container: {
-        // flexDirection: 'row',
+        flexDirection: 'row',
         // justifyContent: 'space-evenly',
-        justifyContent: 'center',
+        alignItems: 'center',
         backgroundColor: '#222222',
         borderRadius: 20,
         padding: 25,
@@ -223,7 +221,7 @@ const styles = StyleSheet.create({
     },
     titleStyle: {
         color: '#0EB080',
-        fontSize: 20,
+        fontSize: 13,
         fontWeight: 'bold',
         width: '107%',
     },
@@ -234,12 +232,13 @@ const styles = StyleSheet.create({
         width: '60%',
     },
     imgContainer: {
-        height: '70%',
-        width: '100%',
+        height: '80%',
+        width: '35%',
         borderRadius: 10,
         overflow: 'hidden',
         borderWidth: 1,
-        borderColor: '#0EB080'
+        borderColor: '#0EB080',
+        marginRight: 5
     },
     imgStyle: {
         width: '100%',

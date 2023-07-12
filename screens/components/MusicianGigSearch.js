@@ -124,7 +124,10 @@ const MusicianGigSearch = () => {
                 animationType='slide'
                 onRequestClose={hideModal}
             >
-                <Appbar.BackAction onPress={hideModal} style={styles.appBarStyle} />
+                <Appbar.Header style={styles.appBarStyle}>
+                    <Appbar.BackAction onPress={hideModal} color='white' />
+                </Appbar.Header>
+
                 <GigDetails {...props} />
             </Modal>
 
@@ -143,7 +146,7 @@ export default MusicianGigSearch
 
 const styles = StyleSheet.create({
     appBarStyle: {
-        backgroundColor: 'white'
+        backgroundColor: '#151414'
     },
     dateContainer: {
         flexDirection: 'row',

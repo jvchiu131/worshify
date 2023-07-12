@@ -14,7 +14,7 @@ import { Appbar } from 'react-native-paper';
 import { MaterialIcons } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
 import ClientGigDetails from './ClientGigDetails';
-
+import { useNavigation } from '@react-navigation/native';
 
 //Screen dimensions
 const { height: screenHeight } = Dimensions.get('screen');
@@ -33,7 +33,7 @@ const ClientGigSearch = () => {
     const [modalVisible, setModalVisible] = useState(false);
     const user = auth.currentUser;
     const uid = user.uid;
-
+    const navigation = useNavigation()
 
 
     const showGigModal = () => setModalVisible(true);
@@ -155,6 +155,9 @@ const ClientGigSearch = () => {
     }
 
 
+    const handleEditBtn = () => {
+        navigation.navigate('EditGig', { ...props })
+    }
 
 
     return (
@@ -194,6 +197,10 @@ const ClientGigSearch = () => {
                 >
                     <Appbar.Header style={styles.appBarStyle}>
                         <Appbar.BackAction onPress={hideGigModal} color='white' />
+
+                        <TouchableOpacity onPress={handleEditBtn}>
+                            <FontAwesome5 name="edit" size={24} color="white" style={{ padding: 15 }} />
+                        </TouchableOpacity>
                     </Appbar.Header>
 
                     <ClientGigDetails {...props} />
@@ -216,7 +223,7 @@ export default ClientGigSearch
 const styles = StyleSheet.create({
     appBarStyle: {
         backgroundColor: '#151414',
-
+        justifyContent: 'space-between'
     },
     root: {
         backgroundColor: '#151414',

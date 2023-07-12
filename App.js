@@ -12,6 +12,8 @@ import ProfileScreen from './screens/screens/ProfileScreen';
 import NotificationScreen from './screens/screens/NotificationScreen';
 import ChatScreen from './screens/screens/ChatScreen';
 import MusicianProfile from './screens/components/MusicianProfile';
+import EditGig from './screens/screens/EditGig';
+
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -27,6 +29,7 @@ export default function App() {
         <Stack.Screen name='DashScreen' component={BottomTab} />
         <Stack.Screen name='Chat' component={ChatScreen} />
         <Stack.Screen name='MusicianProfile' component={MusicianProfile} />
+        <Stack.Screen name='EditGig' component={EditGig} />
       </Stack.Navigator>
       <StatusBar style='auto' />
     </NavigationContainer>
