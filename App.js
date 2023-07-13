@@ -13,7 +13,7 @@ import NotificationScreen from './screens/screens/NotificationScreen';
 import ChatScreen from './screens/screens/ChatScreen';
 import MusicianProfile from './screens/components/MusicianProfile';
 import EditGig from './screens/screens/EditGig';
-
+import AppliedProfile from './screens/components/AppliedProfile';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -30,6 +30,7 @@ export default function App() {
         <Stack.Screen name='Chat' component={ChatScreen} />
         <Stack.Screen name='MusicianProfile' component={MusicianProfile} />
         <Stack.Screen name='EditGig' component={EditGig} />
+        <Stack.Screen name='Applied' component={AppliedProfile} />
       </Stack.Navigator>
       <StatusBar style='auto' />
     </NavigationContainer>

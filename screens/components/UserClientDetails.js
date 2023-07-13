@@ -13,7 +13,7 @@ import { Appbar } from 'react-native-paper';
 import { MaterialIcons } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
 import ClientGigDetails from './ClientGigDetails';
-
+import ArchiveGig from './ArchiveGig';
 //Screen dimensions
 const { height: screenHeight } = Dimensions.get('screen');
 const { width: screenWidth } = Dimensions.get('screen');
@@ -136,7 +136,7 @@ const UserClientDetails = () => {
                     <Appbar.BackAction onPress={hideGigModal} color='white' />
                 </Appbar.Header>
 
-                <ClientGigDetails {...props} />
+                <ArchiveGig {...props} />
             </Modal>
         </View>
     )

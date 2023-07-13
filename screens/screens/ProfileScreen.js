@@ -75,7 +75,6 @@ const ProfileScreen = () => {
                 <UserProfileCard />
             </View>
 
-
             <View style={styles.profileDetailStyle}>
                 {isMusician ? (
                     <View>

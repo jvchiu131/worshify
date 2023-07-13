@@ -27,6 +27,17 @@ const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress,
         { name: InstrumentsNeeded[1], quantity: quantityOne },
         { name: InstrumentsNeeded[2], quantity: quantityTwo },
     ])
+    const [gigCreated, setGigCreated] = useState(false);
+
+
+    const formatTime = (rawTime) => {
+        let time = new Date(rawTime);
+        let hours = time.getHours();
+        let minutes = time.getMinutes();
+
+        return `${hours}:${minutes}`;
+    }
+
 
     //handles gig creation
     //add gig details at the same time in PostGigs and UserGigs
@@ -50,9 +61,9 @@ const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress,
             uid: uid,
             Gig_Name: gigName,
             Gig_Address: gigAddress,
-            Gig_Date: gigDate,
-            Gig_Start: StartTime,
-            Gig_End: EndTime,
+            Gig_Date: gigDate.toDateString(),
+            Gig_Start: formatTime(StartTime),
+            Gig_End: formatTime(EndTime),
             Event_Type: eventType,
             Instruments_Needed: instruments,
             Genre_Needed: GenreNeeded,
@@ -67,9 +78,9 @@ const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress,
             uid: uid,
             Gig_Name: gigName,
             Gig_Address: gigAddress,
-            Gig_Date: gigDate,
-            Gig_Start: StartTime,
-            Gig_End: EndTime,
+            Gig_Date: gigDate.toDateString(),
+            Gig_Start: formatTime(StartTime),
+            Gig_End: formatTime(EndTime),
             Event_Type: eventType,
             Instruments_Needed: instruments,
             Genre_Needed: GenreNeeded,
@@ -79,8 +90,14 @@ const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress,
             gender: gender
         });
 
+        setGigCreated(true);
 
     }
+
+    useEffect(() => {
+        console.log(gigDate.toDateString())
+        console.log(formatTime(StartTime))
+    }, [])
 
     const QuantityZeroBtn = () => {
         return (
@@ -147,14 +164,15 @@ const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress,
                             <TextInput
                                 value={gigName}
                                 placeholder={gigName}
-                                style={styles.inputStyle} />
+                                style={styles.inputStyle}
+                                editable={false} />
                         </View>
 
                         <View style={styles.inputContainer}>
                             <Text>Gig Date:</Text>
                             <TextInput
                                 value={gigDate}
-                                placeholder='Enter Gig date'
+                                placeholder={gigDate.toDateString()}
                                 style={styles.inputStyle}
                                 editable={false} />
                         </View>
@@ -165,7 +183,7 @@ const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress,
                                 <Text>Time start:</Text>
                                 <TextInput
                                     value={StartTime}
-                                    placeholder='Enter Gig date'
+                                    placeholder={formatTime(StartTime)}
                                     style={styles.inputStyle}
                                     editable={false} />
                             </View>
@@ -175,7 +193,7 @@ const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress,
                                 <Text>Time end:</Text>
                                 <TextInput
                                     value={EndTime}
-                                    placeholder='Enter Gig date'
+                                    placeholder={formatTime(EndTime)}
                                     style={styles.inputStyle}
                                     editable={false} />
                             </View>
@@ -255,7 +273,9 @@ const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress,
 
                             <TouchableOpacity style={styles.btnStyle} onPress={handleCreateGig}>
                                 <View >
-                                    <Text style={{ color: 'white', fontWeight: 'bold' }}>Create Gig</Text>
+                                    {gigCreated ? (<Text style={{ color: 'white', fontWeight: 'bold' }}>Gig Created!</Text>) : (
+                                        <Text style={{ color: 'white', fontWeight: 'bold' }}>Create Gig</Text>
+                                    )}
                                 </View>
                             </TouchableOpacity>
 

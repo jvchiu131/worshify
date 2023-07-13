@@ -112,11 +112,12 @@ const AddGigModal = () => {
     const onChange = ({ type }, selectedDate) => {
         if (type == 'set') {
             const currentDate = selectedDate;
-            setDate(currentDate);
+            setDate(new Date(currentDate));
 
             if (Platform.OS === 'android') {
                 toggleDatepicker()
-                setDate(currentDate.toDateString());
+                // setDate(currentDate.toDateString());
+                setDate(new Date(currentDate))
             }
 
         } else {
@@ -136,7 +137,8 @@ const AddGigModal = () => {
 
             if (Platform.OS === 'android') {
                 toggleTimepickerStart()
-                setStartTime(formatTime(currentTime));
+                // setStartTime(formatTime(currentTime));
+                setStartTime(new Date(currentTime));
             }
 
         } else {
@@ -155,7 +157,7 @@ const AddGigModal = () => {
 
             if (Platform.OS === 'android') {
                 toggleTimepickerEnd()
-                setEndTime(formatTime(currentTime));
+                setEndTime(new Date(currentTime));
             }
 
         } else {
@@ -211,7 +213,7 @@ const AddGigModal = () => {
                                 <TextInput
                                     placeholder='Choose Gig Date'
                                     placeholderTextColor='#11182744'
-                                    value={date}
+                                    value={date instanceof Date ? date.toDateString() : ''}
                                     onChangeText={setDate}
                                     editable={false}
                                     style={styles.dateStyle}
@@ -239,7 +241,7 @@ const AddGigModal = () => {
                                 <TextInput
                                     placeholder='Choose Start Time'
                                     placeholderTextColor='#11182744'
-                                    value={startTime}
+                                    value={startTime instanceof Date ? formatTime(startTime) : ''}
                                     onChangeText={setStartTime}
                                     editable={false}
                                     style={styles.dateStyle}
@@ -266,7 +268,7 @@ const AddGigModal = () => {
                                 <TextInput
                                     placeholder='Choose End Time'
                                     placeholderTextColor='#11182744'
-                                    value={endTime}
+                                    value={endTime instanceof Date ? formatTime(endTime) : ''}
                                     onChangeText={setEndTime}
                                     editable={false}
                                     style={styles.dateStyle}

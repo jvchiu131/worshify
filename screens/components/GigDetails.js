@@ -38,7 +38,8 @@ const ClientGigDetails = ({ postID }) => {
                 InstrumentsNeeded: snapshot.val().Instruments_Needed,
                 GigImage: snapshot.val().Gig_Image,
                 GigDate: snapshot.val().Gig_Date,
-                about: snapshot.val().about
+                about: snapshot.val().about,
+                gigStatus: snapshot.val().gigStatus
             };
 
             setPostDetails(gigData);
@@ -49,26 +50,32 @@ const ClientGigDetails = ({ postID }) => {
     useEffect(() => {
         const userRef = ref(db, 'users/client/' + postDetails.uid)
         onValue(userRef, (snapshot) => {
-            const userData = {
-                key: snapshot.key,
-                firstName: snapshot.val().first_name,
-                lastName: snapshot.val().lname,
-                profilePic: snapshot.val().profile_pic
-            };
-            setUserData(userData)
+            if (snapshot.exists()) {
+                const userData = {
+                    key: snapshot.key,
+                    firstName: snapshot.val().first_name,
+                    lastName: snapshot.val().lname,
+                    profilePic: snapshot.val().profile_pic
+                };
+                setUserData(userData)
+            }
+
         });
     }, [])
 
     useEffect(() => {
         const currentRef = ref(db, 'users/musician/' + uid)
         onValue(currentRef, (snapshot) => {
-            let userInfo = {
-                key: snapshot.key,
-                firstName: snapshot.val().first_name,
-                lastName: snapshot.val().lname,
-                profilePic: snapshot.val().profile_pic
-            };
-            setCurrentUserData(userInfo)
+            if (snapshot.exists()) {
+
+                let userInfo = {
+                    key: snapshot.key,
+                    firstName: snapshot.val().first_name,
+                    lastName: snapshot.val().lname,
+                    profilePic: snapshot.val().profile_pic
+                };
+                setCurrentUserData(userInfo)
+            }
         });
 
 
@@ -132,6 +139,9 @@ const ClientGigDetails = ({ postID }) => {
                     <View style={styles.titleContainer}>
                         <Text style={styles.titleStyle}>{postDetails.GigName}</Text>
                     </View>
+                    <View style={styles.statusContainer}>
+                        <Text style={styles.statusChip}>{postDetails.gigStatus}</Text>
+                    </View>
 
                     <View style={styles.dateTimeContainer}>
                         <View>
@@ -177,7 +187,7 @@ const ClientGigDetails = ({ postID }) => {
                             </ImageBackground>
                         </View>
                         <View style={styles.organizerTxtContainer}>
-                            <Text>{userData.firstName} {userData.lastName}</Text>
+                            <Text>{userData?.firstName} {userData?.lastName}</Text>
                             <Text style={{ color: '#706E8F', fontSize: 10 }}>Organizer</Text>
                         </View>
                     </View>
@@ -221,7 +231,18 @@ const ClientGigDetails = ({ postID }) => {
 export default ClientGigDetails
 
 const styles = StyleSheet.create({
-
+    statusChip: {
+        backgroundColor: '#0EB080',
+        padding: 5,
+        textAlign: 'center',
+        borderRadius: 10,
+        paddingHorizontal: 20,
+        color: 'white',
+        fontWeight: 'bold'
+    },
+    statusContainer: {
+        alignItems: 'center'
+    },
     aboutContent: {
         textAlign: 'center'
     },
@@ -286,10 +307,11 @@ const styles = StyleSheet.create({
         fontSize: 15,
     },
     btnStyle: {
-        width: '80%',
+        paddingHorizontal: 60,
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 25,
+        marginTop: 10
 
     },
     btnContainer: {

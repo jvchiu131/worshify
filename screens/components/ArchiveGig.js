@@ -1,20 +1,17 @@
-import { StyleSheet, Text, View, ImageBackground, Dimensions, ScrollView, TouchableOpacity, Modal } from 'react-native'
+import { StyleSheet, Text, View, ImageBackground, Dimensions, ScrollView } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { child, onValue, ref, remove, update, set } from 'firebase/database';
 import { db, auth } from '../../firebase';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { Button } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
-import AppliedProfile from './AppliedProfile';
-import { Appbar } from 'react-native-paper';
-import { AntDesign } from '@expo/vector-icons';
-import DropDownPicker from 'react-native-dropdown-picker'
+
+
 
 const { height: screenHeight } = Dimensions.get('screen');
 const { width: screenWidth } = Dimensions.get('screen');
 
-const ClientGigDetails = ({ postID }) => {
+const ArchiveGig = ({ postID }) => {
 
     const [postDetails, setPostDetails] = useState([]);
     const [instruments, setInstruments] = useState([]);
@@ -25,49 +22,23 @@ const ClientGigDetails = ({ postID }) => {
     const [archived, setArchived] = useState(false);
     const user = auth.currentUser;
     const uid = user.uid;
-    const navigation = useNavigation();
-    const [userId, setUserId] = useState();
-    const [selectedItem, setSelectedItem] = useState([]);
-    const [modalVisible, setModalVisible] = useState(false);
-    const [status, setStatus] = useState();
-    const showGigModal = () => setModalVisible(true);
-    const hideGigModal = () => setModalVisible(false);
-
-    const [open, setOpen] = useState(false);
-    const [items, setItems] = useState([
-        { label: 'Available', value: 'Available' },
-        { label: 'Done', value: 'Done' },
-        { label: 'Cancelled', value: 'Cancelled' },
-        { label: 'Upcoming', value: 'Upcoming' }
-
-    ]);
-    const [gigStatus, setGigStatus] = useState(null);
-
-    const handleItemPress = (key) => {
-        console.log('item presseedd', key)
-        setSelectedItem(key);
-        showGigModal()
-        console.log(selectedItem)
-    };
-
-
 
     useEffect(() => {
-        const dbRef = ref(db, 'gigPosts/' + postID);
+        const dbRef = ref(db, 'archiveGigs/' + uid + '/' + postID);
         onValue(dbRef, (snapshot) => {
             const gigData = {
                 key: snapshot.key,
                 Event_Type: snapshot.val().Event_Type,
-                GigAddress: snapshot.val().Gig_Address,
+                GigAddress: snapshot.val().GigAddress,
                 postID: snapshot.val().postID,
-                GigName: snapshot.val().Gig_Name,
+                GigName: snapshot.val().GigName,
                 uid: snapshot.val().uid,
-                GenreNeeded: snapshot.val().Genre_Needed,
-                StartTime: snapshot.val().Gig_Start,
-                EndTime: snapshot.val().Gig_End,
-                InstrumentsNeeded: snapshot.val().Instruments_Needed,
-                GigImage: snapshot.val().Gig_Image,
-                GigDate: snapshot.val().Gig_Date,
+                GenreNeeded: snapshot.val().GenreNeeded,
+                StartTime: snapshot.val().StartTime,
+                EndTime: snapshot.val().EndTime,
+                InstrumentsNeeded: snapshot.val().InstrumentsNeeded,
+                GigImage: snapshot.val().GigImage,
+                GigDate: snapshot.val().GigDate,
                 about: snapshot.val().about
             };
 
@@ -113,13 +84,10 @@ const ClientGigDetails = ({ postID }) => {
 
 
 
-
-
     useEffect(() => {
         const usersAppliedRef = ref(db, 'gigPosts/' + postID + '/usersApplied')
         onValue(usersAppliedRef, (snapshot) => {
             let userApp = [];
-            let userKey = null
             snapshot.forEach((child) => {
                 userApp.push({
                     key: child.key,
@@ -127,22 +95,21 @@ const ClientGigDetails = ({ postID }) => {
                     lastName: child.val().lastName,
                     profilePic: child.val().profilePic
                 })
-                userKey = child.key
             })
-            setUserId(userKey);
+
             setAppliedUsers(userApp);
         })
-        console.log(userId)
-    }, [])
 
-    const props = { userId, postID };
+        console.log(appliedUsers)
+
+
+    }, [])
 
 
     const archiveGig = () => {
         const archiveRef = ref(db, 'archiveGigs/' + uid + '/' + postID)
         set(archiveRef, postDetails)
         setArchived(true);
-        navigation.goBack();
         deleteGig();
     }
 
@@ -157,33 +124,6 @@ const ClientGigDetails = ({ postID }) => {
             .catch((error) => console.log(error))
     }
 
-    const handleGigStatus = () => {
-        const dbRefUser = ref(db, 'gigPosts/' + postID)
-        const dbRef = ref(db, 'users/client/' + uid + '/gigs/' + postID);
-
-        update(dbRefUser, {
-            gigStatus: gigStatus
-        })
-
-        update(dbRef, {
-            gigStatus: gigStatus
-        })
-    }
-
-
-    useEffect(() => {
-        const dbRef = ref(db, 'gigPosts/' + postID + '/usersApplied/' + userId)
-
-        onValue(dbRef, (snapshot) => {
-            if (snapshot.exists()) {
-                setStatus(snapshot.val().accepted);
-            }
-        })
-    }, [status])
-
-
-
-
 
     return (
         <View style={styles.root}>
@@ -195,6 +135,8 @@ const ClientGigDetails = ({ postID }) => {
                 <View style={styles.detailContainer}>
                     <View style={styles.titleContainer}>
                         <Text style={styles.titleStyle}>{postDetails.GigName}</Text>
+
+
                     </View>
 
                     <View style={styles.dateTimeContainer}>
@@ -254,46 +196,24 @@ const ClientGigDetails = ({ postID }) => {
                         <View style={styles.aboutContent}>
                             <Text style={{ fontSize: 11 }}>{postDetails.about}</Text>
                         </View>
-
-
-                    </View>
-
-                    <View>
-                        <Text style={styles.txtStyles}>Gig Status</Text>
-                        <DropDownPicker
-                            open={open}
-                            value={gigStatus}
-                            items={items}
-                            setOpen={setOpen}
-                            setValue={setGigStatus}
-                            setItems={setItems}
-                            dropDownDirection='BOTTOM'
-                            zIndex={30}
-                            placeholder={gigStatus}
-                            onChangeValue={handleGigStatus}
-                        />
                     </View>
                 </View>
 
                 <View style={styles.appliedContainer}>
                     <Text style={{ fontWeight: 'bold', marginBottom: 10 }}>Applied Users:</Text>
                     {appliedUsers.map((user, index) => (
-                        <TouchableOpacity key={index} style={styles.appliedUserContainer} onPress={() => handleItemPress(user.key)}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <ImageBackground style={styles.userProfilePic} source={{ uri: user.profilePic }}></ImageBackground>
-                                <View style={styles.userInfoContainer}>
-                                    <Text style={styles.userName}>{user.firstName} {user.lastName}</Text>
-                                </View>
+                        <View key={index} style={styles.appliedUserContainer}>
+                            <ImageBackground style={styles.userProfilePic} source={{ uri: user.profilePic }}></ImageBackground>
+                            <View style={styles.userInfoContainer}>
+                                <Text style={styles.userName}>{user.firstName} {user.lastName}</Text>
                             </View>
-
-                            {status ? (<AntDesign name="checkcircle" size={24} color="#0EB080" />) : null}
-                        </TouchableOpacity>
+                        </View>
                     ))}
                 </View>
             </ScrollView>
 
 
-            <View style={styles.btnContainer}>
+            {/* <View style={styles.btnContainer}>
                 <Button mode='elevated'
                     onPress={() => archiveGig()}
                     loading={loading}
@@ -302,35 +222,16 @@ const ClientGigDetails = ({ postID }) => {
                     style={styles.btnStyle}>
                     {archived ? (<Text>Gig Archived</Text>) : (<Text>Archive Gig</Text>)}
                 </Button>
-            </View>
+            </View> */}
 
 
-            <Modal
-                animationType='slide'
-                visible={modalVisible}
-                onRequestClose={hideGigModal}
-            >
-
-                <Appbar.Header style={styles.appBarStyle}>
-                    <Appbar.BackAction onPress={hideGigModal} color='white' />
-                </Appbar.Header>
-
-                <View>
-                    <AppliedProfile {...props} />
-                </View>
-
-            </Modal>
         </View>
     )
 }
 
-export default ClientGigDetails
+export default ArchiveGig
 
 const styles = StyleSheet.create({
-    appBarStyle: {
-        backgroundColor: '#151414',
-        justifyContent: 'space-between'
-    },
     scrollViewContent: {
         flexGrow: 1,
         paddingBottom: 450,
@@ -344,7 +245,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 10,
-        justifyContent: 'space-between'
     },
     userProfilePic: {
         width: 50,
