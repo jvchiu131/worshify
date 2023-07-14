@@ -146,6 +146,9 @@ const ClientGigDetails = ({ postID }) => {
         deleteGig();
     }
 
+    useEffect(() => {
+        console.log(postDetails)
+    }, [])
 
     const deleteGig = async () => {
         setLoading(true);

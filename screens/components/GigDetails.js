@@ -235,13 +235,15 @@ const styles = StyleSheet.create({
         backgroundColor: '#0EB080',
         padding: 5,
         textAlign: 'center',
-        borderRadius: 10,
         paddingHorizontal: 20,
         color: 'white',
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        borderRadius: 10,
+        overflow: 'hidden'
     },
     statusContainer: {
-        alignItems: 'center'
+        alignItems: 'center',
+
     },
     aboutContent: {
         textAlign: 'center'
@@ -299,7 +301,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         marginHorizontal: 15
-
     },
     btnTxtStyle: {
         color: 'white',
@@ -365,8 +366,6 @@ const styles = StyleSheet.create({
         zIndex: 2,
         top: -15,
         backgroundColor: 'white',
-
-
     },
     imgContainer: {
         height: '25%',

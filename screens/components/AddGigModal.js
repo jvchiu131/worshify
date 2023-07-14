@@ -118,6 +118,10 @@ const AddGigModal = () => {
                 toggleDatepicker()
                 // setDate(currentDate.toDateString());
                 setDate(new Date(currentDate))
+            } else if (Platform.OS === 'ios') {
+                toggleDatepicker()
+                // setDate(currentDate.toDateString());
+                setDate(new Date(currentDate))
             }
 
         } else {
@@ -136,6 +140,10 @@ const AddGigModal = () => {
             setStartTime(currentTime);
 
             if (Platform.OS === 'android') {
+                toggleTimepickerStart()
+                // setStartTime(formatTime(currentTime));
+                setStartTime(new Date(currentTime));
+            } else if (Platform.OS === 'ios') {
                 toggleTimepickerStart()
                 // setStartTime(formatTime(currentTime));
                 setStartTime(new Date(currentTime));
@@ -158,6 +166,10 @@ const AddGigModal = () => {
             if (Platform.OS === 'android') {
                 toggleTimepickerEnd()
                 setEndTime(new Date(currentTime));
+            } else if (Platform.OS === 'ios') {
+                toggleTimepickerStart()
+                // setStartTime(formatTime(currentTime));
+                setStartTime(new Date(currentTime));
             }
 
         } else {

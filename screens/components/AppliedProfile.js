@@ -183,13 +183,13 @@ const AppliedProfile = ({ userId, postID, onStatus }) => {
     return (
         <View style={styles.root}>
 
-            {/* <Appbar.Header style={styles.appBarHeader}>
+            <Appbar.Header style={styles.appBarHeader}>
                 <Appbar.BackAction onPress={navigation.goBack} color='white' />
                 <TouchableOpacity onPress={handleClick}>
                     <Ionicons name="chatbox-ellipses-outline" size={24} color="white" style={{ padding: 20 }} />
                 </TouchableOpacity>
 
-            </Appbar.Header> */}
+            </Appbar.Header>
 
             <View style={styles.container}>
                 <ProfileCard {...props} />
