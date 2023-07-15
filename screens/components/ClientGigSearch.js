@@ -37,13 +37,19 @@ const ClientGigSearch = () => {
 
 
     const showGigModal = () => setModalVisible(true);
-    const hideGigModal = () => setModalVisible(false);
+    const hideGigModal = () => {
+        setModalVisible(false)
+        setSelectedItem(null)
+    }
 
     const onRefresh = useCallback(() => {
         setRefreshing(true);
         setTimeout(() => {
             setRefreshing(false);
         }, 2000)
+    }, [])
+    useEffect(() => {
+        console.log(modalVisible)
     }, [])
 
 
@@ -194,6 +200,10 @@ const ClientGigSearch = () => {
                     visible={modalVisible}
                     animationType='slide'
                     onRequestClose={hideGigModal}
+                    onDismiss={() => {
+                        setSelectedItem(null)
+                        setModalVisible(false)
+                    }}
                 >
                     <Appbar.Header style={styles.appBarStyle}>
                         <Appbar.BackAction onPress={hideGigModal} color='white' />

@@ -1,9 +1,9 @@
-import { StyleSheet, Text, View, Dimensions, TextInput, ScrollView, Button, TouchableOpacity, Checkbox } from 'react-native'
+import { StyleSheet, Text, View, Dimensions, TextInput, ScrollView, Button, TouchableOpacity, Pressable } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { useRoute } from '@react-navigation/native'
 import { Appbar } from 'react-native-paper'
-
+import DateTimePicker from '@react-native-community/datetimepicker'
 import DropDownPicker from 'react-native-dropdown-picker'
 import { ref, set, push, child, onValue, DataSnapshot, update } from 'firebase/database';
 import { db } from '../../firebase';
@@ -23,10 +23,8 @@ const EditGig = () => {
     const [gigName, setGigName] = useState();
     const [gigAddress, setGigAddress] = useState();
     const [gigPhoto, setGigPhoto] = useState();
-    const [startTime, setStartTime] = useState();
-    const [endTime, setEndTime] = useState();
     const [about, setAbout] = useState();
-    const [gigDate, setGigDate] = useState();
+    const [date, setDate] = useState(new Date());
     const [gender, setGender] = useState();
     const [instruments, setInstruments] = useState([]);
     const [genre, setGenre] = useState(gigData.genreNeeded || []);
@@ -38,6 +36,12 @@ const EditGig = () => {
         { label: 'Worship Concert', value: 'Worship Concert' },
         { label: 'Wedding', value: 'Wedding' }
     ]);
+    const [showPicker, setShowPicker] = useState(false);
+    const [startVisible, setStartVisible] = useState(false);
+    const [endVisible, setEndVisible] = useState(false);
+    const [gigCreated, setGigCreated] = useState(false);
+    const [startTime, setStartTime] = useState(new Date());
+    const [endTime, setEndTime] = useState(new Date());
 
     const [sex, setSex] = useState([
         { label: 'Male', value: 'Male' },
@@ -123,26 +127,22 @@ const EditGig = () => {
         const gigRef = ref(db, 'gigPosts/' + postID)
         onValue(gigRef, (snapshot) => {
             const gig = snapshot.val()
-
             if (gig) {
                 setGigData(gig);
                 setGigName(gig.Gig_Name || '');
                 setGigAddress(gig.Gig_Address || '');
                 setGigPhoto(gig.Gig_Image || '');
-                setStartTime(gig.Gig_Start || '');
-                setEndTime(gig.Gig_End || '');
+                setStartTime(new Date(gig.Gig_Start) || '');
+                setEndTime(new Date(gig.Gig_End) || '');
                 setAbout(gig.about || '');
-                setGigDate(gig.Gig_Date || '');
+                setDate(new Date(gig.Gig_Date) || '');
                 setGender(gig.gender || '');
                 setInstruments(gig.Instruments_Needed || []);
                 setGenre(gig.Genre_Needed || []);
                 setEventType(gig.Event_Type || '');
             }
 
-
-
         })
-        console.log(gender)
     }, [postID]);
 
 
@@ -159,7 +159,7 @@ const EditGig = () => {
             uid: uid,
             Gig_Name: gigName,
             Gig_Address: gigAddress,
-            Gig_Date: gigDate,
+            Gig_Date: date,
             Gig_Start: startTime,
             Gig_End: endTime,
             Event_Type: eventType,
@@ -172,7 +172,7 @@ const EditGig = () => {
             uid: uid,
             Gig_Name: gigName,
             Gig_Address: gigAddress,
-            Gig_Date: gigDate,
+            Gig_Date: date,
             Gig_Start: startTime,
             Gig_End: endTime,
             Event_Type: eventType,
@@ -190,6 +190,90 @@ const EditGig = () => {
             return updatedGenre;
         });
     };
+
+    const toggleDatepicker = () => {
+        setShowPicker(!showPicker)
+    };
+
+    const onChange = ({ type }, selectedDate) => {
+        if (type == 'set') {
+            const currentDate = selectedDate;
+            setDate(new Date(currentDate));
+
+            if (Platform.OS === 'android') {
+                toggleDatepicker()
+                // setDate(currentDate.toDateString());
+                setDate(new Date(currentDate))
+            } else if (Platform.OS === 'ios') {
+                toggleDatepicker()
+                // setDate(currentDate.toDateString());
+                setDate(new Date(currentDate))
+            }
+
+        } else {
+            toggleDatepicker();
+        }
+    };
+
+
+    const toggleTimepickerStart = () => {
+        setStartVisible(!startVisible)
+    };
+
+    const onChangeStartTime = ({ type }, selectedTime) => {
+        if (type == 'set') {
+            const currentTime = new Date(selectedTime);
+            setStartTime(currentTime);
+
+            if (Platform.OS === 'android') {
+                toggleTimepickerStart()
+                // setStartTime(formatTime(currentTime));
+                setStartTime(new Date(currentTime));
+            } else if (Platform.OS === 'ios') {
+                toggleTimepickerStart()
+                // setStartTime(formatTime(currentTime));
+                setStartTime(new Date(currentTime));
+            }
+
+        } else {
+            toggleTimepickerStart();
+        }
+    };
+
+    const toggleTimepickerEnd = () => {
+        setEndVisible(!endVisible)
+    };
+
+    const onChangeEndTime = ({ type }, selectedTime) => {
+        if (type == 'set') {
+            const currentTime = new Date(selectedTime);
+            setEndTime(currentTime);
+
+            if (Platform.OS === 'android') {
+                toggleTimepickerEnd()
+                setEndTime(new Date(currentTime));
+            } else if (Platform.OS === 'ios') {
+                toggleTimepickerStart()
+                // setStartTime(formatTime(currentTime));
+                setStartTime(new Date(currentTime));
+            }
+
+        } else {
+            toggleTimepickerEnd();
+        }
+    };
+
+    const formatTime = (rawTime) => {
+        let time = new Date(rawTime);
+        let hours = time.getHours();
+        let minutes = time.getMinutes();
+
+        return `${hours}:${minutes}`;
+    }
+
+
+
+
 
 
     return (
@@ -210,54 +294,99 @@ const EditGig = () => {
                             <Text>Gig Title:</Text>
                             <TextInput
                                 value={gigName}
-                                placeholder={gigData.gigName}
+                                placeholder={gigData.gigName || ''}
                                 style={styles.inputStyle}
                                 onChangeText={text => setGigName(text)} />
                         </View>
 
-                        <View style={styles.inputContainer}>
-                            <Text>Gig Date:</Text>
-                            <TextInput
-                                value={gigDate}
-                                placeholder={gigData.gigDate}
-                                style={styles.inputStyle}
-                                onChangeText={text => setGigDate(text)}
-                            />
-                        </View>
-
-                        <View style={styles.inputTimeContainer}>
-
+                        <View style={styles.timeContainer}>
                             <View>
-                                <Text>Time start:</Text>
-                                <TextInput
-                                    value={startTime}
-                                    placeholder={gigData.startTime}
-                                    style={styles.inputStyle}
-                                    onChangeText={text => setStartTime(text)}
-                                />
+                                {!showPicker && (
+                                    <Pressable
+                                        onPress={toggleDatepicker}>
+                                        <TextInput
+                                            placeholder='Select Date:'
+                                            placeholderTextColor='#11182744'
+                                            value={date instanceof Date ? date.toDateString() : ''}
+                                            onChangeText={setDate}
+                                            editable={false}
+                                            style={styles.dateStyle}
+                                        />
+                                    </Pressable>
+
+                                )}
+
+
+                                {showPicker && (
+                                    <DateTimePicker
+                                        mode='date'
+                                        display='spinner'
+                                        value={date}
+                                        onChange={onChange}
+                                        is24Hour={false}
+                                    />
+                                )}
                             </View>
 
 
                             <View>
-                                <Text>Time end:</Text>
-                                <TextInput
-                                    value={endTime}
-                                    placeholder={gigData.endTime}
-                                    style={styles.inputStyle}
-                                    onChangeText={text => setEndTime(text)}
-                                />
+                                {!startVisible && (
+                                    <Pressable
+                                        onPress={toggleTimepickerStart}>
+                                        <TextInput
+                                            placeholder='Select Start Time:'
+                                            placeholderTextColor='#11182744'
+                                            value={startTime instanceof Date ? formatTime(startTime) : ''}
+                                            onChangeText={setStartTime}
+                                            editable={false}
+                                            style={styles.dateStyle}
+                                        />
+                                    </Pressable>
+
+                                )}
+
+
+                                {startVisible && (
+                                    <DateTimePicker
+                                        mode='time'
+                                        display='spinner'
+                                        value={startTime}
+                                        onChange={onChangeStartTime}
+                                        is24Hour={false}
+                                    />
+                                )}
                             </View>
 
-                        </View>
 
-                        <View style={styles.inputContainer}>
-                            <Text>Gig Address:</Text>
-                            <TextInput
-                                value={gigAddress}
-                                placeholder={gigData.gigAddress}
-                                style={styles.inputStyle}
-                                onChangeText={text => setGigAddress(text)}
-                            />
+                            <View>
+
+                                {!endVisible && (
+                                    <Pressable
+                                        onPress={toggleTimepickerEnd}>
+                                        <TextInput
+                                            placeholder='Select End Time'
+                                            placeholderTextColor='#11182744'
+                                            value={endTime instanceof Date ? formatTime(endTime) : ''}
+                                            onChangeText={setEndTime}
+                                            editable={false}
+                                            style={styles.dateStyle}
+                                        />
+                                    </Pressable>
+
+                                )}
+
+
+                                {endVisible && (
+                                    <DateTimePicker
+                                        mode='time'
+                                        display='spinner'
+                                        value={endTime}
+                                        onChange={onChangeEndTime}
+                                    />
+                                )}
+                            </View>
+
+
                         </View>
 
                         <View style={styles.inputContainer}>
@@ -344,6 +473,7 @@ const EditGig = () => {
                                     setValue={setGender}
                                     setItems={setSex}
                                     placeholder={gigData.gender}
+                                    dropDownDirection='TOP'
                                 />
                             </View>
                         </View>
@@ -377,6 +507,21 @@ const EditGig = () => {
 export default EditGig
 
 const styles = StyleSheet.create({
+    timeContainer: {
+        width: '100%',
+        marginTop: 2,
+        height: '5%',
+        marginBottom: 150,
+
+    },
+    dateStyle: {
+        borderWidth: 2,
+        borderColor: '#0EB080',
+        borderRadius: 10,
+        height: '100%',
+        width: '50%',
+        left: '25%'
+    },
     aboutStyle: {
         borderWidth: 2,
         borderColor: '#0EB080',
