@@ -84,8 +84,6 @@ const RecommendedGigs = () => {
                 const instrumentsGig = gig.InstrumentsNeeded;
                 const genreGig = gig.GenreNeeded;
 
-                console.log(userGenre)
-                console.log(userInstrument)
                 setGigGenre(genreGig);
                 setGigInstrument(instrumentsGig);
 
@@ -121,13 +119,13 @@ const RecommendedGigs = () => {
                 <View style={styles.dateAddressStyle}>
                     <View style={styles.addressStyle}>
                         <EvilIcons name="location" size={15} color="#0EB080" />
-                        <Text>{item.GigAddress}</Text>
+                        <Text style={{ color: 'white' }}>{item.GigAddress}</Text>
                     </View>
 
 
                     <View style={styles.dateStyle}>
                         <MaterialIcons name="date-range" size={15} color="#0EB080" style={{ marginRight: 5 }} />
-                        <Text>{item.GigDate}</Text>
+                        <Text style={{ color: 'white' }}>{item.GigDate}</Text>
                     </View>
                 </View>
             </TouchableOpacity>
@@ -187,8 +185,6 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '15%',
         marginTop: 10,
-        borderWidth: 2,
-        borderColor: 'red'
     },
     imgStyle: {
         height: '100%',
@@ -202,20 +198,14 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     dateAddressStyle: {
-        borderWidth: 2,
-        borderColor: 'red',
         height: '20%',
         width: '100%',
         justifyContent: 'center'
     },
     addressStyle: {
         flexDirection: 'row',
-        borderWidth: 2,
-        borderColor: 'red'
     },
     dateStyle: {
         flexDirection: 'row',
-        borderWidth: 2,
-        borderColor: 'red'
     }
 })

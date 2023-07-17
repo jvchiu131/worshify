@@ -17,7 +17,10 @@ const MusicianDashboard = () => {
                         <Text style={styles.txtStyle}>FEATURED GIGS</Text>
                     </View>
 
-                    <FeaturedGig />
+                    <View style={styles.recCardContainer}>
+                        <FeaturedGig />
+                    </View>
+
 
                 </View>
 
@@ -46,22 +49,19 @@ const styles = StyleSheet.create({
         backgroundColor: '#151414',
         height: screenHeight,
         justifyContent: 'flex-start',
-
     },
     container: {
         height: "100%",
         bottom: screenHeight / 4.9,
-
     },
     featuredContainer: {
         width: screenWidth,
-        height: '23%',
+        height: '25%',
     },
     recommendedContainer: {
         height: '35%',
-        top: screenHeight / 15,
+        top: screenHeight / 20,
         width: '100%',
-
     },
     txtContainer: {
         width: '50%',
@@ -71,7 +71,6 @@ const styles = StyleSheet.create({
         marginTop: 10,
         margin: 10,
         paddingTop: 10,
-
     },
     recCardContainer: {
         height: '85%',
@@ -82,9 +81,5 @@ const styles = StyleSheet.create({
         fontWeight: '800',
         fontSize: 14
     },
-    adContainer: {
-        alignItems: 'center',
-        height: screenHeight / 10,
-        top: screenHeight / 10
-    }
+
 })

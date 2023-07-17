@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, ImageBackground, Dimensions, ScrollView } from 'react-native'
 import React, { useState, useEffect } from 'react'
-import { child, onValue, ref, remove, update } from 'firebase/database';
+import { child, onValue, ref, remove, update, get } from 'firebase/database';
 import { db, auth } from '../../firebase';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
@@ -15,95 +15,142 @@ const ClientGigDetails = ({ postID }) => {
     const [postDetails, setPostDetails] = useState([]);
     const [instruments, setInstruments] = useState([]);
     const [userData, setUserData] = useState([]);
-    const [applied, setApplied] = useState([]);
+    const [applied, setApplied] = useState(false);
     const [loading, setLoading] = useState(false);
     const [currentUserData, setCurrentUserData] = useState([]);
     const [genre, setGenre] = useState([]);
+    const [alreadyApplied, setAlreadyApplied] = useState(false);
     const user = auth.currentUser;
     const uid = user.uid;
 
     useEffect(() => {
-        const dbRef = ref(db, 'gigPosts/' + postID);
-        onValue(dbRef, (snapshot) => {
-            const gigData = {
-                key: snapshot.key,
-                Event_Type: snapshot.val().Event_Type,
-                GigAddress: snapshot.val().Gig_Address,
-                postID: snapshot.val().postID,
-                GigName: snapshot.val().Gig_Name,
-                uid: snapshot.val().uid,
-                GenreNeeded: snapshot.val().Genre_Needed,
-                StartTime: snapshot.val().Gig_Start,
-                EndTime: snapshot.val().Gig_End,
-                InstrumentsNeeded: snapshot.val().Instruments_Needed,
-                GigImage: snapshot.val().Gig_Image,
-                GigDate: snapshot.val().Gig_Date,
-                about: snapshot.val().about,
-                gigStatus: snapshot.val().gigStatus
-            };
+        const fetchGigData = async () => {
+            const dbRef = ref(db, 'gigPosts/' + postID);
+            try {
+                const snapshot = await get(dbRef);
+                if (snapshot.exists()) {
+                    const gigData = {
+                        key: snapshot.key,
+                        Event_Type: snapshot.val().Event_Type,
+                        GigAddress: snapshot.val().Gig_Address,
+                        postID: snapshot.val().postID,
+                        GigName: snapshot.val().Gig_Name,
+                        uid: snapshot.val().uid,
+                        GenreNeeded: snapshot.val().Genre_Needed,
+                        StartTime: snapshot.val().Gig_Start,
+                        EndTime: snapshot.val().Gig_End,
+                        InstrumentsNeeded: snapshot.val().Instruments_Needed,
+                        GigImage: snapshot.val().Gig_Image,
+                        GigDate: snapshot.val().Gig_Date,
+                        about: snapshot.val().about,
+                        gigStatus: snapshot.val().gigStatus
+                    };
+                    setPostDetails(gigData);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        };
 
-            setPostDetails(gigData);
-        });
+        fetchGigData();
 
     }, [])
 
     useEffect(() => {
-        const userRef = ref(db, 'users/client/' + postDetails.uid)
-        onValue(userRef, (snapshot) => {
+        const fetchUserData = async () => {
+            const userRef = ref(db, 'users/client/' + postDetails.uid);
+            try {
+                const snapshot = await get(userRef);
+                if (snapshot.exists()) {
+                    const userData = {
+                        key: snapshot.key,
+                        firstName: snapshot.val().first_name,
+                        lastName: snapshot.val().lname,
+                        profilePic: snapshot.val().profile_pic
+                    };
+                    setUserData(userData);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        fetchUserData();
+    }, [])
+
+    useEffect(() => {
+        const fetchCurrentUserData = async () => {
+            const currentRef = ref(db, 'users/musician/' + uid);
+            try {
+                const snapshot = await get(currentRef);
+                if (snapshot.exists()) {
+                    let userInfo = {
+                        key: snapshot.key,
+                        firstName: snapshot.val().first_name,
+                        lastName: snapshot.val().lname,
+                        profilePic: snapshot.val().profile_pic
+                    };
+                    setCurrentUserData(userInfo);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        fetchCurrentUserData();
+    }, [currentUserData])
+
+    useEffect(() => {
+        const fetchInstruments = async () => {
+            const pathRef = child(ref(db), 'gigPosts/' + postID + '/Instruments_Needed');
+            try {
+                const snapshot = await get(pathRef);
+                let data = [];
+                snapshot.forEach((child) => {
+                    data.push(child.val());
+                });
+                setInstruments(data);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        fetchInstruments();
+    }, [])
+
+    useEffect(() => {
+        const fetchGenres = async () => {
+            const pathRef = child(ref(db), 'gigPosts/' + postID + '/Genre_Needed');
+            try {
+                const snapshot = await get(pathRef);
+                let data = [];
+                snapshot.forEach((child) => {
+                    data.push(child.val());
+                });
+                setGenre(data);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        fetchGenres();
+    }, [])
+
+
+
+    useEffect(() => {
+        const usersAppliedRef = ref(db, 'gigPosts/' + postID + '/usersApplied/' + uid)
+        onValue(usersAppliedRef, (snapshot) => {
             if (snapshot.exists()) {
-                const userData = {
-                    key: snapshot.key,
-                    firstName: snapshot.val().first_name,
-                    lastName: snapshot.val().lname,
-                    profilePic: snapshot.val().profile_pic
-                };
-                setUserData(userData)
+                setAlreadyApplied(true);
+                console.log('applied')
+            } else {
+                setAlreadyApplied(false);
             }
 
-        });
-    }, [])
-
-    useEffect(() => {
-        const currentRef = ref(db, 'users/musician/' + uid)
-        onValue(currentRef, (snapshot) => {
-            if (snapshot.exists()) {
-
-                let userInfo = {
-                    key: snapshot.key,
-                    firstName: snapshot.val().first_name,
-                    lastName: snapshot.val().lname,
-                    profilePic: snapshot.val().profile_pic
-                };
-                setCurrentUserData(userInfo)
-            }
-        });
-
-
-    }, [])
-
-    useEffect(() => {
-        const pathRef = child(ref(db), 'gigPosts/' + postID + '/Instruments_Needed')
-        onValue(pathRef, (snapshot) => {
-            let data = [];
-            snapshot.forEach((child) => {
-                data.push(child.val());
-            })
-            setInstruments(data);
         })
+        // console.log(userId)
     }, [])
-
-    useEffect(() => {
-        const pathRef = child(ref(db), 'gigPosts/' + postID + '/Genre_Needed')
-        onValue(pathRef, (snapshot) => {
-            let data = [];
-            snapshot.forEach((child) => {
-                data.push(child.val());
-            })
-            setGenre(data);
-        })
-    }, [])
-
-
 
     const applyGig = async () => {
         setLoading(true);
@@ -112,6 +159,7 @@ const ClientGigDetails = ({ postID }) => {
             [uid]: currentUserData
         }).then(() => {
             setLoading(false)
+            setApplied(true);
         })
 
     }
@@ -120,12 +168,12 @@ const ClientGigDetails = ({ postID }) => {
         setLoading(true);
         const dbRef = ref(db, 'gigPosts/' + postID + '/usersApplied/' + uid)
         await remove(dbRef)
-            .then(() => { setLoading(false) })
+            .then(() => {
+                setLoading(false)
+                setApplied(false)
+            })
             .catch((error) => console.log(error))
     }
-
-
-
 
 
     return (
@@ -206,23 +254,30 @@ const ClientGigDetails = ({ postID }) => {
 
 
             <View style={styles.btnContainer}>
-                <Button mode='elevated'
-                    onPress={() => applyGig()}
-                    loading={loading}
-                    buttonColor='#0EB080'
-                    textColor='white'
-                    style={styles.btnStyle}>
-                    Apply Gig
-                </Button>
 
-                <Button mode='elevated'
-                    onPress={() => deleteGig()}
-                    loading={loading}
-                    buttonColor='#0EB080'
-                    textColor='white'
-                    style={styles.btnStyle}>
-                    Cancel Application
-                </Button>
+                {applied || alreadyApplied ? (
+
+                    <Button mode='elevated'
+                        onPress={() => deleteGig()}
+                        loading={loading}
+                        buttonColor='red'
+                        textColor='white'
+                        style={styles.btnStyle}>
+                        Cancel Application
+                    </Button>
+
+                ) : (
+                    <Button mode='elevated'
+                        onPress={() => applyGig()}
+                        loading={loading}
+                        buttonColor='#0EB080'
+                        textColor='white'
+                        style={styles.btnStyle}>
+                        Apply Gig
+                    </Button>
+
+                )}
+
             </View>
         </View>
     )

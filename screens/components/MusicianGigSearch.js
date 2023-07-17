@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 import { onValue, ref } from 'firebase/database'
 import { EvilIcons } from '@expo/vector-icons';
 import GigDetails from './GigDetails'
-
+import { Ionicons } from '@expo/vector-icons';
 import { Appbar } from 'react-native-paper';
 import { MaterialIcons } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -138,6 +138,10 @@ const MusicianGigSearch = () => {
                 keyExtractor={(item) => item.key}
                 ItemSeparatorComponent={renderSeparator} />
 
+            <TouchableOpacity style={styles.btnContainer}>
+                <Ionicons name="search-circle-sharp" size={70} color="#0EB080" />
+            </TouchableOpacity>
+
         </View>
     )
 }
@@ -145,6 +149,14 @@ const MusicianGigSearch = () => {
 export default MusicianGigSearch
 
 const styles = StyleSheet.create({
+    btnContainer: {
+        padding: 5,
+        alignItems: 'flex-end',
+        bottom: screenHeight / 3.5,
+        width: '20%',
+        left: 280,
+        zIndex: 1
+    },
     appBarStyle: {
         backgroundColor: '#151414'
     },

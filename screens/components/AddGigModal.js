@@ -218,7 +218,7 @@ const AddGigModal = () => {
         const currentDate = new Date();
         const threeDaysLater = new Date();
         threeDaysLater.setDate(currentDate.getDate() + 3);
-        return selectedDate >= currentDate && selectedDate <= threeDaysLater;
+        return selectedDate >= currentDate && selectedDate >= threeDaysLater;
     };
 
     return (

@@ -105,6 +105,7 @@ const MusicianSearch = () => {
 
     }
 
+
     return (
         <View style={styles.root}>
             <Header />
@@ -116,6 +117,9 @@ const MusicianSearch = () => {
                     ItemSeparatorComponent={renderSeparator}
                     keyExtractor={(item) => item.key}
                 />
+                <TouchableOpacity style={styles.btnContainer}>
+                    <Ionicons name="search-circle-sharp" size={70} color="#0EB080" />
+                </TouchableOpacity>
             </View>
 
 
@@ -126,6 +130,15 @@ const MusicianSearch = () => {
 export default MusicianSearch
 
 const styles = StyleSheet.create({
+    btnContainer: {
+        padding: 5,
+        bottom: screenHeight / 3.5,
+        width: '25%',
+        left: 250,
+        zIndex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     appBarHeader: {
         backgroundColor: '#151414',
         justifyContent: 'space-between',
