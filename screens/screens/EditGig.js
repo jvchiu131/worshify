@@ -94,8 +94,6 @@ const EditGig = () => {
             }
 
             setGigData(gig);
-
-
         })
     }, [])
 
@@ -265,15 +263,11 @@ const EditGig = () => {
 
     const formatTime = (rawTime) => {
         let time = new Date(rawTime);
-        let hours = time.getHours();
-        let minutes = time.getMinutes();
+        let hours = time.getHours().toString().padStart(2, '0');
+        let minutes = time.getMinutes().toString().padStart(2, '0');
 
         return `${hours}:${minutes}`;
     }
-
-
-
-
 
 
     return (
@@ -399,6 +393,7 @@ const EditGig = () => {
                                 setValue={setEventType}
                                 setItems={setItems}
                                 placeholder={gigData.eventType}
+                                dropDownDirection='TOP'
 
                             />
                         </View>

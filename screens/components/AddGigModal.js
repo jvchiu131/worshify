@@ -43,18 +43,39 @@ const AddGigModal = () => {
     const [endVisible, setEndVisible] = useState(false);
     const [imgUploaded, setImgUploaded] = useState(false)
     const [showPicker, setShowPicker] = useState(false);
+    const [isFieldsComplete, setIsFieldsComplete] = useState(false);
 
 
 
+    // const handleBtn = () => {
+    //     Animated.timing(ContentValue, {
+    //         toValue: 0,
+    //         duration: 300,
+    //         useNativeDriver: false,
+    //     }).start()
+    //     setIsClicked(true);
+    // }
 
     const handleBtn = () => {
-        Animated.timing(ContentValue, {
-            toValue: 0,
-            duration: 300,
-            useNativeDriver: false,
-        }).start()
-        setIsClicked(true);
-    }
+        if (GigName && GigAddress && date && startTime && endTime && EventType && image) {
+            if (!isPastDate(date) && isWithinThreeDays(date)) {
+                Animated.timing(ContentValue, {
+                    toValue: 0,
+                    duration: 300,
+                    useNativeDriver: false,
+                }).start();
+                setIsClicked(true);
+                setIsFieldsComplete(true); // Set the completeness state to true
+            } else {
+                // Handle invalid date selection (date in the past or not within 3 days)
+                alert('Please select a valid date that is not in the past and within 3 days from today.');
+            }
+        } else {
+            // Handle case when all fields are not filled
+            alert('Please fill in all the required fields.');
+            setIsFieldsComplete(false); // Set the completeness state to false
+        }
+    };
 
     //handles image upload
     const pickImage = async () => {
@@ -132,6 +153,7 @@ const AddGigModal = () => {
 
     const toggleTimepickerStart = () => {
         setStartVisible(!startVisible)
+        console.log('timepicker pressed start')
     };
 
     const onChangeStartTime = ({ type }, selectedTime) => {
@@ -185,6 +207,19 @@ const AddGigModal = () => {
         return `${hours}:${minutes}`;
     }
 
+    //handles user chosen past dates
+    const isPastDate = (selectedDate) => {
+        const currentDate = new Date()
+        return selectedDate < currentDate;
+    }
+
+    //handles user chosen three days before the gig
+    const isWithinThreeDays = (selectedDate) => {
+        const currentDate = new Date();
+        const threeDaysLater = new Date();
+        threeDaysLater.setDate(currentDate.getDate() + 3);
+        return selectedDate >= currentDate && selectedDate <= threeDaysLater;
+    };
 
     return (
         <View style={styles.root}>
@@ -220,7 +255,7 @@ const AddGigModal = () => {
                     <View style={styles.timeContainer}>
 
                         {!showPicker && (
-                            <Pressable
+                            <TouchableOpacity
                                 onPress={toggleDatepicker}>
                                 <TextInput
                                     placeholder='Choose Gig Date'
@@ -230,7 +265,7 @@ const AddGigModal = () => {
                                     editable={false}
                                     style={styles.dateStyle}
                                 />
-                            </Pressable>
+                            </TouchableOpacity>
 
                         )}
 
