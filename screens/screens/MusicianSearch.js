@@ -9,6 +9,7 @@ import { EvilIcons } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native'
 import FindMusicians from '../components/FindMusicians'
+import { MaterialIcons } from '@expo/vector-icons';
 
 
 const { height: screenHeight } = Dimensions.get('screen');
@@ -24,6 +25,35 @@ const MusicianSearch = () => {
     const [gigModalVisible, setGigModalVisible] = useState(false)
     const showGigModal = () => setGigModalVisible(true);
     const hideGigModal = () => setGigModalVisible(false);
+    const [matchedMusicians, setMatchedMusicians] = useState([]);
+    const [musicians, setMusicians] = useState([]);
+    const [musicianGenre, setMusicianGenre] = useState([])
+    const [musicianInstruments, setMusicianInstrument] = useState([])
+    const [selectedGender, setSelectedGender] = useState(null);
+    const [selectedInstruments, setSelectedInstruments] = useState([]);
+    const [selectedGenres, setSelectedGenres] = useState([]);
+    const [isFilterApplied, setIsFilterApplied] = useState(false);
+
+    const closeGigModal = () => {
+        setGigModalVisible(false);
+        setIsFilterApplied(true);
+    };
+
+
+    // Function to handle selected gender
+    const handleGenderSelection = (gender) => {
+        setSelectedGender(gender);
+    };
+
+    // Function to handle selected instruments
+    const handleInstrumentSelection = (instruments) => {
+        setSelectedInstruments(instruments);
+    };
+
+    // Function to handle selected genres
+    const handleGenreSelection = (genres) => {
+        setSelectedGenres(genres);
+    };
 
 
 
@@ -62,6 +92,51 @@ const MusicianSearch = () => {
         })
     }, [])
 
+    //this is for find gig
+    useEffect(() => {
+        const musicianRef = ref(db, 'users/musician/')
+        let musicianDetails = [];
+        onValue(musicianRef, (snapshot) => {
+            snapshot.forEach((childSnapshot) => {
+                musicianDetails.push({
+                    key: childSnapshot.key,
+                    firstName: childSnapshot.val().first_name,
+                    lastName: childSnapshot.val().lname,
+                    address: childSnapshot.val().address,
+                    profilePic: childSnapshot.val().profile_pic,
+                    uid: childSnapshot.val().uid,
+                    instruments: childSnapshot.val().instruments,
+                    genre: childSnapshot.val().genre
+                })
+            });
+
+
+
+            const musicianScore = musicianDetails.map((musician) => {
+                const instrumentsMusician = musician.instruments;
+                const genreMusician = musician.genre;
+
+                setMusicianGenre(genreMusician);
+                setMusicianInstrument(instrumentsMusician);
+
+                const matchedGenre = genreMusician.filter((genre) => selectedGenres.includes(genre));
+                const matchedInstruments = instrumentsMusician.filter((instrument) => selectedInstruments.includes(instrument));
+
+                const calculatePercentage = ((matchedGenre.length + matchedInstruments.length) / 6) * 100;
+                console.log(matchedGenre)
+                console.log(matchedInstruments)
+
+                return { ...musician, calculatePercentage };
+
+            });
+
+            const musicianSorted = musicianScore.sort((a, b) => b.calculatePercentage - a.calculatePercentage);
+            const topMusicians = musicianSorted.slice(0, 5);
+            setMatchedMusicians(topMusicians)
+        });
+
+    }, [selectedGenres])
+
 
     const props = {
         userId: selectedItem
@@ -77,6 +152,37 @@ const MusicianSearch = () => {
                     <View style={styles.textContainer}>
                         <View style={styles.nameContainer}>
                             <Text style={styles.nameStyle}>{item.firstName} {item.lastName}</Text>
+                        </View>
+
+                        <View style={styles.addressContainer}>
+                            <EvilIcons name="location" size={15} color="#0EB080" />
+                            <Text style={styles.addressText}>
+                                {item.address}
+                            </Text>
+                        </View>
+
+                        <View style={styles.instrumentsContainer}>
+                            <Text style={styles.instrumentStyle}>{item.instruments[0]}</Text>
+                            <Text style={styles.instrumentStyle}>{item.instruments[1]}</Text>
+                            <Text style={styles.instrumentStyle}>{item.instruments[2]}</Text>
+                        </View>
+
+                    </View>
+                </View>
+            </TouchableOpacity>
+        )
+    }
+
+    const renderMusician = ({ item }) => {
+        return (
+            <TouchableOpacity onPress={() => handleItemPress(item.uid)}>
+                <View style={styles.renderContainer}>
+                    <View style={styles.imgContainer}>
+                        <ImageBackground source={{ uri: item.profilePic }} style={styles.imgStyle}></ImageBackground>
+                    </View>
+                    <View style={styles.textContainer}>
+                        <View style={styles.nameContainer}>
+                            <Text style={styles.nameStyle}>{item.firstName} {item.lastName} {item.calculatePercentage}</Text>
                         </View>
 
                         <View style={styles.addressContainer}>
@@ -114,12 +220,28 @@ const MusicianSearch = () => {
             <Header />
 
             <View style={styles.flatlistContainer}>
-                <FlatList
-                    data={musician}
-                    renderItem={renderItem}
-                    ItemSeparatorComponent={renderSeparator}
-                    keyExtractor={(item) => item.key}
-                />
+                {isFilterApplied ? (
+                    // Render matched gigs
+                    <View>
+                        <FlatList
+                            data={matchedMusicians}
+                            renderItem={renderMusician}
+                            keyExtractor={(item) => item.key}
+                            ItemSeparatorComponent={renderSeparator}
+                        />
+                        <TouchableOpacity onPress={() => setIsFilterApplied(false)}>
+                            <MaterialIcons name="cancel" size={70} color="#0EB080" />
+                        </TouchableOpacity>
+                    </View>
+                ) : (
+                    // Render original gigs
+                    <FlatList
+                        data={musician}
+                        renderItem={renderItem}
+                        keyExtractor={(item) => item.key}
+                        ItemSeparatorComponent={renderSeparator}
+                    />
+                )}
                 <TouchableOpacity style={styles.btnContainer} onPress={showGigModal}>
                     <Ionicons name="search-circle-sharp" size={70} color="#0EB080" />
                 </TouchableOpacity>
@@ -132,9 +254,17 @@ const MusicianSearch = () => {
             >
                 <Appbar.Header style={styles.appBarStyle}>
                     <Appbar.BackAction onPress={hideGigModal} color='white' />
+                    <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 20 }}>Find Musician</Text>
                 </Appbar.Header>
 
-                <FindMusicians />
+                <FindMusicians
+                    selectedGender={selectedGender}
+                    setSelectedGender={setSelectedGender}
+                    selectedInstruments={selectedInstruments}
+                    setSelectedInstruments={setSelectedInstruments}
+                    selectedGenres={selectedGenres}
+                    setSelectedGenres={setSelectedGenres}
+                    closeModal={closeGigModal} />
             </Modal>
 
 
@@ -145,6 +275,9 @@ const MusicianSearch = () => {
 export default MusicianSearch
 
 const styles = StyleSheet.create({
+    appBarStyle: {
+        backgroundColor: '#151414'
+    },
     btnContainer: {
         padding: 5,
         bottom: screenHeight / 3.5,

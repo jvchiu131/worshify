@@ -76,6 +76,7 @@ const ClientGigSearch = () => {
 
     }
 
+
     const handleItemPress = (key) => {
         setSelectedItem(key);
         showGigModal();
@@ -165,6 +166,10 @@ const ClientGigSearch = () => {
         navigation.navigate('EditGig', { ...props })
     }
 
+    const closeGigModal = () => {
+        setModalVisible(false);
+    };
+
 
     return (
         <View style={styles.root}>
@@ -213,7 +218,7 @@ const ClientGigSearch = () => {
                         </TouchableOpacity>
                     </Appbar.Header>
 
-                    <ClientGigDetails {...props} />
+                    <ClientGigDetails {...props} closeModal={closeGigModal} />
                 </Modal>
             </View >
 

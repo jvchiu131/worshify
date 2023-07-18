@@ -47,15 +47,6 @@ const AddGigModal = () => {
 
 
 
-    // const handleBtn = () => {
-    //     Animated.timing(ContentValue, {
-    //         toValue: 0,
-    //         duration: 300,
-    //         useNativeDriver: false,
-    //     }).start()
-    //     setIsClicked(true);
-    // }
-
     const handleBtn = () => {
         if (GigName && GigAddress && date && startTime && endTime && EventType && image) {
             if (!isPastDate(date) && isWithinThreeDays(date)) {

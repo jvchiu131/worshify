@@ -28,11 +28,44 @@ const MusicianGigSearch = () => {
     const showGigModal = () => setGigModalVisible(true);
     const hideGigModal = () => setGigModalVisible(false);
 
+    const [selectedGender, setSelectedGender] = useState(null);
+    const [selectedInstruments, setSelectedInstruments] = useState([]);
+    const [selectedGenres, setSelectedGenres] = useState([]);
+    const [matchedGigs, setMatchedGigs] = useState([]);
+    const [gigGenre, setGigGenre] = useState([])
+    const [gigInstrument, setGigInstrument] = useState([])
+    const [isFilterApplied, setIsFilterApplied] = useState(false);
+
     const handleItemPress = (key) => {
         setSelectedItem(key);
         showModal();
     };
 
+    const closeGigModal = () => {
+        setGigModalVisible(false);
+        setIsFilterApplied(true);
+    };
+
+    // Function to handle selected gender
+    const handleGenderSelection = (gender) => {
+        setSelectedGender(gender);
+    };
+
+    // Function to handle selected instruments
+    const handleInstrumentSelection = (instruments) => {
+        setSelectedInstruments(instruments);
+    };
+
+    // Function to handle selected genres
+    const handleGenreSelection = (genres) => {
+        setSelectedGenres(genres);
+    };
+
+    useEffect(() => {
+        console.log(selectedGender)
+        console.log(selectedGenres)
+        console.log(selectedInstruments)
+    }, [])
 
     const props = { postID: selectedItem };
 
@@ -65,8 +98,61 @@ const MusicianGigSearch = () => {
 
     }, [])
 
+    useEffect(() => {
+        const gigRef = ref(db, 'gigPosts');
+        let gigDetails = [];
+        onValue(gigRef, (snapshot) => {
+            snapshot.forEach((childSnapshot) => {
+                setGigInstrument(childSnapshot.val().Instruments_Needed)
+            })
+        })
+    }, [])
 
 
+    //this is for find gig
+    useEffect(() => {
+        const gigRef = ref(db, 'gigPosts');
+        let gigDetails = [];
+        onValue(gigRef, (snapshot) => {
+            snapshot.forEach((childSnapshot) => {
+                gigDetails.push({
+                    key: childSnapshot.key,
+                    Event_Type: childSnapshot.val().Event_Type,
+                    GigAddress: childSnapshot.val().Gig_Address,
+                    postID: childSnapshot.val().postID,
+                    GigName: childSnapshot.val().Gig_Name,
+                    uid: childSnapshot.val().uid,
+                    GenreNeeded: childSnapshot.val().Genre_Needed,
+                    StartTime: childSnapshot.val().Gig_Start,
+                    EndTime: childSnapshot.val().Gig_End,
+                    InstrumentsNeeded: childSnapshot.val().Instruments_Needed,
+                    GigImage: childSnapshot.val().Gig_Image,
+                    GigDate: childSnapshot.val().Gig_Date,
+                });
+            });
+
+
+
+            const gigScore = gigDetails.map((gig) => {
+                const instrumentsGig = gig.InstrumentsNeeded;
+                const genreGig = gig.GenreNeeded;
+
+                setGigGenre(genreGig);
+                setGigInstrument(instrumentsGig);
+
+                const matchedGenre = genreGig.filter((genre) => selectedGenres.includes(genre));
+                const matchedInstruments = gigInstrument.filter((instrument) => selectedInstruments.includes(instrument));
+                const calculatePercentage = ((matchedGenre.length + matchedInstruments.length) / 6) * 100;
+
+                return { ...gig, calculatePercentage };
+
+            });
+
+            const gigSorted = gigScore.sort((a, b) => b.calculatePercentage - a.calculatePercentage);
+            const topGigs = gigSorted.slice(0, 5);
+            setMatchedGigs(topGigs)
+        });
+    }, [selectedGenres])
 
 
 
@@ -136,11 +222,31 @@ const MusicianGigSearch = () => {
             </Modal>
 
 
-            <FlatList
-                data={gigData}
-                renderItem={renderItem}
-                keyExtractor={(item) => item.key}
-                ItemSeparatorComponent={renderSeparator} />
+
+            {isFilterApplied ? (
+                // Render matched gigs
+                <View>
+                    <FlatList
+                        data={matchedGigs}
+                        renderItem={renderItem}
+                        keyExtractor={(item) => item.key}
+                        ItemSeparatorComponent={renderSeparator}
+                    />
+                    <TouchableOpacity onPress={() => setIsFilterApplied(false)}>
+                        <MaterialIcons name="cancel" size={70} color="#0EB080" />
+                    </TouchableOpacity>
+                </View>
+            ) : (
+                // Render original gigs
+                <FlatList
+                    data={gigData}
+                    renderItem={renderItem}
+                    keyExtractor={(item) => item.key}
+                    ItemSeparatorComponent={renderSeparator}
+                />
+            )}
+
+
 
             <Modal
                 visible={gigModalVisible}
@@ -149,9 +255,18 @@ const MusicianGigSearch = () => {
             >
                 <Appbar.Header style={styles.appBarStyle}>
                     <Appbar.BackAction onPress={hideGigModal} color='white' />
+                    <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 20 }}>Find Gig</Text>
                 </Appbar.Header>
 
-                <FindGig />
+                <FindGig
+                    selectedGender={selectedGender}
+                    setSelectedGender={setSelectedGender}
+                    selectedInstruments={selectedInstruments}
+                    setSelectedInstruments={setSelectedInstruments}
+                    selectedGenres={selectedGenres}
+                    setSelectedGenres={setSelectedGenres}
+                    closeModal={closeGigModal}
+                />
             </Modal>
 
             <TouchableOpacity style={styles.btnContainer} onPress={showGigModal}>
@@ -174,7 +289,7 @@ const styles = StyleSheet.create({
         zIndex: 1
     },
     appBarStyle: {
-        backgroundColor: '#151414'
+        backgroundColor: '#151414',
     },
     dateContainer: {
         flexDirection: 'row',
