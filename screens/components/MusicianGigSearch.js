@@ -9,7 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Appbar } from 'react-native-paper';
 import { MaterialIcons } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
-
+import FindGig from './FindGig'
 
 
 const { height: screenHeight } = Dimensions.get('screen');
@@ -23,6 +23,10 @@ const MusicianGigSearch = () => {
 
     const showModal = () => setModalVisible(true);
     const hideModal = () => setModalVisible(false);
+
+    const [gigModalVisible, setGigModalVisible] = useState(false)
+    const showGigModal = () => setGigModalVisible(true);
+    const hideGigModal = () => setGigModalVisible(false);
 
     const handleItemPress = (key) => {
         setSelectedItem(key);
@@ -138,7 +142,19 @@ const MusicianGigSearch = () => {
                 keyExtractor={(item) => item.key}
                 ItemSeparatorComponent={renderSeparator} />
 
-            <TouchableOpacity style={styles.btnContainer}>
+            <Modal
+                visible={gigModalVisible}
+                animationType='slide'
+                onRequestClose={hideGigModal}
+            >
+                <Appbar.Header style={styles.appBarStyle}>
+                    <Appbar.BackAction onPress={hideGigModal} color='white' />
+                </Appbar.Header>
+
+                <FindGig />
+            </Modal>
+
+            <TouchableOpacity style={styles.btnContainer} onPress={showGigModal}>
                 <Ionicons name="search-circle-sharp" size={70} color="#0EB080" />
             </TouchableOpacity>
 

@@ -6,10 +6,9 @@ import { onValue, ref } from 'firebase/database'
 import { Appbar } from 'react-native-paper';
 import Header from '../components/Header'
 import { EvilIcons } from '@expo/vector-icons';
-import MusicianProfile from '../components/MusicianProfile'
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native'
-
+import FindMusicians from '../components/FindMusicians'
 
 
 const { height: screenHeight } = Dimensions.get('screen');
@@ -21,6 +20,10 @@ const MusicianSearch = () => {
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
     const navigation = useNavigation();
+
+    const [gigModalVisible, setGigModalVisible] = useState(false)
+    const showGigModal = () => setGigModalVisible(true);
+    const hideGigModal = () => setGigModalVisible(false);
 
 
 
@@ -117,10 +120,22 @@ const MusicianSearch = () => {
                     ItemSeparatorComponent={renderSeparator}
                     keyExtractor={(item) => item.key}
                 />
-                <TouchableOpacity style={styles.btnContainer}>
+                <TouchableOpacity style={styles.btnContainer} onPress={showGigModal}>
                     <Ionicons name="search-circle-sharp" size={70} color="#0EB080" />
                 </TouchableOpacity>
             </View>
+
+            <Modal
+                visible={gigModalVisible}
+                animationType='slide'
+                onRequestClose={hideGigModal}
+            >
+                <Appbar.Header style={styles.appBarStyle}>
+                    <Appbar.BackAction onPress={hideGigModal} color='white' />
+                </Appbar.Header>
+
+                <FindMusicians />
+            </Modal>
 
 
         </View>
