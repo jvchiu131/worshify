@@ -69,8 +69,7 @@ const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress,
             postID: newGigsRefKey,
             Gig_Image: img,
             about: about,
-            gender: gender,
-            gigStatus: 'Available'
+            gender: gender
         });
 
 
@@ -87,8 +86,7 @@ const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress,
             postID: newGigsRefKey,
             Gig_Image: img,
             about: about,
-            gender: gender,
-            gigStatus: 'Available'
+            gender: gender
         });
 
         setGigCreated(true);

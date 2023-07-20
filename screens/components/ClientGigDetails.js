@@ -14,7 +14,7 @@ import DropDownPicker from 'react-native-dropdown-picker'
 const { height: screenHeight } = Dimensions.get('screen');
 const { width: screenWidth } = Dimensions.get('screen');
 
-const ClientGigDetails = ({ postID, closeModal }) => {
+const ClientGigDetails = ({ postID }) => {
 
     const [postDetails, setPostDetails] = useState([]);
     const [instruments, setInstruments] = useState([]);
@@ -38,19 +38,20 @@ const ClientGigDetails = ({ postID, closeModal }) => {
         { label: 'Available', value: 'Available' },
         { label: 'Done', value: 'Done' },
         { label: 'Cancelled', value: 'Cancelled' },
-        { label: 'Closed', value: 'Closed' }
+        { label: 'Upcoming', value: 'Upcoming' }
 
     ]);
     const [gigStatus, setGigStatus] = useState(null);
 
     const handleItemPress = (key) => {
+        console.log('item presseedd', key)
         setSelectedItem(key);
         showGigModal()
-
+        console.log(selectedItem)
     };
 
 
-    //retrieve the gig details of the gig pressed
+
     useEffect(() => {
         const dbRef = ref(db, 'gigPosts/' + postID);
         onValue(dbRef, (snapshot) => {
@@ -75,7 +76,6 @@ const ClientGigDetails = ({ postID, closeModal }) => {
 
     }, [postID])
 
-    //retrieve the user client's data
     useEffect(() => {
         const userRef = ref(db, 'users/client/' + uid)
         onValue(userRef, (snapshot) => {
@@ -89,19 +89,6 @@ const ClientGigDetails = ({ postID, closeModal }) => {
         });
     }, [postID])
 
-    //checks if the gig status is cancelled, if cancelled it will archive the gig
-    useEffect(() => {
-        const statusRef = ref(db, 'gigPosts/' + postID + '/gigStatus')
-        onValue(statusRef, (snapshot) => {
-            if (snapshot.exists()) {
-                if (snapshot.val() == 'Cancelled') {
-                    archiveGig()
-                }
-            }
-        })
-    }, [])
-
-    //retrieves gig instrument
     useEffect(() => {
         const pathRef = child(ref(db), 'gigPosts/' + postID + '/Instruments_Needed')
         onValue(pathRef, (snapshot) => {
@@ -113,7 +100,6 @@ const ClientGigDetails = ({ postID, closeModal }) => {
         })
     }, [])
 
-    //retrieves gig genre
     useEffect(() => {
         const pathRef = child(ref(db), 'gigPosts/' + postID + '/Genre_Needed')
         onValue(pathRef, (snapshot) => {
@@ -128,7 +114,7 @@ const ClientGigDetails = ({ postID, closeModal }) => {
 
 
 
-    //retrieves users that applied to the gig
+
     useEffect(() => {
         const usersAppliedRef = ref(db, 'gigPosts/' + postID + '/usersApplied')
         onValue(usersAppliedRef, (snapshot) => {
@@ -151,18 +137,19 @@ const ClientGigDetails = ({ postID, closeModal }) => {
 
     const props = { userId, postID };
 
-    //handles gig archiving
+
     const archiveGig = () => {
         const archiveRef = ref(db, 'archiveGigs/' + uid + '/' + postID)
         set(archiveRef, postDetails)
         setArchived(true);
         navigation.goBack();
-        closeModal()
         deleteGig();
     }
 
+    useEffect(() => {
+        console.log(postDetails)
+    }, [])
 
-    //function that deletes gig
     const deleteGig = async () => {
         setLoading(true);
         const dbRefUser = ref(db, 'gigPosts/' + postID)
@@ -173,7 +160,6 @@ const ClientGigDetails = ({ postID, closeModal }) => {
             .catch((error) => console.log(error))
     }
 
-    //handles gig status
     const handleGigStatus = () => {
         const dbRefUser = ref(db, 'gigPosts/' + postID)
         const dbRef = ref(db, 'users/client/' + uid + '/gigs/' + postID);
@@ -187,7 +173,7 @@ const ClientGigDetails = ({ postID, closeModal }) => {
         })
     }
 
-    //users accepted
+
     useEffect(() => {
         const dbRef = ref(db, 'gigPosts/' + postID + '/usersApplied/' + userId)
 

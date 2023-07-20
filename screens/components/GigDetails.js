@@ -20,7 +20,6 @@ const ClientGigDetails = ({ postID }) => {
     const [currentUserData, setCurrentUserData] = useState([]);
     const [genre, setGenre] = useState([]);
     const [alreadyApplied, setAlreadyApplied] = useState(false);
-    const [gigClosed, setGigClosed] = useState(false)
     const user = auth.currentUser;
     const uid = user.uid;
 
@@ -117,18 +116,6 @@ const ClientGigDetails = ({ postID }) => {
         };
 
         fetchInstruments();
-    }, [])
-
-
-    useEffect(() => {
-        const statusRef = ref(db, 'gigPosts/' + postID + '/gigStatus')
-        onValue(statusRef, (snapshot) => {
-            if (snapshot.exists()) {
-                if (snapshot.val() == 'Closed') {
-                    setGigClosed(true);
-                }
-            }
-        })
     }, [])
 
     useEffect(() => {
@@ -267,37 +254,29 @@ const ClientGigDetails = ({ postID }) => {
 
 
             <View style={styles.btnContainer}>
-                {gigClosed ? (
-                    <View style={{ ...styles.btnStyle, backgroundColor: 'red', padding: 15 }}>
-                        <Text style={{ color: 'white', fontWeight: 'bold' }}>Gig Already Closed</Text>
-                    </View>
+
+                {applied || alreadyApplied ? (
+
+                    <Button mode='elevated'
+                        onPress={() => deleteGig()}
+                        loading={loading}
+                        buttonColor='red'
+                        textColor='white'
+                        style={styles.btnStyle}>
+                        Cancel Application
+                    </Button>
+
                 ) : (
-                    <>
-                        {applied || alreadyApplied ? (
+                    <Button mode='elevated'
+                        onPress={() => applyGig()}
+                        loading={loading}
+                        buttonColor='#0EB080'
+                        textColor='white'
+                        style={styles.btnStyle}>
+                        Apply Gig
+                    </Button>
 
-                            <Button mode='elevated'
-                                onPress={() => deleteGig()}
-                                loading={loading}
-                                buttonColor='red'
-                                textColor='white'
-                                style={styles.btnStyle}>
-                                Cancel Application
-                            </Button>
-
-                        ) : (
-                            <Button mode='elevated'
-                                onPress={() => applyGig()}
-                                loading={loading}
-                                buttonColor='#0EB080'
-                                textColor='white'
-                                style={styles.btnStyle}>
-                                Apply Gig
-                            </Button>
-
-                        )}
-                    </>
                 )}
-
 
             </View>
         </View>
