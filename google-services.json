@@ -1,0 +1,56 @@
+{
+  "project_info": {
+    "project_number": "562597244093",
+    "firebase_url": "https://worshify-52a66-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "worshify-52a66",
+    "storage_bucket": "worshify-52a66.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:562597244093:android:0d5f80808436e19248dbd4",
+        "android_client_info": {
+          "package_name": "com.jvchiu131.worshify"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "562597244093-cns9dsuek3ka27ige6p5ag6jma3d7i8n.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jvchiu131.worshify",
+            "certificate_hash": "02b394c983dc62aa064cd5a4256103b9c46d574b"
+          }
+        },
+        {
+          "client_id": "562597244093-rgppm3sqjf5m5keof6395haj5dgr8029.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jvchiu131.worshify",
+            "certificate_hash": "0033e563f6cffc4025ddd4193bb91a574d2e9ecb"
+          }
+        },
+        {
+          "client_id": "562597244093-p0d43avqd5s2urb41hibt2ljd9uobjep.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBy41U736fXphXn09zemFYICO-f6JdNcDQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "562597244093-p0d43avqd5s2urb41hibt2ljd9uobjep.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
