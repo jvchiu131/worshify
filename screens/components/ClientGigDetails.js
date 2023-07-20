@@ -10,6 +10,8 @@ import AppliedProfile from './AppliedProfile';
 import { Appbar } from 'react-native-paper';
 import { AntDesign } from '@expo/vector-icons';
 import DropDownPicker from 'react-native-dropdown-picker'
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
 
 const { height: screenHeight } = Dimensions.get('screen');
 const { width: screenWidth } = Dimensions.get('screen');
@@ -30,6 +32,7 @@ const ClientGigDetails = ({ postID }) => {
     const [selectedItem, setSelectedItem] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [status, setStatus] = useState();
+    const [notification, setNotification] = useState()
     const showGigModal = () => setModalVisible(true);
     const hideGigModal = () => setModalVisible(false);
 
@@ -110,7 +113,6 @@ const ClientGigDetails = ({ postID }) => {
             setGenre(data);
         })
     }, [])
-
 
 
 

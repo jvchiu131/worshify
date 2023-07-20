@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, Animated } from 'react-native'
 import { Stack, TextInput, IconButton } from '@react-native-material/core'
 import Icon from '@expo/vector-icons/MaterialCommunityIcons'
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { TouchableOpacity } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { signInWithEmailAndPassword } from 'firebase/auth';
@@ -14,11 +14,11 @@ const LoginModal = () => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-
     const [isFocused, setIsFocused] = useState(false);
-
-
     const navigation = useNavigation();
+
+
+
 
     const handleLogin = () => {
         signInWithEmailAndPassword(auth, email, password)

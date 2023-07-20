@@ -1,13 +1,13 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import { createStackNavigator } from '@react-navigation/stack'
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ProfileScreen from '../../screens/ProfileScreen';
 import EdtProfile from '../../screens/EdtProfile';
 import { StatusBar } from 'expo-status-bar';
 
 
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator()
 
 const ChatNav = () => {
     return (
