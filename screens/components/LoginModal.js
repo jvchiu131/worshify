@@ -31,7 +31,7 @@ const LoginModal = () => {
             })
             .catch((error) => {
                 const errorCode = error.code;
-                const errorMessage = error.message;
+                const errorMessage = error.message; d
             });
     }
 
