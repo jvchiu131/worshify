@@ -3,101 +3,43 @@ import { StatusBar } from 'expo-status-bar';
 import LoginScreen from './screens/screens/LoginScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
-import ContactNav from './screens/components/navigator/ContactNav';
-import DashNav from './screens/components/navigator/DashNav';
 import GigSearch from './screens/screens/GigSearch';
 import MusicianSearch from './screens/screens/MusicianSearch';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import ProfileScreen from './screens/screens/ProfileScreen';
 import NotificationScreen from './screens/screens/NotificationScreen';
-import ChatScreen from './screens/screens/ChatScreen';
 import MusicianProfile from './screens/components/MusicianProfile';
 import EditGig from './screens/screens/EditGig';
+import DashNav from './screens/components/navigator/DashNav';
+import ContactNav from './screens/components/navigator/ContactNav';
+import ChatScreen from './screens/screens/ChatScreen';
 import AppliedProfile from './screens/components/AppliedProfile';
 import { useState, useEffect, useRef } from 'react';
-import { Text, View, Button, Platform, StyleSheet } from 'react-native';
+import { Text, View, Button, Platform, StyleSheet, Alert } from 'react-native';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
-
 
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
-  }),
-});
-
-// Can use this function below OR use Expo's Push Notification Tool from: https://expo.dev/notifications
-async function sendPushNotification(expoPushToken) {
-  const message = {
-    to: expoPushToken,
-    sound: 'default',
-    title: 'Original Title',
-    body: 'And here is the body!',
-    data: { someData: 'goes here' },
-  };
-
-  await fetch('https://exp.host/--/api/v2/push/send', {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Accept-encoding': 'gzip, deflate',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(message),
-  });
-}
-
-async function registerForPushNotificationsAsync() {
-  let token;
-  if (Device.isDevice) {
-    const { status: existingStatus } = await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
-    if (existingStatus !== 'granted') {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
-    }
-    if (finalStatus !== 'granted') {
-      alert('Failed to get push token for push notification!');
-      return;
-    }
-    token = (await Notifications.getExpoPushTokenAsync()).data;
-    console.log(token);
-  } else {
-    alert('Must use physical device for Push Notifications');
-  }
-
-  if (Platform.OS === 'android') {
-    Notifications.setNotificationChannelAsync('default', {
-      name: 'default',
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#FF231F7C',
-    });
-  }
-
-  return token;
-}
-
-
-
-
-
 export default function App() {
-
   const [expoPushToken, setExpoPushToken] = useState('');
   const [notification, setNotification] = useState(false);
   const notificationListener = useRef();
   const responseListener = useRef();
 
   useEffect(() => {
-    registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: false,
+        shouldSetBadge: false,
+      }),
+    });
+
 
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
       setNotification(notification);
@@ -115,8 +57,6 @@ export default function App() {
 
 
   return (
-
-
 
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>

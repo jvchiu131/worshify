@@ -5,6 +5,8 @@ import { db, auth } from '../../firebase';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { Button } from 'react-native-paper';
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
 
 
 const { height: screenHeight } = Dimensions.get('screen');
@@ -20,7 +22,7 @@ const ClientGigDetails = ({ postID }) => {
     const [currentUserData, setCurrentUserData] = useState([]);
     const [genre, setGenre] = useState([]);
     const [alreadyApplied, setAlreadyApplied] = useState(false);
-    const [gigClosed, setGigClosed] = useState(false)
+    const [clientToken, setClientToken] = useState('');
     const user = auth.currentUser;
     const uid = user.uid;
 
@@ -119,18 +121,6 @@ const ClientGigDetails = ({ postID }) => {
         fetchInstruments();
     }, [])
 
-
-    useEffect(() => {
-        const statusRef = ref(db, 'gigPosts/' + postID + '/gigStatus')
-        onValue(statusRef, (snapshot) => {
-            if (snapshot.exists()) {
-                if (snapshot.val() == 'Closed') {
-                    setGigClosed(true);
-                }
-            }
-        })
-    }, [])
-
     useEffect(() => {
         const fetchGenres = async () => {
             const pathRef = child(ref(db), 'gigPosts/' + postID + '/Genre_Needed');
@@ -148,6 +138,49 @@ const ClientGigDetails = ({ postID }) => {
 
         fetchGenres();
     }, [])
+
+    useEffect(() => {
+        const fetchToken = async () => {
+            const tokenRef = ref(db, 'users/notificationTokens/' + postDetails.uid)
+
+            onValue(tokenRef, (snapshot) => {
+                setClientToken(snapshot.val().expoToken);
+            })
+
+            // try {
+            //     const snapshot = await get(tokenRef);
+            //     setClientToken(snapshot.val());
+            //     console.log(clientToken);
+            // } catch (error) {
+            //     console.log(error)
+            // }
+        }
+        console.log(clientToken)
+
+        fetchToken();
+    }, [])
+
+    // Can use this function below OR use Expo's Push Notification Tool from: https://expo.dev/notifications
+    async function sendPushNotification(expoPushToken) {
+        const message = {
+            to: expoPushToken,
+            sound: 'default',
+            title: 'Original Title',
+            body: 'And here is the body!',
+            data: { someData: 'goes here' },
+        };
+
+        await fetch('https://exp.host/--/api/v2/push/send', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Accept-encoding': 'gzip, deflate',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(message),
+        });
+    }
+
 
 
 
@@ -173,6 +206,7 @@ const ClientGigDetails = ({ postID }) => {
         }).then(() => {
             setLoading(false)
             setApplied(true);
+
         })
 
     }
@@ -267,37 +301,29 @@ const ClientGigDetails = ({ postID }) => {
 
 
             <View style={styles.btnContainer}>
-                {gigClosed ? (
-                    <View style={{ ...styles.btnStyle, backgroundColor: 'red', padding: 15 }}>
-                        <Text style={{ color: 'white', fontWeight: 'bold' }}>Gig Already Closed</Text>
-                    </View>
+
+                {applied || alreadyApplied ? (
+
+                    <Button mode='elevated'
+                        onPress={() => deleteGig()}
+                        loading={loading}
+                        buttonColor='red'
+                        textColor='white'
+                        style={styles.btnStyle}>
+                        Cancel Application
+                    </Button>
+
                 ) : (
-                    <>
-                        {applied || alreadyApplied ? (
+                    <Button mode='elevated'
+                        onPress={async () => { applyGig(), await sendPushNotification(clientToken); }}
+                        loading={loading}
+                        buttonColor='#0EB080'
+                        textColor='white'
+                        style={styles.btnStyle}>
+                        Apply Gig
+                    </Button>
 
-                            <Button mode='elevated'
-                                onPress={() => deleteGig()}
-                                loading={loading}
-                                buttonColor='red'
-                                textColor='white'
-                                style={styles.btnStyle}>
-                                Cancel Application
-                            </Button>
-
-                        ) : (
-                            <Button mode='elevated'
-                                onPress={() => applyGig()}
-                                loading={loading}
-                                buttonColor='#0EB080'
-                                textColor='white'
-                                style={styles.btnStyle}>
-                                Apply Gig
-                            </Button>
-
-                        )}
-                    </>
                 )}
-
 
             </View>
         </View>

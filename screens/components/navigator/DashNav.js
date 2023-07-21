@@ -3,9 +3,9 @@ import React from 'react'
 import MusicianSearch from '../../screens/MusicianSearch'
 import GigSearch from '../../screens/GigSearch'
 import DashScreen from '../../screens/DashScreen'
-import { createStackNavigator } from '@react-navigation/stack'
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator()
 
 const DashNav = () => {
     return (

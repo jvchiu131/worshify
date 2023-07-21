@@ -111,9 +111,22 @@ const ProfilePicReg = ({ fname, lname, email, bday, age, address, password }) =>
                         }
                     );
                 }
+
+                const sendEmailVerification = async () => {
+                    // Send email verification
+                    await user.sendEmailVerification({
+                        handleCodeInApp: true,
+                        url: 'https://worshify-52a66.firebaseapp.com/'
+                    });
+
+                }
+
+
                 writeUserData();
                 writeUserType();
                 writeLoggedUserData();
+                sendEmailVerification();
+
             })
             .catch(error => alert(error.message))
 

@@ -39,7 +39,7 @@ const InstGenre = ({ fname, lname, email, bday, age, address, password, img }) =
 
         }
     }
-
+    d
     const handleSignup = () => {
         createUserWithEmailAndPassword(auth, email, password)
 

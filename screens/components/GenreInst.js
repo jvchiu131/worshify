@@ -88,7 +88,6 @@ const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType
             Genre_Needed: { ...selectedGenres },
             postID: newGigsRefKey,
             Gig_Image: img,
-            gigStatus: 'Available'
         });
 
 
@@ -105,7 +104,6 @@ const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType
             Genre_Needed: { ...selectedGenres },
             postID: newGigsRefKey,
             Gig_Image: img,
-            gigStatus: 'Available'
         });
 
 

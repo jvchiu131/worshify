@@ -119,7 +119,6 @@ const AddPortfolio = () => {
         const PortfolioRef = db_ref(db, 'users/' + '/logged_users/' + uid + '/portfolioPic');
 
         set(UserPortfolioRef, {
-
             FirstImage: firstImage,
             SecondImage: secondImage,
             ThirdImage: thirdImage
