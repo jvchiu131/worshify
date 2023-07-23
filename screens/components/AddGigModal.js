@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Animated, Dimensions, Image, Platform } from 'react-native'
+import { StyleSheet, Text, View, Animated, Dimensions, Image, Platform, ScrollView } from 'react-native'
 import React from 'react'
 import { useState, useCallback } from 'react'
 import GenreInst from './GenreInst'
@@ -39,43 +39,34 @@ const AddGigModal = () => {
         { label: 'Worship Concert', value: 'Worship Concert' },
         { label: 'Wedding', value: 'Wedding' }
     ]);
+    const [MusicianType, setMusicianType] = useState(null);
+    const [opentype, setOpenType] = useState(false);
+    const [itemsType, setItemsType] = useState([
+        { label: 'Solo', value: 'Solo' },
+        { label: 'Band', value: 'Band' }
+    ]);
+    const [gender, setGender] = useState(null);
+    const [opengender, setOpenGender] = useState(false);
+    const [itemsGender, setItemsGender] = useState([
+        { label: 'Male', value: 'Male' },
+        { label: 'Female', value: 'Female' }
+    ]);
     const [startVisible, setStartVisible] = useState(false);
     const [endVisible, setEndVisible] = useState(false);
     const [imgUploaded, setImgUploaded] = useState(false)
     const [showPicker, setShowPicker] = useState(false);
-    const [isFieldsComplete, setIsFieldsComplete] = useState(false);
 
 
 
-    // const handleBtn = () => {
-    //     Animated.timing(ContentValue, {
-    //         toValue: 0,
-    //         duration: 300,
-    //         useNativeDriver: false,
-    //     }).start()
-    //     setIsClicked(true);
-    // }
 
     const handleBtn = () => {
-        if (GigName && GigAddress && date && startTime && endTime && EventType && image) {
-            if (!isPastDate(date) && isWithinThreeDays(date)) {
-                Animated.timing(ContentValue, {
-                    toValue: 0,
-                    duration: 300,
-                    useNativeDriver: false,
-                }).start();
-                setIsClicked(true);
-                setIsFieldsComplete(true); // Set the completeness state to true
-            } else {
-                // Handle invalid date selection (date in the past or not within 3 days)
-                alert('Please select a valid date that is not in the past and within 3 days from today.');
-            }
-        } else {
-            // Handle case when all fields are not filled
-            alert('Please fill in all the required fields.');
-            setIsFieldsComplete(false); // Set the completeness state to false
-        }
-    };
+        Animated.timing(ContentValue, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: false,
+        }).start()
+        setIsClicked(true);
+    }
 
     //handles image upload
     const pickImage = async () => {
@@ -124,7 +115,11 @@ const AddGigModal = () => {
     }
 
 
-    const props = { gigName: GigName, gigAddress: GigAddress, gigDate: date, StartTime: startTime, EndTime: endTime, eventType: EventType, img: image };
+    const props = {
+        gigName: GigName, gigAddress: GigAddress, gigDate: date,
+        StartTime: startTime, EndTime: endTime, eventType: EventType, img: image,
+        gender: gender, musicianType: MusicianType
+    };
 
     const toggleDatepicker = () => {
         setShowPicker(!showPicker)
@@ -153,7 +148,6 @@ const AddGigModal = () => {
 
     const toggleTimepickerStart = () => {
         setStartVisible(!startVisible)
-        console.log('timepicker pressed start')
     };
 
     const onChangeStartTime = ({ type }, selectedTime) => {
@@ -207,185 +201,216 @@ const AddGigModal = () => {
         return `${hours}:${minutes}`;
     }
 
-    //handles user chosen past dates
-    const isPastDate = (selectedDate) => {
-        const currentDate = new Date()
-        return selectedDate < currentDate;
-    }
-
-    //handles user chosen three days before the gig
-    const isWithinThreeDays = (selectedDate) => {
-        const currentDate = new Date();
-        const threeDaysLater = new Date();
-        threeDaysLater.setDate(currentDate.getDate() + 3);
-        return selectedDate >= currentDate && selectedDate >= threeDaysLater;
-    };
-
     return (
-        <View style={styles.root}>
+        <ScrollView contentContainerStyle={styles.scrollViewContent}>
+            <View style={styles.root}>
 
-            {isClicked ? (
-                <Animated.View
-                    style={{ right: ContentValue }}>
-                    {isClicked ? (
-                        <GenreInst {...props} />
-                    ) : null}
-                </Animated.View>
-            ) : (
-                <View style={styles.container}>
+                {isClicked ? (
+                    <Animated.View
+                        style={{ right: ContentValue }}>
+                        {isClicked ? (
+                            <GenreInst {...props} />
+                        ) : null}
+                    </Animated.View>
+                ) : (
 
+                    <View style={styles.container}>
 
-                    <View style={styles.GigNameContainer}>
-                        <Text style={styles.txtStyles}>Gig Name</Text>
-                        <TextInput style={styles.inputStyle}
-                            value={GigName}
-                            placeholder='Enter gig name'
-                            onChangeText={text => setGigName(text)} />
-                    </View>
-
-                    <View style={styles.GigNameContainer}>
-                        <Text style={styles.txtStyles}>Gig Address</Text>
-                        <TextInput style={styles.inputStyle}
-                            value={GigAddress}
-                            placeholder='Enter gig address'
-                            onChangeText={text => setGigAddress(text)} />
-                    </View>
+                        <View style={styles.headerContainer}>
+                            <Text style={styles.header}>Create A <Text style={{ color: '#0EB080' }}>Gig</Text></Text>
+                        </View>
 
 
-                    <View style={styles.timeContainer}>
+                        <View style={styles.GigNameContainer}>
+                            <Text style={styles.txtStyles}>Gig Title</Text>
+                            <TextInput style={styles.inputStyle}
+                                value={GigName}
+                                placeholder='Enter gig name'
+                                onChangeText={text => setGigName(text)} />
+                        </View>
 
-                        {!showPicker && (
-                            <TouchableOpacity
-                                onPress={toggleDatepicker}>
-                                <TextInput
-                                    placeholder='Choose Gig Date'
-                                    placeholderTextColor='#11182744'
-                                    value={date instanceof Date ? date.toDateString() : ''}
-                                    onChangeText={setDate}
-                                    editable={false}
-                                    style={styles.dateStyle}
+                        <View style={styles.GigNameContainer}>
+                            <Text style={styles.txtStyles}>Gig Address</Text>
+                            <TextInput style={styles.inputStyle}
+                                value={GigAddress}
+                                placeholder='Enter gig address'
+                                onChangeText={text => setGigAddress(text)} />
+                        </View>
+                        <View style={styles.GigNameContainer}>
+
+                            <Text style={styles.txtStyles}>Date</Text>
+                            {!showPicker && (
+                                <Pressable
+                                    onPress={toggleDatepicker} style={styles.pressableContainer}>
+                                    <View style={styles.inputContainer}>
+                                        <MaterialIcons name="date-range" size={24} color="#1E1E1E" style={styles.dateIcon} />
+                                        <TextInput
+                                            placeholder='Choose Gig Date'
+                                            placeholderTextColor='#11182744'
+                                            value={date instanceof Date ? date.toDateString() : ''}
+                                            onChangeText={setDate}
+                                            editable={false}
+                                            style={styles.txtTime}
+                                        />
+                                    </View>
+                                </Pressable>
+
+                            )}
+
+
+                            {showPicker && (
+                                <DateTimePicker
+                                    mode='date'
+                                    display='spinner'
+                                    value={date}
+                                    onChange={onChange}
+                                    is24Hour={false}
                                 />
-                            </TouchableOpacity>
+                            )}
 
-                        )}
-
-
-                        {showPicker && (
-                            <DateTimePicker
-                                mode='date'
-                                display='spinner'
-                                value={date}
-                                onChange={onChange}
-                                is24Hour={false}
-                            />
-                        )}
-
-
-
-                        {!startVisible && (
-                            <Pressable
-                                onPress={toggleTimepickerStart}>
-                                <TextInput
-                                    placeholder='Choose Start Time'
-                                    placeholderTextColor='#11182744'
-                                    value={startTime instanceof Date ? formatTime(startTime) : ''}
-                                    onChangeText={setStartTime}
-                                    editable={false}
-                                    style={styles.dateStyle}
+                        </View>
+                        <View style={styles.timeContainer}>
+                            {!startVisible ? (
+                                <Pressable onPress={toggleTimepickerStart} style={styles.timePickerContainer}>
+                                    <Text style={styles.txtStyles}>Time Start:</Text>
+                                    <TextInput
+                                        placeholder='Choose Start Time'
+                                        placeholderTextColor='#11182744'
+                                        value={startTime instanceof Date ? formatTime(startTime) : ''}
+                                        onChangeText={setStartTime}
+                                        editable={false}
+                                        style={styles.timeStyle}
+                                    />
+                                    <MaterialIcons name="access-time" size={24} color="#1E1E1E" style={styles.pickerIcon} />
+                                </Pressable>
+                            ) : (
+                                <DateTimePicker
+                                    mode='time'
+                                    display='compact'
+                                    value={startTime}
+                                    onChange={onChangeStartTime}
+                                    is24Hour={false}
                                 />
-                            </Pressable>
+                            )}
 
-                        )}
+                            {!endVisible ? (
+                                <Pressable onPress={toggleTimepickerEnd} style={styles.timePickerContainer}>
+                                    <Text style={styles.txtStyles}>Time End:</Text>
+                                    <TextInput
+                                        placeholder='Choose End Time'
+                                        placeholderTextColor='#11182744'
+                                        value={endTime instanceof Date ? formatTime(endTime) : ''}
+                                        onChangeText={setEndTime}
+                                        editable={false}
+                                        style={styles.timeStyle}
 
-
-                        {startVisible && (
-                            <DateTimePicker
-                                mode='time'
-                                display='spinner'
-                                value={startTime}
-                                onChange={onChangeStartTime}
-                                is24Hour={false}
-                            />
-                        )}
-
-
-                        {!endVisible && (
-                            <Pressable
-                                onPress={toggleTimepickerEnd}>
-                                <TextInput
-                                    placeholder='Choose End Time'
-                                    placeholderTextColor='#11182744'
-                                    value={endTime instanceof Date ? formatTime(endTime) : ''}
-                                    onChangeText={setEndTime}
-                                    editable={false}
-                                    style={styles.dateStyle}
+                                    />
+                                    <MaterialIcons name="access-time" size={24} color="#1E1E1E" style={styles.pickerIcon} />
+                                </Pressable>
+                            ) : (
+                                <DateTimePicker
+                                    mode='time'
+                                    display='compact'
+                                    value={endTime}
+                                    onChange={onChangeEndTime}
+                                    is24Hour={false}
                                 />
-                            </Pressable>
+                            )}
+                        </View>
 
-                        )}
 
 
-                        {endVisible && (
-                            <DateTimePicker
-                                mode='time'
-                                display='spinner'
-                                value={endTime}
-                                onChange={onChangeEndTime}
+
+                        <View style={styles.eventContainer}>
+                            <Text style={styles.txtStyles}>Event Type</Text>
+                            <DropDownPicker
+                                open={open}
+                                value={EventType}
+                                items={items}
+                                setOpen={setOpen}
+                                setValue={setEventType}
+                                setItems={setItems}
+                                style={styles.eventStyle}
+                                dropDownStyle={styles.dropDownStyle}
                             />
-                        )}
+                        </View>
 
 
-                    </View>
-
-
-                    <View style={styles.eventContainer}>
-                        <Text style={styles.txtStyles}>Event Type</Text>
-                        <DropDownPicker
-                            open={open}
-                            value={EventType}
-                            items={items}
-                            setOpen={setOpen}
-                            setValue={setEventType}
-                            setItems={setItems}
-                        />
-                    </View>
-
-
-                    <TouchableOpacity style={styles.imgContainer} onPress={pickImage}>
-
-                        {imgUploaded ? (
-                            image && <Image source={{ uri: image }} style={styles.imgStyle} />
-
-                        ) : (
-                            <>
-                                <MaterialIcons name="add-photo-alternate" size={24} color="black" />
-                                <Text>
-                                    Add Photo
-                                </Text>
-                            </>
-                        )}
-
-                    </TouchableOpacity>
-
-
-                    <View>
-                        <TouchableOpacity style={styles.btnContainer} onPress={handleBtn}>
-                            <View style={styles.button}>
-                                <Text style={styles.txtStyle}>Next</Text>
+                        <View style={styles.rowContainer}>
+                            <View style={styles.musicianContainer}>
+                                <Text style={styles.txtStyles}>Musician Type</Text>
+                                <DropDownPicker
+                                    open={opentype}
+                                    value={MusicianType}
+                                    items={itemsType}
+                                    setOpen={setOpenType}
+                                    setValue={setMusicianType}
+                                    setItems={setItemsType}
+                                    style={styles.eventStyle}
+                                    dropDownStyle={styles.dropDownStyle}
+                                    dropDownDirection='TOP'
+                                />
                             </View>
+
+                            <View style={styles.genderContainer}>
+                                <Text style={styles.txtStyles}>Gender</Text>
+                                <DropDownPicker
+                                    open={opengender}
+                                    value={gender}
+                                    items={itemsGender}
+                                    setOpen={setOpenGender}
+                                    setValue={setGender}
+                                    setItems={setItemsGender}
+                                    style={styles.eventStyle}
+                                    dropDownStyle={styles.dropDownStyle}
+                                    dropDownDirection='TOP'
+                                />
+                            </View>
+                        </View>
+
+                        <TouchableOpacity style={styles.imgContainer} onPress={pickImage}>
+
+                            {imgUploaded ? (
+                                image && <Image source={{ uri: image }} style={styles.imgStyle} />
+
+                            ) : (
+                                <>
+                                    <MaterialIcons name="add-photo-alternate" size={24} color="black" />
+                                    <Text>
+                                        Add Photo
+                                    </Text>
+                                </>
+                            )}
+
                         </TouchableOpacity>
+
+
+                        <View>
+                            <TouchableOpacity style={styles.btnContainer} onPress={handleBtn}>
+                                <View style={styles.button}>
+                                    <Text style={[styles.txtStyle, { color: 'white', fontWeight: 'bold' }]}>Next</Text>
+                                </View>
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                </View>
-            )}
 
 
-        </View>
+
+                )}
+
+
+            </View>
+        </ScrollView>
     )
 }
 
 export default AddGigModal
 
 const styles = StyleSheet.create({
+    scrollViewContent: {
+        flexGrow: 1,
+        paddingBottom: 100,
+    },
     root: {
         height: '100%',
         width: '100%',
@@ -393,51 +418,79 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         position: 'relative',
 
-
     },
     container: {
-
+        marginTop: 60,
         height: '100%',
         width: '100%',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     GigNameContainer: {
-        margin: 10,
-        width: '100%'
-    },
-    inputStyle: {
-        borderWidth: 2,
-        borderColor: '#0EB080',
-        borderRadius: 10,
-        padding: 5
+        margin: 6,
+        width: '90%'
 
     },
-    txtStyles: {
+    header: {
         fontWeight: 'bold',
-        color: 'black'
+        fontSize: 20,
+        alignItems: 'center',
     },
-    timeContainer: {
+
+    inputStyle: {
+        marginTop: 5,
+        borderWidth: 1,
+        borderColor: '#0EB080',
+        borderRadius: 10,
+        padding: 5,
+        marginLeft: 3,
+    },
+    inputContainer: {
         flexDirection: 'row',
-        width: '100%',
-        justifyContent: 'space-between',
-        marginTop: 2,
-        height: '5%',
-        marginBottom: 25,
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: '#0EB080',
+        borderRadius: 10,
+        marginTop: 5,
+        padding: 2,
+        color: 'black',
 
     },
-    btnStyle: {
-        borderWidth: 2,
-        borderColor: '#0EB080',
+
+
+    timePickerContainer: {
+        flex: 1,
         alignItems: 'center',
-        justifyContent: 'center',
+
+    },
+    pickerPressable: {
+        alignItems: 'center',
+    },
+
+
+    pickerInputContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: '#0EB080',
         borderRadius: 10,
-        width: '25%'
+        width: '80%',
+        height: 36,
+    },
+    pickerIcon: {
+        position: 'absolute',
+        left: 30,
+        paddingTop: 30,
     },
     eventContainer: {
-        margin: 5
+        margin: 20,
+
+
     },
+
+
+
     btnContainer: {
-        borderWidth: 2,
+        borderWidth: 5,
         borderColor: '#0EB080',
         backgroundColor: '#0EB080',
         borderRadius: 10,
@@ -452,11 +505,37 @@ const styles = StyleSheet.create({
         paddingVertical: 2,
         borderRadius: 10
     },
-    txtStyle: {
-        fontSize: 17,
-        fontWeight: 'bold',
-        color: 'white'
+    timeContainer: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        marginTop: 10,
+        height: '5%',
+        marginBottom: 25,
+        margin: 5,
+        flexDirection: 'row',
+
     },
+    timePickerContainer: {
+        flex: 1,
+        alignItems: 'center',
+    },
+    txtStyles: {
+        fontWeight: 'bold',
+        color: 'black',
+        marginBottom: 5,
+    },
+    timeStyle: {
+        borderWidth: 1,
+        borderColor: '#0EB080',
+        borderRadius: 10,
+        width: '80%',
+        height: 36,
+        fontSize: 16,
+        color: '#111827',
+        paddingLeft: 50
+
+    },
+
     imgContainer: {
         borderWidth: 2,
         borderRadius: 15,
@@ -474,11 +553,40 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    dateStyle: {
-        borderWidth: 2,
+    dateIcon: {
+        margin: 5,
+    },
+    txtTime: {
+        color: 'black',
+    },
+
+
+    dropDownContainerStyle: {
+        backgroundColor: '#FFFFFF',
         borderColor: '#0EB080',
-        borderRadius: 10,
-        height: '100%',
-        width: '80%'
-    }
+        borderWidth: 1,
+    },
+    eventContainer: {
+        marginHorizontal: 20,
+        marginTop: 10
+    },
+    rowContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 15
+    },
+    musicianContainer: {
+        flex: 1,
+        marginHorizontal: 20,
+    },
+    genderContainer: {
+        flex: 1,
+        marginHorizontal: 20,
+    },
+    eventStyle: {
+        borderColor: '#0EB080',
+        borderWidth: 1,
+    },
+
+
 });

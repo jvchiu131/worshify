@@ -7,7 +7,7 @@ import DateTimePicker from '@react-native-community/datetimepicker'
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('screen');
 
-const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress, gigDate, StartTime, EndTime, eventType, img }) => {
+const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress, gigDate, StartTime, EndTime, eventType, img, gender, musicianType }) => {
 
 
     const [items, setItems] = useState([
@@ -23,7 +23,7 @@ const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress,
     const [quantityZero, setQuantityZero] = useState(0);
     const [quantityOne, setQuantityOne] = useState(0);
     const [quantityTwo, setQuantityTwo] = useState(0);
-    const [gender, setGender] = useState(null);
+    const [Gender, setGender] = useState();
     const [open, setOpen] = useState(false);
     const [about, setAbout] = useState('');
     const [instrumentsNeeded, setInstrumentsNeeded] = useState([
@@ -69,7 +69,8 @@ const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress,
             postID: newGigsRefKey,
             Gig_Image: img,
             about: about,
-            gender: gender
+            gender: Gender,
+            musicianType: musicianType
         });
 
 
@@ -86,7 +87,8 @@ const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress,
             postID: newGigsRefKey,
             Gig_Image: img,
             about: about,
-            gender: gender
+            gender: Gender,
+            musicianType: musicianType
         });
 
         setGigCreated(true);
@@ -377,12 +379,13 @@ const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress,
                                 <Text style={styles.txtStyles}>Sex:</Text>
                                 <DropDownPicker
                                     open={open}
-                                    value={gender}
+                                    value={Gender}
                                     items={items}
                                     setOpen={setOpen}
                                     setValue={setGender}
                                     setItems={setItems}
                                     dropDownDirection='TOP'
+                                    placeholder={gender}
                                 />
                             </View>
                         </View>

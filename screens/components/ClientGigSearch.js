@@ -35,6 +35,9 @@ const ClientGigSearch = () => {
     const uid = user.uid;
     const navigation = useNavigation()
 
+    const showAddGig = () => setShowModal(true);
+    const hideAddGig = () => setShowModal(false);
+
 
     const showGigModal = () => setModalVisible(true);
     const hideGigModal = () => {
@@ -53,28 +56,7 @@ const ClientGigSearch = () => {
     }, [])
 
 
-    const moveModal = () => {
-        setShowModal(true)
-        Animated.timing(animValue, {
-            toValue: 700,
-            duration: 300,
-            useNativeDriver: false
-        }).start()
 
-    }
-
-    const moveBack = () => {
-        Animated.timing(animValue, {
-            toValue: 0,
-            duration: 300,
-            useNativeDriver: false,
-
-        }).start()
-        setTimeout(() => {
-            setShowModal(false)
-        }, 300)
-
-    }
 
     const handleItemPress = (key) => {
         setSelectedItem(key);
@@ -160,10 +142,37 @@ const ClientGigSearch = () => {
         )
     }
 
+    const isWithinOneWeek = (gigDate) => {
+        const oneWeekInMillis = 7 * 24 * 60 * 60 * 1000;
+        const today = new Date();
+        const gigDateMillis = new Date(gigDate).getTime();
+        return gigDateMillis - today.getTime() <= oneWeekInMillis;
+    };
+
 
     const handleEditBtn = () => {
-        navigation.navigate('EditGig', { ...props })
-    }
+        if (selectedItem && isWithinOneWeek(gigData.GigDate)) {
+            Alert.alert(
+                'Editing Gig within 1 Week',
+                'You are editing a gig that is within 1 week from the current date. Are you sure you want to proceed?',
+                [
+                    {
+                        text: 'Cancel',
+                        style: 'cancel'
+                    },
+                    {
+                        text: 'Proceed',
+                        onPress: () => navigation.navigate('EditGig', { ...props })
+                    }
+                ]
+            );
+        } else {
+            navigation.navigate('EditGig', { ...props });
+        }
+    };
+
+
+
 
 
     return (
@@ -183,18 +192,17 @@ const ClientGigSearch = () => {
                 } />
 
             <View style={{ zIndex: 20 }}>
-                <TouchableWithoutFeedback onPressOut={moveBack}>
-                    <Animated.View
-                        style={{ bottom: animValue }}
-                        behavior='padding'>
-                        {showModal ? (
-                            <View style={styles.containerField}>
-                                <AddGigModal />
-                            </View>
-                        ) : (<></>
-                        )}
-                    </Animated.View>
-                </TouchableWithoutFeedback >
+
+                <Modal
+                    visible={showModal}
+                    animationType='slide'
+                    onRequestClose={hideAddGig}
+                    onDismiss={() => setShowModal(false)}>
+                    <Appbar.Header style={styles.appBarStyle}>
+                        <Appbar.BackAction onPress={hideAddGig} color='white' />
+                    </Appbar.Header>
+                    <AddGigModal />
+                </Modal>
 
                 <Modal
                     visible={modalVisible}
@@ -217,7 +225,7 @@ const ClientGigSearch = () => {
                 </Modal>
             </View >
 
-            <TouchableOpacity onPress={moveModal} style={styles.btnContainer}>
+            <TouchableOpacity onPress={() => showAddGig()} style={styles.btnContainer}>
                 <Ionicons name="add-circle-sharp" size={70} color="#0EB080" />
             </TouchableOpacity>
 

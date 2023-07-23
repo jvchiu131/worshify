@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ImageBackground, Dimensions, ScrollView, TouchableOpacity, Modal } from 'react-native'
+import { StyleSheet, Text, View, ImageBackground, Dimensions, ScrollView, TouchableOpacity, Modal, TextInput } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { child, onValue, ref, remove, update, set } from 'firebase/database';
 import { db, auth } from '../../firebase';
@@ -12,6 +12,8 @@ import { AntDesign } from '@expo/vector-icons';
 import DropDownPicker from 'react-native-dropdown-picker'
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
+import { AirbnbRating, Rating } from 'react-native-ratings';
+
 
 const { height: screenHeight } = Dimensions.get('screen');
 const { width: screenWidth } = Dimensions.get('screen');
@@ -33,8 +35,14 @@ const ClientGigDetails = ({ postID }) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [status, setStatus] = useState();
     const [notification, setNotification] = useState()
+    const [ratingsVisible, setRatingsVisible] = useState(false);
+    const [rating, setRating] = useState(0);
+    const [review, setReview] = useState('');
+    // const [counter, setCounter] = useState(0);
     const showGigModal = () => setModalVisible(true);
     const hideGigModal = () => setModalVisible(false);
+    const showRatings = () => setRatingsVisible(true);
+    const hideRatings = () => setRatingsVisible(false);
 
     const [open, setOpen] = useState(false);
     const [items, setItems] = useState([
@@ -148,9 +156,7 @@ const ClientGigDetails = ({ postID }) => {
         deleteGig();
     }
 
-    useEffect(() => {
-        console.log(postDetails)
-    }, [])
+
 
     const deleteGig = async () => {
         setLoading(true);
@@ -185,6 +191,27 @@ const ClientGigDetails = ({ postID }) => {
             }
         })
     }, [status])
+
+    //handles the rating visibility
+    useEffect(() => {
+        console.log(gigStatus)
+        if (gigStatus === 'Done') {
+            showRatings()
+        }
+    }, [gigStatus])
+
+    // useEffect(() => {
+    //     const interval = setInterval(() => {
+    //         // Update the count every second
+    //         setCounter(prevCount => prevCount + 1);
+    //     }, 500);
+
+    //     console.log(counter)
+    //     // Clean up the interval when the component unmounts
+    //     return () => {
+    //         clearInterval(interval);
+    //     };
+    // }, []);
 
 
 
@@ -325,6 +352,53 @@ const ClientGigDetails = ({ postID }) => {
                 </View>
 
             </Modal>
+
+            <Modal
+                animationType='slide'
+                transparent={true}
+                visible={ratingsVisible}
+            >
+
+                <View style={styles.ratingsContainer}>
+                    <View style={styles.ratingBorder}>
+                        <View style={styles.ratingTitle}>
+                            <Text style={{ fontWeight: 'bold', fontSize: 20 }}>Ratings and Reviews</Text>
+                        </View>
+
+                        <AirbnbRating reviews={["Poor", "Fair", "Good", "Very Good", "Excellent"]}
+                            count={5}
+                            defaultRating={3}
+                            showRating={true}
+                            size={40}
+                            onFinishRating={(rating) =>
+                                setRating(rating)
+                            } />
+
+
+                        <View style={styles.ratingTitles}>
+                            <Text>Please share your opinion about the musician</Text>
+                        </View>
+
+                        <View style={styles.reviewContainer}>
+                            <TextInput
+                                style={styles.reviewInput}
+                                multiline={true}
+                                autoCapitalize='sentences'
+                                blurOnSubmit={true}
+                                placeholder='Type your reviews...'
+                                onChangeText={text => setReview(text)} />
+                        </View>
+
+                        <View style={styles.reviewBtnContainer}>
+                            <TouchableOpacity style={styles.btnReview} onPress={() => hideRatings()}>
+                                <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 18 }}>Submit Review</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+
+            </Modal>
+
         </View>
     )
 }
@@ -332,6 +406,57 @@ const ClientGigDetails = ({ postID }) => {
 export default ClientGigDetails
 
 const styles = StyleSheet.create({
+    btnReview: {
+        backgroundColor: '#0EB080',
+        padding: 10,
+        paddingHorizontal: 50,
+        borderRadius: 15
+    },
+    reviewBtnContainer: {
+        alignItems: 'center',
+        marginTop: 30
+    },
+    reviewInput: {
+        backgroundColor: '#D9D9D9',
+        height: '100%',
+        width: '100%',
+        borderRadius: 10,
+        padding: 10
+    },
+    reviewContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 10,
+        marginTop: 10,
+        height: '35%'
+    },
+    ratingTitles: {
+        borderColor: 'lightgray',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 10,
+        marginTop: 25
+    },
+    ratingTitle: {
+        borderBottomWidth: 1,
+        borderColor: 'lightgray',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 10
+    },
+    ratingBorder: {
+        borderWidth: 0.5,
+        height: '60%',
+        width: '90%',
+        backgroundColor: '#F9F9F9',
+        borderRadius: 15
+    },
+    ratingsContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: screenHeight,
+        width: screenWidth
+    },
     appBarStyle: {
         backgroundColor: '#151414',
         justifyContent: 'space-between'

@@ -15,7 +15,7 @@ const { width: screenWidth } = Dimensions.get('screen');
 
 
 
-const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType, img }) => {
+const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType, img, gender, musicianType }) => {
 
     const [selectedInstruments, setSelectedInstruments] = useState([]);
     const [selectedGenres, setSelectedGenres] = useState([]);
@@ -88,6 +88,8 @@ const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType
             Genre_Needed: { ...selectedGenres },
             postID: newGigsRefKey,
             Gig_Image: img,
+            Gender: gender,
+            MusicianType: musicianType
         });
 
 
@@ -104,12 +106,18 @@ const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType
             Genre_Needed: { ...selectedGenres },
             postID: newGigsRefKey,
             Gig_Image: img,
+            Gender: gender,
+            MusicianType: musicianType
         });
 
 
     }
 
-    const props = { InstrumentsNeeded: selectedInstruments, GenreNeeded: selectedGenres, uid: uid, gigName: gigName, gigAddress: gigAddress, gigDate: gigDate, StartTime: StartTime, EndTime: EndTime, eventType: eventType, img: img }
+    const props = {
+        InstrumentsNeeded: selectedInstruments, GenreNeeded: selectedGenres, uid: uid, gigName: gigName,
+        gigAddress: gigAddress, gigDate: gigDate, StartTime: StartTime, EndTime: EndTime, eventType: eventType, img: img,
+        gender: gender, musicianType: musicianType
+    }
 
 
 
