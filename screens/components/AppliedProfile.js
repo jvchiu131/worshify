@@ -194,7 +194,7 @@ const AppliedProfile = ({ userId, postID, onStatus }) => {
             try {
                 const snapshot = await get(tokenRef);
                 setMusicianToken(snapshot.val().expoToken);
-                console.log(musicianToken);
+
 
             } catch (error) {
                 console.log(error)

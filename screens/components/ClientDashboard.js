@@ -6,6 +6,8 @@ import { db } from '../../firebase'
 import { ref, set, update } from 'firebase/database'
 import { auth } from '../../firebase';
 import FeaturedMusician from './FeaturedMusician';
+import UpcomingGigs from './UpcomingGigs';
+
 
 const { height: screenHeight } = Dimensions.get('screen');
 const { width: screenWidth } = Dimensions.get('screen');
@@ -125,13 +127,20 @@ const ClientDashboard = () => {
 
     return (
         <View style={styles.root}>
-
+            <View style={styles.txtContainer}>
+                <Text style={styles.txtStyle}>FEATURED MUSICIANS</Text>
+            </View>
             <View style={styles.featuredContainer}>
                 <FeaturedMusician />
             </View>
 
+
+            <View style={styles.txtContainer}>
+                <Text style={styles.txtStyle}>AVAILABLE GIGS</Text>
+            </View>
+
             <View style={styles.container}>
-                <Text>Client Dashboard</Text>
+                <UpcomingGigs />
             </View>
         </View>
     )
@@ -140,6 +149,17 @@ const ClientDashboard = () => {
 export default ClientDashboard
 
 const styles = StyleSheet.create({
+    txtStyle: {
+        color: "white",
+        fontWeight: '800',
+        fontSize: 16
+    },
+    txtContainer: {
+        justifyContent: 'center',
+        marginBottom: 15,
+        marginTop: 10,
+        margin: 10,
+    },
     featuredContainer: {
         width: screenWidth,
         height: '30%',
@@ -151,8 +171,7 @@ const styles = StyleSheet.create({
         bottom: screenHeight / 4.4
     },
     container: {
+        marginTop: 10,
         height: '100%',
-        borderWidth: 2,
-        borderColor: 'white'
     }
 })
