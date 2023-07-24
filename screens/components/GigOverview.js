@@ -20,17 +20,11 @@ const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress,
     const [startVisible, setStartVisible] = useState(false);
     const [endVisible, setEndVisible] = useState(false);
 
-    const [quantityZero, setQuantityZero] = useState(0);
-    const [quantityOne, setQuantityOne] = useState(0);
-    const [quantityTwo, setQuantityTwo] = useState(0);
-    const [Gender, setGender] = useState();
+    const [quantity, setQuantity] = useState(InstrumentsNeeded.map(() => 1));
+    const [Gender, setGender] = useState(gender);
     const [open, setOpen] = useState(false);
     const [about, setAbout] = useState('');
-    const [instrumentsNeeded, setInstrumentsNeeded] = useState([
-        { name: InstrumentsNeeded[0], quantity: quantityZero },
-        { name: InstrumentsNeeded[1], quantity: quantityOne },
-        { name: InstrumentsNeeded[2], quantity: quantityTwo },
-    ])
+    const [instrumentsNeeded, setInstrumentsNeeded] = useState(InstrumentsNeeded.map(instrument => ({ name: instrument, quantity: 1 })));
     const [gigCreated, setGigCreated] = useState(false);
     const [date, setDate] = useState(gigDate || new Date());
     const [startTime, setStartTime] = useState(StartTime || new Date());
@@ -47,13 +41,9 @@ const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress,
         const UserGigsRef = ref_db(db, 'users/' + '/client/' + uid + '/gigs/' + newGigsRefKey);
         const GigPostsRef = ref_db(db, 'gigPosts/' + '/' + newGigsRefKey);
 
-        const instruments = instrumentsNeeded.map(instrument => ({
+        const instruments = instrumentsNeeded.map((instrument, index) => ({
             name: instrument.name,
-            quantity: instrument.name === InstrumentsNeeded[0]
-                ? quantityZero
-                : instrument.name === InstrumentsNeeded[1]
-                    ? quantityOne
-                    : quantityTwo,
+            quantity: quantity[index],
         }));
 
         set(UserGigsRef, {
@@ -100,52 +90,10 @@ const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress,
         console.log(formatTime(StartTime))
     }, [])
 
-    const QuantityZeroBtn = () => {
-        return (
-            <View style={styles.btnQuantity}>
-                <TouchableOpacity onPress={() => setQuantityZero(quantityZero - 1)} style={styles.btnSprt}>
-                    <Text>-</Text>
-                </TouchableOpacity>
-
-                <Text style={styles.btnSprt}>{quantityZero}</Text>
-
-                <TouchableOpacity onPress={() => setQuantityZero(quantityZero + 1)} style={styles.btnSprt}>
-                    <Text>+</Text>
-                </TouchableOpacity>
-            </View>
-        )
-    }
-
-    const QuantityOneBtn = () => {
-        return (
-            <View style={styles.btnQuantity}>
-                <TouchableOpacity onPress={() => setQuantityOne(quantityOne - 1)} style={styles.btnSprt}>
-                    <Text>-</Text>
-                </TouchableOpacity>
-
-                <Text style={styles.btnSprt}>{quantityOne}</Text>
-
-                <TouchableOpacity onPress={() => setQuantityOne(quantityOne + 1)} style={styles.btnSprt}>
-                    <Text>+</Text>
-                </TouchableOpacity>
-            </View>
-        )
-    }
-
-    const QuantityTwoBtn = () => {
-        return (
-            <View style={styles.btnQuantity}>
-                <TouchableOpacity onPress={() => setQuantityTwo(quantityTwo - 1)} style={styles.btnSprt}>
-                    <Text>-</Text>
-                </TouchableOpacity>
-
-                <Text style={styles.btnSprt}>{quantityTwo}</Text>
-
-                <TouchableOpacity onPress={() => setQuantityTwo(quantityTwo + 1)} style={styles.btnSprt}>
-                    <Text>+</Text>
-                </TouchableOpacity>
-            </View>
-        )
+    const handleQuantityChange = (index, value) => {
+        const newQuantity = [...quantity];
+        newQuantity[index] = value;
+        setQuantity(newQuantity);
     }
 
     const toggleDatepicker = () => {
@@ -358,18 +306,22 @@ const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress,
                             <Text>Instruments:</Text>
 
                             <View>
-                                <View style={styles.rootInstrument}>
-                                    <Text style={styles.instrumentsContainer}>{InstrumentsNeeded[0]}</Text>
-                                    <QuantityZeroBtn />
-                                </View>
-                                <View style={styles.rootInstrument}>
-                                    <Text style={styles.instrumentsContainer}>{InstrumentsNeeded[1]}</Text>
-                                    <QuantityOneBtn />
-                                </View>
-                                <View style={styles.rootInstrument}>
-                                    <Text style={styles.instrumentsContainer}>{InstrumentsNeeded[2]}</Text>
-                                    <QuantityTwoBtn />
-                                </View>
+                                {InstrumentsNeeded.map((instrument, index) => (
+                                    <View style={styles.rootInstrument} key={index}>
+                                        <Text style={styles.instrumentsContainer}>{instrument}</Text>
+                                        <View style={styles.btnQuantity}>
+                                            <TouchableOpacity onPress={() => handleQuantityChange(index, quantity[index] - 1)} style={styles.btnSprt}>
+                                                <Text>-</Text>
+                                            </TouchableOpacity>
+
+                                            <Text style={styles.btnSprt}>{quantity[index]}</Text>
+
+                                            <TouchableOpacity onPress={() => handleQuantityChange(index, quantity[index] + 1)} style={styles.btnSprt}>
+                                                <Text>+</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </View>
+                                ))}
                             </View>
 
                         </View>
@@ -394,9 +346,13 @@ const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress,
                             <Text>About:</Text>
                             <TextInput
                                 value={about}
-                                placeholder='Set About'
+                                placeholder='Type here...'
                                 onChangeText={text => setAbout(text)}
                                 style={styles.aboutStyle}
+                                multiline={true}
+                                autoCapitalize='sentences'
+                                blurOnSubmit={true}
+
                             />
                         </View>
 
@@ -408,7 +364,7 @@ const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress,
                                 </ImageBackground>
                             </View>
 
-                            <TouchableOpacity style={styles.btnStyle} onPress={handleCreateGig}>
+                            <TouchableOpacity style={styles.btnStyle} onPress={handleCreateGig} disabled={gigCreated}>
                                 <View >
                                     {gigCreated ? (<Text style={{ color: 'white', fontWeight: 'bold' }}>Gig Created!</Text>) : (
                                         <Text style={{ color: 'white', fontWeight: 'bold' }}>Create Gig</Text>
@@ -488,7 +444,7 @@ const styles = StyleSheet.create({
     },
     scrollViewContent: {
         flexGrow: 1,
-        paddingBottom: 450,
+        paddingBottom: 550,
     },
     instrumentsContainer: {
         borderWidth: 2,
@@ -532,5 +488,9 @@ const styles = StyleSheet.create({
     root: {
         height: screenHeight,
         width: screenWidth
+    },
+    timeContainer: {
+        height: '5%',
+        marginBottom: 200
     }
 })

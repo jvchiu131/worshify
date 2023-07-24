@@ -58,6 +58,7 @@ const ClientGigSearch = () => {
 
 
 
+
     const handleItemPress = (key) => {
         setSelectedItem(key);
         showGigModal();

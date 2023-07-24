@@ -5,7 +5,7 @@ import * as Notifications from 'expo-notifications';
 import { db } from '../../firebase'
 import { ref, set, update } from 'firebase/database'
 import { auth } from '../../firebase';
-
+import FeaturedMusician from './FeaturedMusician';
 
 const { height: screenHeight } = Dimensions.get('screen');
 const { width: screenWidth } = Dimensions.get('screen');
@@ -15,7 +15,7 @@ const { width: screenWidth } = Dimensions.get('screen');
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
         shouldShowAlert: true,
-        shouldPlaySound: false,
+        shouldPlaySound: true,
         shouldSetBadge: false,
     }),
 });
@@ -125,6 +125,11 @@ const ClientDashboard = () => {
 
     return (
         <View style={styles.root}>
+
+            <View style={styles.featuredContainer}>
+                <FeaturedMusician />
+            </View>
+
             <View style={styles.container}>
                 <Text>Client Dashboard</Text>
             </View>
@@ -135,12 +140,15 @@ const ClientDashboard = () => {
 export default ClientDashboard
 
 const styles = StyleSheet.create({
+    featuredContainer: {
+        width: screenWidth,
+        height: '30%',
+    },
     root: {
         backgroundColor: '#151414',
         height: screenHeight,
-        justifyContent: 'flex-start',
-        borderWidth: 2,
-        borderColor: 'red'
+        width: screenWidth,
+        bottom: screenHeight / 4.4
     },
     container: {
         height: '100%',

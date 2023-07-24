@@ -26,6 +26,21 @@ const AppliedProfile = ({ userId, postID, onStatus }) => {
     const [counter, setCounter] = useState(0);
     const [status, setStatus] = useState();
     const [visible, setVisible] = useState(false);
+    const [musicianToken, setMusicianToken] = useState('')
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            // Update the count every second
+            setCounter(prevCount => prevCount + 1);
+        }, 500);
+
+        // Clean up the interval when the component unmounts
+        return () => {
+            clearInterval(interval);
+        };
+
+
+    }, []);
 
     const hideDialog = () => {
         setVisible(false);
@@ -50,23 +65,15 @@ const AppliedProfile = ({ userId, postID, onStatus }) => {
     useEffect(() => {
         const dbRef = ref(db, 'gigPosts/' + postID + '/usersApplied/' + userId)
         onValue(dbRef, (snapshot) => {
-            setStatus(snapshot.val().accepted);
+            if (snapshot.exists()) {
+                setStatus(snapshot.val().accepted);
+            } else {
+                console.log('user parent node non existent')
+            }
         })
-    }, [])
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            // Update the count every second
-            setCounter(prevCount => prevCount + 1);
-        }, 500);
-
-        // Clean up the interval when the component unmounts
-        return () => {
-            clearInterval(interval);
-        };
+    }, [counter])
 
 
-    }, []);
 
     // const handleStatus = () => {
     //     onStatus(status);
@@ -180,6 +187,65 @@ const AppliedProfile = ({ userId, postID, onStatus }) => {
         }
         setCounter(prevCount => prevCount + 1)
     }
+
+    useEffect(() => {
+        const fetchToken = async () => {
+            const tokenRef = ref(db, 'users/notificationTokens/' + userId)
+            try {
+                const snapshot = await get(tokenRef);
+                setMusicianToken(snapshot.val().expoToken);
+                console.log(musicianToken);
+
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        fetchToken();
+    }, [counter])
+
+
+    // Can use this function below OR use Expo's Push Notification Tool from: https://expo.dev/notifications
+    async function sendAcceptedNotification(expoPushToken) {
+        const message = {
+            to: expoPushToken,
+            sound: 'default',
+            title: 'Gig Application',
+            body: 'Your application for the gig has been accepted!',
+            data: { someData: 'goes here' },
+        };
+
+        await fetch('https://exp.host/--/api/v2/push/send', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Accept-encoding': 'gzip, deflate',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(message),
+        });
+    }
+
+
+    // Can use this function below OR use Expo's Push Notification Tool from: https://expo.dev/notifications
+    async function sendRejectedNotification(expoPushToken) {
+        const message = {
+            to: expoPushToken,
+            sound: 'default',
+            title: 'Gig Application',
+            body: 'Your application for the gig has been rejected',
+            data: { someData: 'goes here' },
+        };
+
+        await fetch('https://exp.host/--/api/v2/push/send', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Accept-encoding': 'gzip, deflate',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(message),
+        });
+    }
     return (
         <View style={styles.root}>
 
@@ -223,14 +289,22 @@ const AppliedProfile = ({ userId, postID, onStatus }) => {
 
                 <View style={styles.acceptContainer}>
                     {status ? (
-                        <View style={styles.acceptBtn}><Text style={{ color: 'white', fontWeight: 'bold' }}>User already accepted</Text></View>
+                        <View style={styles.gigBtnContainer}>
+                            <View style={styles.acceptBtn}>
+                                <Text style={{ color: 'white', fontWeight: 'bold' }}>User already accepted</Text>
+                            </View>
+
+                            <TouchableOpacity style={styles.rejctBtn} onPress={async () => { handleReject(), await sendRejectedNotification(musicianToken) }}>
+                                <Text style={{ color: 'white', fontWeight: 'bold' }}>Cancel Booking</Text>
+                            </TouchableOpacity>
+                        </View>
                     ) : (
                         <>
-                            <TouchableOpacity style={styles.acceptBtn} onPress={() => handleAccept()}>
+                            <TouchableOpacity style={styles.acceptBtn} onPress={async () => { handleAccept(), await sendAcceptedNotification(musicianToken) }}>
                                 <Text style={{ color: 'white', fontWeight: 'bold' }}>Accept</Text>
                             </TouchableOpacity>
 
-                            <TouchableOpacity style={styles.rejctBtn} onPress={() => handleReject()}>
+                            <TouchableOpacity style={styles.rejctBtn} onPress={async () => { handleReject(), await sendRejectedNotification(musicianToken) }}>
                                 <Text style={{ color: 'white', fontWeight: 'bold' }}>Reject</Text>
                             </TouchableOpacity>
                         </>
@@ -247,6 +321,10 @@ const AppliedProfile = ({ userId, postID, onStatus }) => {
 export default AppliedProfile
 
 const styles = StyleSheet.create({
+    gigBtnContainer: {
+        flexDirection: 'column',
+
+    },
     detailsContainer: {
         height: 500
     },
@@ -258,13 +336,15 @@ const styles = StyleSheet.create({
         padding: 15,
         paddingHorizontal: 60,
         borderRadius: 15,
-        backgroundColor: '#0EB080'
+        backgroundColor: '#0EB080',
+        alignItems: 'center'
     },
     rejctBtn: {
         padding: 15,
         paddingHorizontal: 60,
         borderRadius: 15,
-        backgroundColor: 'red'
+        backgroundColor: 'red',
+        alignItems: 'center'
     },
     acceptContainer: {
         flexDirection: 'row',

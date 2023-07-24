@@ -331,6 +331,7 @@ const AddGigModal = () => {
                                 setValue={setEventType}
                                 setItems={setItems}
                                 style={styles.eventStyle}
+                                dropDownDirection='TOP'
                                 dropDownStyle={styles.dropDownStyle}
                             />
                         </View>

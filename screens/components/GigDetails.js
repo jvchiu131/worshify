@@ -25,6 +25,21 @@ const ClientGigDetails = ({ postID }) => {
     const [clientToken, setClientToken] = useState('');
     const user = auth.currentUser;
     const uid = user.uid;
+    const [counter, setCounter] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            // Update the count every second
+            setCounter(prevCount => prevCount + 1);
+        }, 500);
+
+        console.log(counter)
+        // Clean up the interval when the component unmounts
+        return () => {
+            clearInterval(interval);
+        };
+    }, []);
+
 
     useEffect(() => {
         const fetchGigData = async () => {
@@ -79,7 +94,7 @@ const ClientGigDetails = ({ postID }) => {
         };
 
         fetchUserData();
-    }, [])
+    }, [counter])
 
     useEffect(() => {
         const fetchCurrentUserData = async () => {
@@ -91,7 +106,8 @@ const ClientGigDetails = ({ postID }) => {
                         key: snapshot.key,
                         firstName: snapshot.val().first_name,
                         lastName: snapshot.val().lname,
-                        profilePic: snapshot.val().profile_pic
+                        profilePic: snapshot.val().profile_pic,
+                        accepted: false
                     };
                     setCurrentUserData(userInfo);
                 }
@@ -142,31 +158,45 @@ const ClientGigDetails = ({ postID }) => {
     useEffect(() => {
         const fetchToken = async () => {
             const tokenRef = ref(db, 'users/notificationTokens/' + postDetails.uid)
-
-            onValue(tokenRef, (snapshot) => {
+            try {
+                const snapshot = await get(tokenRef);
                 setClientToken(snapshot.val().expoToken);
-            })
-
-            // try {
-            //     const snapshot = await get(tokenRef);
-            //     setClientToken(snapshot.val());
-            //     console.log(clientToken);
-            // } catch (error) {
-            //     console.log(error)
-            // }
+            } catch (error) {
+                console.log(error)
+            }
         }
-        console.log(clientToken)
-
         fetchToken();
-    }, [])
+    }, [counter])
 
     // Can use this function below OR use Expo's Push Notification Tool from: https://expo.dev/notifications
     async function sendPushNotification(expoPushToken) {
         const message = {
             to: expoPushToken,
             sound: 'default',
-            title: 'Original Title',
-            body: 'And here is the body!',
+            title: 'Musician Applied!',
+            body: 'A musician applied to your gig!',
+            data: { someData: 'goes here' },
+        };
+
+        await fetch('https://exp.host/--/api/v2/push/send', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Accept-encoding': 'gzip, deflate',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(message),
+        });
+    }
+
+
+    // Can use this function below OR use Expo's Push Notification Tool from: https://expo.dev/notifications
+    async function sendCancelNotification(expoPushToken) {
+        const message = {
+            to: expoPushToken,
+            sound: 'default',
+            title: 'Musician Cancelled',
+            body: 'A musician cancelled in one of your gig.',
             data: { someData: 'goes here' },
         };
 
@@ -202,7 +232,8 @@ const ClientGigDetails = ({ postID }) => {
         setLoading(true);
         const dbRef = ref(db, 'gigPosts/' + postID + '/usersApplied')
         await update(dbRef, {
-            [uid]: currentUserData
+            [uid]: currentUserData,
+
         }).then(() => {
             setLoading(false)
             setApplied(true);
@@ -218,8 +249,14 @@ const ClientGigDetails = ({ postID }) => {
             .then(() => {
                 setLoading(false)
                 setApplied(false)
+                handleApplyCancel();
             })
             .catch((error) => console.log(error))
+    }
+
+    const handleApplyCancel = async () => {
+        const dbRef = ref(db, 'gigPosts/' + postID + '/usersApplied/' + uid)
+        await remove(dbRef)
     }
 
 
@@ -305,7 +342,7 @@ const ClientGigDetails = ({ postID }) => {
                 {applied || alreadyApplied ? (
 
                     <Button mode='elevated'
-                        onPress={() => deleteGig()}
+                        onPress={async () => { deleteGig(), await sendCancelNotification(clientToken) }}
                         loading={loading}
                         buttonColor='red'
                         textColor='white'

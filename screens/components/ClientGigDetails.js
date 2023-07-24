@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, ImageBackground, Dimensions, ScrollView, TouchableOpacity, Modal, TextInput } from 'react-native'
 import React, { useState, useEffect } from 'react'
-import { child, onValue, ref, remove, update, set } from 'firebase/database';
+import { child, onValue, ref, remove, update, set, get } from 'firebase/database';
 import { db, auth } from '../../firebase';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
@@ -36,13 +36,18 @@ const ClientGigDetails = ({ postID }) => {
     const [status, setStatus] = useState();
     const [notification, setNotification] = useState()
     const [ratingsVisible, setRatingsVisible] = useState(false);
-    const [rating, setRating] = useState(0);
+    const [rating, setRating] = useState(3);
     const [review, setReview] = useState('');
     // const [counter, setCounter] = useState(0);
     const showGigModal = () => setModalVisible(true);
     const hideGigModal = () => setModalVisible(false);
     const showRatings = () => setRatingsVisible(true);
     const hideRatings = () => setRatingsVisible(false);
+    // Keep track of acceptance status for each user separately
+    const [userAcceptanceStatus, setUserAcceptanceStatus] = useState({});
+    const [acceptedVisible, setAcceptedVisible] = useState(false);
+    const showAccepted = () => setAcceptedVisible(true);
+    const hideAccepted = () => setAcceptedVisible(false);
 
     const [open, setOpen] = useState(false);
     const [items, setItems] = useState([
@@ -53,12 +58,38 @@ const ClientGigDetails = ({ postID }) => {
 
     ]);
     const [gigStatus, setGigStatus] = useState(null);
+    const [selectedUserKey, setSelectedUserKey] = useState(null);
+
+    const [counter, setCounter] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            // Update the count every second
+            setCounter(prevCount => prevCount + 1);
+        }, 500);
+
+        console.log(counter)
+        // Clean up the interval when the component unmounts
+        return () => {
+            clearInterval(interval);
+        };
+    }, []);
 
     const handleItemPress = (key) => {
-        console.log('item presseedd', key)
         setSelectedItem(key);
+        setUserId(key)
         showGigModal()
-        console.log(selectedItem)
+    };
+
+    const handleUserPress = (userKey) => {
+        setSelectedUserKey(userKey);
+        showRatings()
+        hideAccepted()
+        const variable = acceptedUsers.some((user) => user.key === selectedUserKey)
+        console.log(variable);
+        console.log(ratingsVisible)
+        console.log(selectedUserKey)
+        console.log(acceptedUsers)
     };
 
 
@@ -126,24 +157,87 @@ const ClientGigDetails = ({ postID }) => {
 
 
     useEffect(() => {
-        const usersAppliedRef = ref(db, 'gigPosts/' + postID + '/usersApplied')
+        const usersAppliedRef = ref(db, 'gigPosts/' + postID + '/usersApplied');
         onValue(usersAppliedRef, (snapshot) => {
             let userApp = [];
-            let userKey = null
+            let userStatus = {}; // Object to store acceptance status for each user
+
             snapshot.forEach((child) => {
-                userApp.push({
-                    key: child.key,
+                const userKey = child.key;
+                const user = {
+                    key: userKey,
                     firstName: child.val().firstName,
                     lastName: child.val().lastName,
-                    profilePic: child.val().profilePic
-                })
-                userKey = child.key
-            })
-            setUserId(userKey);
+                    profilePic: child.val().profilePic,
+
+                };
+                userApp.push(user);
+
+
+                // Check if this user has an acceptance status and store it in the userStatus object
+                if (child.val().accepted) {
+                    userStatus[userKey] = true;
+                } else {
+                    userStatus[userKey] = false;
+                }
+            });
+
             setAppliedUsers(userApp);
-        })
-        console.log(userId)
-    }, [])
+            setUserAcceptanceStatus(userStatus); // Set the individual acceptance statuses
+            // getAcceptedUsers()
+
+        });
+    }, []);
+
+    const getAcceptedUsers = () => {
+        return appliedUsers.filter((user) => userAcceptanceStatus[user.key]);
+    }
+
+    const acceptedUsers = getAcceptedUsers();
+    const acceptedUserKeys = acceptedUsers.map((user) => user.key);
+
+
+    const handleRatingSubmission = async (userKey) => {
+        const ratingRef = ref(db, 'users/musicianRatings/' + userKey + '/' + uid);
+        try {
+            const snapshot = await get(ratingRef);
+            const existingData = snapshot.val();
+
+            if (existingData) {
+                // // Update existing data
+                const newData = {
+                    ...existingData,
+                    rating,
+                    review,
+                };
+                await update(ratingRef, newData);
+
+                hideRatings()
+                showAccepted()
+            } else {
+                // Create new data if it doesn't exist
+                const newData = {
+                    rating: rating,
+                    review: review,
+                };
+                await set(ratingRef, newData);
+                hideRatings()
+                showAccepted()
+            }
+            hideRatings()
+            showAccepted()
+
+
+        } catch (error) {
+            console.error('Error handling rating:', error)
+        }
+
+    }
+
+
+
+    //notify applied musicians if gig is edited
+
 
     const props = { userId, postID };
 
@@ -155,6 +249,9 @@ const ClientGigDetails = ({ postID }) => {
         navigation.goBack();
         deleteGig();
     }
+    useEffect(() => {
+        console.log(rating)
+    }, [rating])
 
 
 
@@ -183,35 +280,42 @@ const ClientGigDetails = ({ postID }) => {
 
 
     useEffect(() => {
-        const dbRef = ref(db, 'gigPosts/' + postID + '/usersApplied/' + userId)
+        const dbRef = ref(db, 'gigPosts/' + postID + '/usersApplied/')
 
         onValue(dbRef, (snapshot) => {
             if (snapshot.exists()) {
                 setStatus(snapshot.val().accepted);
             }
         })
-    }, [status])
+    }, [counter])
 
     //handles the rating visibility
     useEffect(() => {
-        console.log(gigStatus)
         if (gigStatus === 'Done') {
-            showRatings()
+            showAccepted()
         }
     }, [gigStatus])
 
-    // useEffect(() => {
-    //     const interval = setInterval(() => {
-    //         // Update the count every second
-    //         setCounter(prevCount => prevCount + 1);
-    //     }, 500);
+    // Can use this function below OR use Expo's Push Notification Tool from: https://expo.dev/notifications
+    async function sendDoneNotification(expoPushToken) {
+        const message = {
+            to: expoPushToken,
+            sound: 'default',
+            title: 'Gig Done',
+            body: 'A gig that you applied is done! Please rate and give your feedback to the event!',
+            data: { someData: 'goes here' },
+        };
 
-    //     console.log(counter)
-    //     // Clean up the interval when the component unmounts
-    //     return () => {
-    //         clearInterval(interval);
-    //     };
-    // }, []);
+        await fetch('https://exp.host/--/api/v2/push/send', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Accept-encoding': 'gzip, deflate',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(message),
+        });
+    }
 
 
 
@@ -318,7 +422,7 @@ const ClientGigDetails = ({ postID }) => {
                                 </View>
                             </View>
 
-                            {status ? (<AntDesign name="checkcircle" size={24} color="#0EB080" />) : null}
+                            {userAcceptanceStatus[user.key] ? (<AntDesign name="checkcircle" size={24} color="#0EB080" />) : null}
                         </TouchableOpacity>
                     ))}
                 </View>
@@ -353,51 +457,102 @@ const ClientGigDetails = ({ postID }) => {
 
             </Modal>
 
+
             <Modal
                 animationType='slide'
                 transparent={true}
-                visible={ratingsVisible}
+                visible={acceptedVisible}
             >
 
-                <View style={styles.ratingsContainer}>
-                    <View style={styles.ratingBorder}>
+                <View style={styles.acceptedContainer}>
+
+                    <View style={styles.acceptedBorder}>
                         <View style={styles.ratingTitle}>
-                            <Text style={{ fontWeight: 'bold', fontSize: 20 }}>Ratings and Reviews</Text>
+                            <Text style={{ fontWeight: 'bold', fontSize: 20 }}>Musicians Involved</Text>
                         </View>
+                        <ScrollView contentContainerStyle={styles.scrollViewContent}>
+                            {acceptedUsers.map((users, index) => (
+                                <TouchableOpacity
+                                    key={index.toString()}
+                                    style={[
+                                        styles.acceptedListContainer,
+                                        // Add conditional styling to mark the selected user
+                                        selectedUserKey === users.key ? styles.selectedUser : null,
+                                    ]}
+                                    onPress={() => handleUserPress(users.key)}>
 
-                        <AirbnbRating reviews={["Poor", "Fair", "Good", "Very Good", "Excellent"]}
-                            count={5}
-                            defaultRating={3}
-                            showRating={true}
-                            size={40}
-                            onFinishRating={(rating) =>
-                                setRating(rating)
-                            } />
+                                    <View style={styles.acceptedPicContainer}>
+                                        <ImageBackground source={{ uri: users.profilePic }} style={{ height: '100%', width: '100%' }}>
+                                        </ImageBackground>
+                                    </View>
 
 
-                        <View style={styles.ratingTitles}>
-                            <Text>Please share your opinion about the musician</Text>
-                        </View>
+                                    <View style={styles.txtContainer}>
+                                        <Text>{users.firstName} {users.lastName}</Text>
+                                    </View>
+                                </TouchableOpacity>
+                            ))}
+                        </ScrollView>
 
-                        <View style={styles.reviewContainer}>
-                            <TextInput
-                                style={styles.reviewInput}
-                                multiline={true}
-                                autoCapitalize='sentences'
-                                blurOnSubmit={true}
-                                placeholder='Type your reviews...'
-                                onChangeText={text => setReview(text)} />
-                        </View>
-
-                        <View style={styles.reviewBtnContainer}>
-                            <TouchableOpacity style={styles.btnReview} onPress={() => hideRatings()}>
-                                <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 18 }}>Submit Review</Text>
+                        <View style={styles.btnContainer}>
+                            <TouchableOpacity style={styles.doneBtn} onPress={() => hideAccepted()}>
+                                <Text style={styles.btnTxtStyle}>Done!</Text>
                             </TouchableOpacity>
+
                         </View>
+
                     </View>
+
+
+
                 </View>
 
             </Modal>
+
+            <View style={{ bottom: screenHeight / 3, zIndex: 20 }} >
+                {selectedUserKey && ratingsVisible && acceptedUsers.some((user) => user.key === selectedUserKey) && (
+                    <View style={styles.ratingsContainer}>
+                        <View style={styles.ratingBorder}>
+                            <View style={styles.ratingTitle}>
+                                <Text style={{ fontWeight: 'bold', fontSize: 20 }}>Ratings and Reviews</Text>
+                            </View>
+
+                            {/* Add the rating component here */}
+                            <AirbnbRating
+                                reviews={["Poor", "Fair", "Good", "Very Good", "Excellent"]}
+                                count={5}
+                                defaultRating={3}
+                                showRating={true}
+                                size={40}
+                                onFinishRating={(rating) => setRating(rating)}
+                            />
+
+                            {/* Add the review input component here */}
+                            <View style={styles.ratingTitles}>
+                                <Text>Please share your opinion about the musician</Text>
+                            </View>
+                            <View style={styles.reviewContainer}>
+                                <TextInput
+                                    style={styles.reviewInput}
+                                    multiline={true}
+                                    autoCapitalize='sentences'
+                                    blurOnSubmit={true}
+                                    placeholder='Type your reviews...'
+                                    value={review}
+                                    onChangeText={(text) => setReview(text)}
+                                />
+                            </View>
+
+                            {/* Add the submit button for the rating and review */}
+                            <View style={styles.reviewBtnContainer}>
+                                <TouchableOpacity style={styles.btnReview} onPress={() => handleRatingSubmission(selectedUserKey)}>
+                                    <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 18 }}>Submit Review</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                )}
+            </View>
 
         </View>
     )
@@ -406,6 +561,53 @@ const ClientGigDetails = ({ postID }) => {
 export default ClientGigDetails
 
 const styles = StyleSheet.create({
+    doneBtn: {
+        width: '60%',
+        backgroundColor: '#0EB080',
+        padding: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 10
+    },
+    selectedUser: {
+        borderColor: '#0EB080',
+        borderWidth: 2
+    },
+    acceptedListContainer: {
+        borderWidth: 0.5,
+        flexDirection: 'row',
+        height: 95,
+        padding: 10,
+        marginBottom: 10
+    },
+    acceptedPicContainer: {
+        width: '25%',
+        borderRadius: 50,
+        overflow: 'hidden',
+        borderWidth: 0.5,
+        borderColor: '#0EB080'
+    },
+    txtContainer: {
+        marginLeft: 10
+    },
+    scrollViewContent: {
+        flexGrow: 1,
+        paddingBottom: 450,
+    },
+    acceptedBorder: {
+        borderWidth: 0.5,
+        height: '50%',
+        width: '90%',
+        backgroundColor: '#F9F9F9',
+        borderRadius: 15
+    },
+    acceptedContainer: {
+        padding: 10,
+        marginTop: 10,
+        height: '95%',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     btnReview: {
         backgroundColor: '#0EB080',
         padding: 10,
@@ -455,7 +657,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         height: screenHeight,
-        width: screenWidth
+        width: screenWidth,
     },
     appBarStyle: {
         backgroundColor: '#151414',
