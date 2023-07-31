@@ -1,10 +1,12 @@
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Dimensions, ImageBackground } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Dimensions, ImageBackground, Modal } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { db } from '../../firebase';
 import { ref, onValue } from 'firebase/database';
 import { auth } from '../../firebase';
 import { EvilIcons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
+import { Appbar } from 'react-native-paper';
+import GigDetails from './GigDetails';
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('screen')
 
@@ -14,6 +16,11 @@ const FeaturedGig = () => {
     const [userInstrument, setUserInstruments] = useState([]);
     const [userGenre, setUserGenre] = useState([]);
     const [featuredGigs, setFeaturedGigs] = useState([]);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedItem, setSelectedItem] = useState();
+    const showModal = () => setModalVisible(true);
+    const hideModal = () => setModalVisible(false);
+
 
 
     useEffect(() => {
@@ -35,6 +42,7 @@ const FeaturedGig = () => {
     useEffect(() => {
         const gigRef = ref(db, 'gigPosts');
         let gigDetails = [];
+        let gigInstruments = [];
         onValue(gigRef, (snapshot) => {
             snapshot.forEach((childSnapshot) => {
                 gigDetails.push({
@@ -51,17 +59,22 @@ const FeaturedGig = () => {
                     GigImage: childSnapshot.val().Gig_Image,
                     GigDate: childSnapshot.val().Gig_Date,
                 });
+
+
             });
 
+
+
             const gigScore = gigDetails.map((gig) => {
-                const instrumentsGig = gig.InstrumentsNeeded;
+                const instrumentsGig = gig.InstrumentsNeeded.map((inst) => inst.name)
                 const genreGig = gig.GenreNeeded;
 
                 const matchedGenre = genreGig.filter((genre) => userGenre.includes(genre));
                 const matchedInstruments = instrumentsGig.filter((instrument) =>
                     userInstrument.includes(instrument)
                 );
-                const calculatePercentage = ((matchedGenre.length + matchedInstruments.length) / 6) * 100;
+                const totalGenreAndInstrument = userGenre.length + userInstrument.length
+                const calculatePercentage = ((matchedGenre.length + matchedInstruments.length) / totalGenreAndInstrument) * 100;
 
                 return { ...gig, calculatePercentage, GigDate: new Date(gig.GigDate) };
             });
@@ -76,12 +89,19 @@ const FeaturedGig = () => {
         return <View style={{ marginHorizontal: 10, height: 0.5 }} />;
     };
 
+    const handleModal = (key) => {
+        setSelectedItem(key);
+        showModal()
+    }
+
+    const props = { postID: selectedItem };
+
     return (
         <ScrollView contentContainerStyle={styles.scrollContainer} horizontal={true}>
             {/* Your FlatList or other component to render the featured gigs */}
             <View style={styles.rootContainer}>
                 {featuredGigs.map((gig) => (
-                    <TouchableOpacity key={gig.key} style={styles.container}>
+                    <TouchableOpacity key={gig.key} style={styles.container} onPress={() => { handleModal(gig.key) }}>
                         <View style={styles.imageContainer}>
                             <ImageBackground source={{ uri: gig.GigImage }} style={styles.imgStyle}>
                             </ImageBackground>
@@ -93,6 +113,18 @@ const FeaturedGig = () => {
                         </View>
                     </TouchableOpacity>
                 ))}
+
+                <Modal
+                    visible={modalVisible}
+                    animationType='slide'
+                    onRequestClose={hideModal}
+                >
+                    <Appbar.Header style={styles.appBarStyle}>
+                        <Appbar.BackAction onPress={hideModal} color='white' />
+                    </Appbar.Header>
+
+                    <GigDetails {...props} />
+                </Modal>
             </View>
         </ScrollView>
     );
@@ -101,6 +133,9 @@ const FeaturedGig = () => {
 export default FeaturedGig;
 
 const styles = StyleSheet.create({
+    appBarStyle: {
+        backgroundColor: '#151414',
+    },
     imgStyle: {
         height: '100%',
         width: '100%',

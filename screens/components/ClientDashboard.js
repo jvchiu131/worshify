@@ -136,7 +136,7 @@ const ClientDashboard = () => {
 
 
             <View style={styles.txtContainer}>
-                <Text style={styles.txtStyle}>AVAILABLE GIGS</Text>
+                <Text style={styles.txtStyle}>UPCOMING GIGS</Text>
             </View>
 
             <View style={styles.container}>

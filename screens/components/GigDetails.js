@@ -12,7 +12,7 @@ import * as Notifications from 'expo-notifications';
 const { height: screenHeight } = Dimensions.get('screen');
 const { width: screenWidth } = Dimensions.get('screen');
 
-const ClientGigDetails = ({ postID }) => {
+const GigDetails = ({ postID }) => {
 
     const [postDetails, setPostDetails] = useState([]);
     const [instruments, setInstruments] = useState([]);
@@ -367,7 +367,7 @@ const ClientGigDetails = ({ postID }) => {
     )
 }
 
-export default ClientGigDetails
+export default GigDetails
 
 const styles = StyleSheet.create({
     statusChip: {

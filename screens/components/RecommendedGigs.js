@@ -1,10 +1,15 @@
-import { StyleSheet, Text, View, TouchableOpacity, ImageBackground, ScrollView, Dimensions, FlatList } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, ImageBackground, ScrollView, Dimensions, FlatList, Modal } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { db } from '../../firebase';
 import { ref, onValue } from 'firebase/database';
 import { auth } from '../../firebase';
 import { EvilIcons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
+import { Appbar } from 'react-native-paper';
+import GigDetails from './GigDetails';
+
+
+
 
 const { height: screenHeight } = Dimensions.get('screen');
 const { width: screenWidth } = Dimensions.get('screen');
@@ -20,6 +25,10 @@ const RecommendedGigs = () => {
     const [gigGenre, setGigGenre] = useState([]);
     const [gigInstrument, setGigInstrument] = useState([]);
     const [recommendedGigs, setRecommendedGigs] = useState([]);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedItem, setSelectedItem] = useState();
+    const showModal = () => setModalVisible(true);
+    const hideModal = () => setModalVisible(false);
 
 
     useEffect(() => {
@@ -58,11 +67,11 @@ const RecommendedGigs = () => {
     useEffect(() => {
         const gigRef = ref(db, 'gigPosts');
         let gigDetails = [];
+        let gigInstruments = [];
         onValue(gigRef, (snapshot) => {
             snapshot.forEach((childSnapshot) => {
                 gigDetails.push({
                     key: childSnapshot.key,
-
                     Event_Type: childSnapshot.val().Event_Type,
                     GigAddress: childSnapshot.val().Gig_Address,
                     postID: childSnapshot.val().postID,
@@ -74,6 +83,7 @@ const RecommendedGigs = () => {
                     InstrumentsNeeded: childSnapshot.val().Instruments_Needed,
                     GigImage: childSnapshot.val().Gig_Image,
                     GigDate: childSnapshot.val().Gig_Date,
+                    gender: childSnapshot.val().gender
                 });
             });
 
@@ -81,15 +91,15 @@ const RecommendedGigs = () => {
 
 
             const gigScore = gigDetails.map((gig) => {
-                const instrumentsGig = gig.InstrumentsNeeded;
+
+                const instrumentsGig = gig.InstrumentsNeeded.map((inst) => inst.name)
                 const genreGig = gig.GenreNeeded;
 
-                setGigGenre(genreGig);
-                setGigInstrument(instrumentsGig);
 
                 const matchedGenre = genreGig.filter((genre) => userGenre.includes(genre));
                 const matchedInstruments = instrumentsGig.filter((instrument) => userInstrument.includes(instrument));
-                const calculatePercentage = ((matchedGenre.length + matchedInstruments.length) / 6) * 100;
+                const totalGenreAndInstrument = userGenre.length + userInstrument.length
+                const calculatePercentage = ((matchedGenre.length + matchedInstruments.length) / totalGenreAndInstrument) * 100;
 
                 return { ...gig, calculatePercentage };
 
@@ -104,7 +114,7 @@ const RecommendedGigs = () => {
 
     const renderItem = ({ item }) => {
         return (
-            <TouchableOpacity style={styles.container}>
+            <TouchableOpacity style={styles.container} onPress={() => { handleModal(item.key) }}>
                 <View style={styles.imageContainer}>
                     <ImageBackground source={{ uri: item.GigImage }} style={styles.imgStyle} >
                     </ImageBackground>
@@ -133,6 +143,13 @@ const RecommendedGigs = () => {
 
     }
 
+    const handleModal = (key) => {
+        setSelectedItem(key);
+        showModal()
+    }
+
+    const props = { postID: selectedItem };
+
 
 
     return (
@@ -145,6 +162,18 @@ const RecommendedGigs = () => {
                 horizontal
             />
 
+            <Modal
+                visible={modalVisible}
+                animationType='slide'
+                onRequestClose={hideModal}
+            >
+                <Appbar.Header style={styles.appBarStyle}>
+                    <Appbar.BackAction onPress={hideModal} color='white' />
+                </Appbar.Header>
+
+                <GigDetails {...props} />
+            </Modal>
+
         </View>
 
     )
@@ -153,6 +182,9 @@ const RecommendedGigs = () => {
 export default RecommendedGigs
 
 const styles = StyleSheet.create({
+    appBarStyle: {
+        backgroundColor: '#151414',
+    },
     percentageStyle: {
         fontSize: 20,
         color: '#0EB080',

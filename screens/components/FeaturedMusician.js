@@ -3,11 +3,22 @@ import React, { useEffect, useState } from 'react'
 import { db } from '../../firebase'
 import { onValue, ref, child, get } from 'firebase/database'
 import { AirbnbRating, Rating } from 'react-native-ratings';
+import { useNavigation } from '@react-navigation/native';
 
 
 const FeaturedMusician = () => {
     const [featuredMusicians, setFeaturedMusicians] = useState([]);
 
+    const navigation = useNavigation();
+
+
+    const handleItemPress = (key) => {
+        console.log('item presseedd', key)
+        // showModal();
+        navigation.navigate('MusicianProfile', { userId: key });
+    };
+
+    //handles the fetching and calculation of musician's rating
     useEffect(() => {
         const ratingRef = ref(db, 'users/musicianRatings/');
         onValue(ratingRef, (snapshot) => {
@@ -39,6 +50,7 @@ const FeaturedMusician = () => {
         });
     }, []);
 
+    //Fetches the musician data from users/musicians node
     const fetchMusiciansData = async (musiciansData) => {
         const updatedMusiciansData = await Promise.all(
             musiciansData.map(async (musician) => {
@@ -56,13 +68,13 @@ const FeaturedMusician = () => {
         );
 
         setFeaturedMusicians(updatedMusiciansData);
-        console.log(featuredMusicians)
+
     };
 
     return (
         <ScrollView contentContainerStyle={styles.scrollContainer} horizontal={true}>
             {featuredMusicians.map((musician) => (
-                <TouchableOpacity key={musician.userId} style={styles.musicianContainer}>
+                <TouchableOpacity key={musician.userId} style={styles.musicianContainer} onPress={() => { handleItemPress(musician.userId) }}>
                     <View>
                         <View style={styles.imgContainer}>
                             <ImageBackground source={{ uri: musician.profilePic }} style={{ height: '100%', width: '100%' }}>
@@ -83,9 +95,6 @@ const FeaturedMusician = () => {
                             <Text style={styles.titleTxt}>{musician.firstName} {musician.lastName}</Text>
                         </View>
 
-
-
-
                     </View>
                 </TouchableOpacity>
             ))}
@@ -97,7 +106,7 @@ export default FeaturedMusician;
 
 const styles = StyleSheet.create({
     titleTxt: {
-        color: 'white',
+        color: '#0EB080',
         fontSize: 20,
         fontWeight: 'bold'
     },
@@ -105,25 +114,28 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '30%',
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        marginTop: 10
     },
     imgContainer: {
-
+        borderWidth: 2,
+        borderColor: '#0EB080',
         justifyContent: 'center',
         alignItems: 'center',
-        height: '70%',
-        width: '60%',
+        height: '60%',
+        width: '50%',
         borderRadius: 100,
         overflow: 'hidden',
         alignSelf: 'center'
     },
     musicianContainer: {
-
         height: '90%',
         marginRight: 20,
         width: '30%',
-        backgroundColor: '#1B1A1C',
-        borderRadius: 15
+        // backgroundColor: '#1B1A1C',
+        borderRadius: 15,
+        backgroundColor: 'white',
+        padding: 10
     },
     scrollContainer: {
         flexGrow: 1,
