@@ -13,7 +13,7 @@ import { Feather } from '@expo/vector-icons';
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('screen');
 
-const MusicianProfilePic = ({ fname, lname, email, bday, age, address, password }) => {
+const MusicianProfilePic = ({ fname, lname, email, bday, age, address, password, gender }) => {
 
 
     const [image, setImage] = useState(null);
@@ -22,7 +22,7 @@ const MusicianProfilePic = ({ fname, lname, email, bday, age, address, password 
     const [isClicked, setIsClicked] = useState(false);
 
 
-    const props = { fname: fname, lname: lname, email: email, bday: bday, age: age, address: address, password: password, img: image }
+    const props = { fname: fname, lname: lname, email: email, bday: bday, age: age, address: address, password: password, img: image, gender: gender }
 
 
     const pickImage = async () => {

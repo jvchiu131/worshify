@@ -1,6 +1,7 @@
-import { StyleSheet, Text, TouchableOpacity, TextInput, View, Animated, Dimensions, Button, KeyboardAvoidingView, Pressable } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, TextInput, View, Animated, Dimensions, Button, KeyboardAvoidingView, ScrollView, Pressable } from 'react-native'
 import React, { useState } from 'react'
 import InstGenre from './InstGenre';
+import DropDownPicker from 'react-native-dropdown-picker'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import MusicianProfilePic from './MusicianProfilePic';
 
@@ -17,6 +18,12 @@ const MusicianReg = () => {
     const [address, setAddress] = useState('');
     const [password, setPassword] = useState('');
     const [phone, setPhone] = useState('');
+    const [gender, setGender] = useState(null);
+    const [opengender, setOpenGender] = useState(false);
+    const [itemsGender, setItemsGender] = useState([
+        { label: 'Male', value: 'Male' },
+        { label: 'Female', value: 'Female' }
+    ]);
     const ContentValue = useState(new Animated.Value(-600))[0]
     const [isClicked, setIsClicked] = useState(false);
     const [showPicker, setShowPicker] = useState(false);
@@ -55,7 +62,7 @@ const MusicianReg = () => {
 
     }
 
-    const props = { fname: firstName, lname: lastName, email: email, bday: birthday, age: age, address: address, password: password }
+    const props = { fname: firstName, lname: lastName, email: email, bday: birthday, age: age, gender: gender, address: address, password: password }
 
 
     return (
@@ -101,13 +108,7 @@ const MusicianReg = () => {
                                 onChangeText={text => setEmail(text)} />
                         </View>
 
-                        {/* <View style={styles.passContainer}>
-                            <TextInput style={styles.passStyle}
-                                value={password}
-                                placeholder='Password'
-                                onChange={text => setPassword(text)}
-                                secureTextEntry />
-                        </View> */}
+
                         <View style={styles.birthContainer}>
                             <View style={styles.ageStyle}>
                                 {!showPicker && (
@@ -141,12 +142,33 @@ const MusicianReg = () => {
                                 onChangeText={text => setAge(text)} />
 
                         </View>
+
                         <View style={styles.addressContainer}>
-                            <TextInput style={styles.addressStyle}
-                                placeholder='Address'
-                                value={address}
-                                onChangeText={text => setAddress(text)} />
+                            <View style={styles.addressStyle}>
+                                <TextInput
+                                    placeholder='Address'
+                                    value={address}
+                                    onChangeText={text => setAddress(text)} />
+                            </View>
+
+
+                            <View style={styles.genderContainer}>
+                                <DropDownPicker
+                                    open={opengender}
+                                    value={gender}
+                                    items={itemsGender}
+                                    placeholder='Gender'
+                                    setOpen={setOpenGender}
+                                    setValue={setGender}
+                                    setItems={setItemsGender}
+                                    style={styles.genderStyle}
+                                    dropDownStyle={styles.dropDownStyle}
+                                    dropDownDirection='TOP'
+                                />
+                            </View>
+
                         </View>
+
                         <View style={styles.phoneContainer}>
                             <TextInput style={styles.passStyle}
                                 value={password}
@@ -176,6 +198,11 @@ const MusicianReg = () => {
 export default MusicianReg
 
 const styles = StyleSheet.create({
+
+    genderStyle: {
+        width: '100%',
+    },
+
     container: {
         justifyContent: 'center',
         alignItems: 'center',
@@ -267,16 +294,18 @@ const styles = StyleSheet.create({
         position: 'absolute',
         flex: 1,
         flexDirection: 'row',
-        justifyContent: 'center',
+        justifyContent: 'space-around',
         bottom: screenHeight / 5,
-        width: screenWidth
+        width: screenWidth,
+
     },
     addressStyle: {
         borderRadius: 15,
         borderWidth: 1,
         borderColor: '#606060',
         paddingVertical: 12,
-        width: '95%',
+        width: '60%',
+
     },
     musicContainer: {
         position: 'absolute',
@@ -284,6 +313,15 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         bottom: screenHeight / 8
+    },
+    genderContainer: {
+
+        width: '30%'
+    },
+    txtStyles: {
+        fontWeight: 'bold',
+        color: 'black',
+        marginBottom: 5,
     },
     btnContainer: {
         borderWidth: 2,

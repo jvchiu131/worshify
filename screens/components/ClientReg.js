@@ -102,14 +102,6 @@ const ClientReg = () => {
                                 placeholder='Email'
                                 onChangeText={text => setEmail(text)} />
                         </View>
-
-                        {/* <View style={styles.passContainer}>
-                            <TextInput style={styles.passStyle}
-                                value={password}
-                                placeholder='Password'
-                                onChange={text => setPassword(text)}
-                                secureTextEntry />
-                        </View> */}
                         <View style={styles.birthContainer}>
                             <View style={styles.ageStyle}>
                                 {!showPicker && (

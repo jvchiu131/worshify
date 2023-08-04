@@ -205,6 +205,7 @@ const MusicianProfile = () => {
 export default MusicianProfile
 
 const styles = StyleSheet.create({
+
     modalRoot: {
         justifyContent: 'center',
         alignItems: 'center'

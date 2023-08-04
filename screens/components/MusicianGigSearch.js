@@ -32,6 +32,7 @@ const MusicianGigSearch = () => {
     const [selectedInstruments, setSelectedInstruments] = useState([]);
     const [selectedGenres, setSelectedGenres] = useState([]);
     const [matchedGigs, setMatchedGigs] = useState([]);
+    const [gigGender, setGigGender] = useState();
     const [gigGenre, setGigGenre] = useState([])
     const [gigInstrument, setGigInstrument] = useState([])
     const [isFilterApplied, setIsFilterApplied] = useState(false);
@@ -128,6 +129,7 @@ const MusicianGigSearch = () => {
                     InstrumentsNeeded: childSnapshot.val().Instruments_Needed,
                     GigImage: childSnapshot.val().Gig_Image,
                     GigDate: childSnapshot.val().Gig_Date,
+                    gigGender: childSnapshot.val().gender
                 });
             });
 
@@ -136,13 +138,21 @@ const MusicianGigSearch = () => {
             const gigScore = gigDetails.map((gig) => {
                 const instrumentsGig = gig.InstrumentsNeeded;
                 const genreGig = gig.GenreNeeded;
+                const genderGig = gig.gigGender;
 
                 setGigGenre(genreGig);
                 setGigInstrument(instrumentsGig);
+                setGigGender(genderGig);
 
+                // Check for gender match
+                const genderMatch = selectedGender === genderGig ? 1 : 0;
+
+                const totalItem = genderMatch + selectedInstruments.length + selectedGenres.length;
                 const matchedGenre = genreGig.filter((genre) => selectedGenres.includes(genre));
                 const matchedInstruments = gigInstrument.filter((instrument) => selectedInstruments.includes(instrument));
-                const calculatePercentage = ((matchedGenre.length + matchedInstruments.length) / 6) * 100;
+                const calculatePercentage = ((matchedGenre.length + matchedInstruments.length) / totalItem) * 100;
+
+                console.log(calculatePercentage)
 
                 return { ...gig, calculatePercentage };
 

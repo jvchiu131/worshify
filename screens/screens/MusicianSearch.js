@@ -29,6 +29,7 @@ const MusicianSearch = () => {
     const [musicians, setMusicians] = useState([]);
     const [musicianGenre, setMusicianGenre] = useState([])
     const [musicianInstruments, setMusicianInstrument] = useState([])
+    const [musicianGender, setMusicianGender] = useState();
     const [selectedGender, setSelectedGender] = useState(null);
     const [selectedInstruments, setSelectedInstruments] = useState([]);
     const [selectedGenres, setSelectedGenres] = useState([]);
@@ -87,8 +88,6 @@ const MusicianSearch = () => {
             })
 
             setMusician(musicianData);
-
-
         })
     }, [])
 
@@ -106,7 +105,8 @@ const MusicianSearch = () => {
                     profilePic: childSnapshot.val().profile_pic,
                     uid: childSnapshot.val().uid,
                     instruments: childSnapshot.val().instruments,
-                    genre: childSnapshot.val().genre
+                    genre: childSnapshot.val().genre,
+                    gender: childSnapshot.val().gender
                 })
             });
 
@@ -115,16 +115,24 @@ const MusicianSearch = () => {
             const musicianScore = musicianDetails.map((musician) => {
                 const instrumentsMusician = musician.instruments;
                 const genreMusician = musician.genre;
+                const genderMusician = musician.gender;
+
 
                 setMusicianGenre(genreMusician);
                 setMusicianInstrument(instrumentsMusician);
+                setMusicianGender(genderMusician);
+
+                // Check for gender match
+                const genderMatch = selectedGender === genderMusician ? 1 : 0;
+
+                const totalItem = genderMatch + selectedInstruments.length + selectedGenres.length;
 
                 const matchedGenre = genreMusician.filter((genre) => selectedGenres.includes(genre));
                 const matchedInstruments = instrumentsMusician.filter((instrument) => selectedInstruments.includes(instrument));
 
-                const calculatePercentage = ((matchedGenre.length + matchedInstruments.length) / 6) * 100;
+                const calculatePercentage = ((matchedGenre.length + matchedInstruments.length + genderMatch) / totalItem) * 100;
+
                 console.log(matchedGenre)
-                console.log(matchedInstruments)
 
                 return { ...musician, calculatePercentage };
 

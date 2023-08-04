@@ -101,7 +101,7 @@ const FeaturedGig = () => {
             {/* Your FlatList or other component to render the featured gigs */}
             <View style={styles.rootContainer}>
                 {featuredGigs.map((gig) => (
-                    <TouchableOpacity key={gig.key} style={styles.container} onPress={() => { handleModal(gig.key) }}>
+                    <TouchableOpacity key={gig.postID} style={styles.container} onPress={() => { handleModal(gig.key) }}>
                         <View style={styles.imageContainer}>
                             <ImageBackground source={{ uri: gig.GigImage }} style={styles.imgStyle}>
                             </ImageBackground>

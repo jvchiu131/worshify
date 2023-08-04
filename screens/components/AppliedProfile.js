@@ -7,13 +7,13 @@ import { Appbar } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { db } from '../../firebase';
-import { ref, set, push, update, get, onValue, child, off } from 'firebase/database';
+import { ref, set, push, update, get, onValue, } from 'firebase/database';
 import { auth } from '../../firebase';
 const { height: screenHeight, width: screenWidth } = Dimensions.get('screen');
 
 
 
-const AppliedProfile = ({ userId, postID, onStatus }) => {
+const AppliedProfile = ({ userId, postID, onStatus, hideModal }) => {
 
 
     const navigation = useNavigation()
@@ -27,6 +27,12 @@ const AppliedProfile = ({ userId, postID, onStatus }) => {
     const [status, setStatus] = useState();
     const [visible, setVisible] = useState(false);
     const [musicianToken, setMusicianToken] = useState('')
+
+
+    const handleHideAccepted = () => {
+        hideModal(false);
+    };
+
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -75,14 +81,7 @@ const AppliedProfile = ({ userId, postID, onStatus }) => {
 
 
 
-    // const handleStatus = () => {
-    //     onStatus(status);
-    // }
 
-    // useEffect(() => {
-    //     handleStatus(status)
-    //     console.log(status)
-    // }, [status])
 
     useEffect(() => {
         checkChat();
@@ -223,6 +222,13 @@ const AppliedProfile = ({ userId, postID, onStatus }) => {
             },
             body: JSON.stringify(message),
         });
+
+        const notificationRef = ref(db, 'users/usersNotification/' + userId)
+        const newNotificationRef = push(notificationRef);
+        await set(newNotificationRef, {
+            title: 'Gig Application',
+            body: 'Your application for the gig has been accepted!',
+        })
     }
 
 
@@ -245,12 +251,19 @@ const AppliedProfile = ({ userId, postID, onStatus }) => {
             },
             body: JSON.stringify(message),
         });
+
+        const notificationRef = ref(db, 'users/usersNotification/' + userId)
+        const newNotificationRef = push(notificationRef);
+        await set(newNotificationRef, {
+            title: 'Gig Application',
+            body: 'Your application for the gig has been rejected',
+        })
     }
     return (
         <View style={styles.root}>
 
             <Appbar.Header style={styles.appBarHeader}>
-                <Appbar.BackAction onPress={navigation.goBack} color='white' />
+                <Appbar.BackAction onPress={() => handleHideAccepted()} color='white' />
                 <TouchableOpacity onPress={handleClick}>
                     <Ionicons name="chatbox-ellipses-outline" size={24} color="white" style={{ padding: 20 }} />
                 </TouchableOpacity>
@@ -323,10 +336,10 @@ export default AppliedProfile
 const styles = StyleSheet.create({
     gigBtnContainer: {
         flexDirection: 'column',
-
+        borderWidth: 2
     },
     detailsContainer: {
-        height: 500
+        height: screenHeight / 2.4
     },
     scrollViewContent: {
         flexGrow: 1,

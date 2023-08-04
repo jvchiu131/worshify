@@ -4,6 +4,7 @@ import LoginScreen from './screens/screens/LoginScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import GigSearch from './screens/screens/GigSearch';
+import { MaterialCommunityIcons, Feather } from '@expo/vector-icons';
 import MusicianSearch from './screens/screens/MusicianSearch';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import ProfileScreen from './screens/screens/ProfileScreen';
@@ -18,7 +19,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Text, View, Button, Platform, StyleSheet, Alert } from 'react-native';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
-
+import { LogBox } from 'react-native';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -31,6 +32,7 @@ export default function App() {
   const responseListener = useRef();
 
   useEffect(() => {
+    LogBox.ignoreAllLogs();
 
     Notifications.setNotificationHandler({
       handleNotification: async () => ({
@@ -76,26 +78,85 @@ export default function App() {
 }
 
 
-
 function BottomTab() {
   return (
+
     <>
-      <Tab.Navigator screenOptions={{ headerShown: false }}>
-        <Tab.Screen name='Home' component={DashNav} />
-        <Tab.Screen name='Gigs' component={GigSearch} />
-        <Tab.Screen name='Musicians' component={MusicianSearch} />
-        <Tab.Screen options={{ headerShown: false }} name='Contacts' component={ContactNav} />
+      <Tab.Navigator
+        screenOptions={{
+          headerShown: false,
+          tabBarStyle: styles.tabBar,
+          tabBarActiveTintColor: styles.tabBarIconActive.color,
+          tabBarInactiveTintColor: styles.tabBarIconInactive.color,
+
+        }}
+      >
+        <Tab.Screen
+          name='Home'
+          component={DashNav}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons name='home' size={size} color={color} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name='Gigs'
+          component={GigSearch}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons
+                name='music-circle-outline'
+                size={size}
+                color={color}
+              />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name='Musicians'
+          component={MusicianSearch}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons
+                name='account-music-outline'
+                size={size}
+                color={color}
+              />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name='Contacts'
+          component={ContactNav}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Feather name='message-square' size={size} color={color} />
+            ),
+          }}
+        />
       </Tab.Navigator>
       <StatusBar style='light' />
     </>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  tabBar: {
+    height: 55,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    overflow: 'hidden',
+  },
+  tabBarIconActive: {
+    color: '#0EB080',
+  },
+  tabBarIconInactive: {
+    color: '#1E1E1E',
   },
 });

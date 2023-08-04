@@ -30,6 +30,7 @@ const FeaturedMusician = () => {
 
                 childSnapshot.forEach((rating) => {
                     const ratingValue = rating.val().rating;
+                    console.log(ratingValue)
                     totalRatings += ratingValue;
                     numRatings += 1; // Increment the number of ratings for each child
                 });

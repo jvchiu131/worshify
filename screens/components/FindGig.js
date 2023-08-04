@@ -15,10 +15,19 @@ const FindGig = ({ selectedGender,
     closeModal
 }) => {
 
+    const handleFindMatch = () => {
+        // Check if any selection has been made
+        if (!selectedGender && selectedInstruments.length === 0 && selectedGenres.length === 0) {
+            alert(
+                "No Selection",
+                "Please select at least one option to find a match.",
+                [{ text: "OK", onPress: () => { } }]
+            );
+        } else {
+            closeModal(); // Close the modal if any selection has been made
+        }
+    };
 
-    // const [selectedGender, setSelectedGender] = useState(null);
-    // const [selectedInstruments, setSelectedInstruments] = useState([]);
-    // const [selectedGenres, setSelectedGenres] = useState([]);
 
 
 
@@ -217,7 +226,7 @@ const FindGig = ({ selectedGender,
                             <Text style={styles.btnTxt}>Reset</Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={[styles.btnStyles, { backgroundColor: '#0EB080' }]} onPress={closeModal}>
+                        <TouchableOpacity style={[styles.btnStyles, { backgroundColor: '#0EB080' }]} onPress={() => handleFindMatch()}>
                             <Text style={styles.btnTxt}>Find Match</Text>
                         </TouchableOpacity>
                     </View>

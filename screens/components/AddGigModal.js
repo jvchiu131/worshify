@@ -49,7 +49,8 @@ const AddGigModal = () => {
     const [opengender, setOpenGender] = useState(false);
     const [itemsGender, setItemsGender] = useState([
         { label: 'Male', value: 'Male' },
-        { label: 'Female', value: 'Female' }
+        { label: 'Female', value: 'Female' },
+        { label: 'Anyone', value: 'Anyone' }
     ]);
     const [startVisible, setStartVisible] = useState(false);
     const [endVisible, setEndVisible] = useState(false);
@@ -60,13 +61,22 @@ const AddGigModal = () => {
 
 
     const handleBtn = () => {
-        Animated.timing(ContentValue, {
-            toValue: 0,
-            duration: 300,
-            useNativeDriver: false,
-        }).start()
-        setIsClicked(true);
-    }
+        // Check if the selected gig date is in the future
+        const currentDate = new Date();
+        if (date < currentDate) {
+            alert(
+                "The selected gig date is invalid. Please input an appropriate date.",
+                [{ text: "OK", onPress: () => { } }]
+            );
+        } else {
+            Animated.timing(ContentValue, {
+                toValue: 0,
+                duration: 300,
+                useNativeDriver: false,
+            }).start();
+            setIsClicked(true);
+        }
+    };
 
     //handles image upload
     const pickImage = async () => {

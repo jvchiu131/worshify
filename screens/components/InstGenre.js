@@ -4,8 +4,9 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { auth, db } from '../../firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 import { ref, set } from 'firebase/database';
+
 
 
 
@@ -14,7 +15,7 @@ const { width: screenWidth } = Dimensions.get('screen');
 
 
 
-const InstGenre = ({ fname, lname, email, bday, age, address, password, img }) => {
+const InstGenre = ({ fname, lname, email, bday, age, address, password, img, gender }) => {
 
 
 
@@ -39,66 +40,85 @@ const InstGenre = ({ fname, lname, email, bday, age, address, password, img }) =
 
         }
     }
-    d
-    const handleSignup = () => {
-        createUserWithEmailAndPassword(auth, email, password)
+
+    const actionCode = {
+        url: 'https://worshify-52a66.firebaseapp.com/',
+        handleCodeInApp: true
+    }
+
+    const handleSignup = async () => {
+        await createUserWithEmailAndPassword(auth, email, password)
 
             .then(userCredentials => {
                 const user = userCredentials.user;
-                // console.log(user.email);
 
+                sendEmailVerification(user, actionCode)
+                    .then(() => {
+                        alert('Registration Successful. Email Verification Sent!')
+                    }).catch(error => {
+                        alert(error.message)
+                        console.log("error here")
+                    })
+                    .then(() => {
 
-
-                //writes data on the database
-                const writeUserData = () => {
-                    set(ref(db, 'users/' + '/musician/' + user.uid),
-                        {
-                            first_name: fname,
-                            lname: lname,
-                            email: email,
-                            birthday: bday,
-                            age: age,
-                            address: address,
-                            instruments: { ...selectedInstruments },
-                            genre: { ...selectedGenres },
-                            accountType: 'Musician',
-                            uid: user.uid,
-                            profile_pic: img
+                        //writes data on the database
+                        const writeUserData = () => {
+                            set(ref(db, 'users/' + '/musician/' + user.uid),
+                                {
+                                    first_name: fname,
+                                    lname: lname,
+                                    email: email,
+                                    birthday: bday,
+                                    age: age,
+                                    address: address,
+                                    instruments: { ...selectedInstruments },
+                                    genre: { ...selectedGenres },
+                                    accountType: 'Musician',
+                                    uid: user.uid,
+                                    profile_pic: img,
+                                    gender: gender
+                                }
+                            );
                         }
-                    );
-                }
 
-                const writeUserType = () => {
-                    set(ref(db, 'users/' + '/accountType/' + user.uid),
-                        {
-                            accountType: 'Musician'
-                        });
-                }
-
-                const writeLoggedUserData = () => {
-                    set(ref(db, 'users/' + '/logged_users/' + user.uid),
-                        {
-                            first_name: fname,
-                            lname: lname,
-                            email: email,
-                            birthday: bday,
-                            age: age,
-                            address: address,
-                            instruments: { ...selectedInstruments },
-                            genre: { ...selectedGenres },
-                            accountType: 'Musician',
-                            uid: user.uid,
-                            profile_pic: img
+                        const writeUserType = () => {
+                            set(ref(db, 'users/' + '/accountType/' + user.uid),
+                                {
+                                    accountType: 'Musician'
+                                });
                         }
-                    );
-                }
-                writeUserData();
-                writeUserType();
-                writeLoggedUserData();
+
+                        const writeLoggedUserData = () => {
+                            set(ref(db, 'users/' + '/logged_users/' + user.uid),
+                                {
+                                    first_name: fname,
+                                    lname: lname,
+                                    email: email,
+                                    birthday: bday,
+                                    age: age,
+                                    address: address,
+                                    instruments: { ...selectedInstruments },
+                                    genre: { ...selectedGenres },
+                                    accountType: 'Musician',
+                                    uid: user.uid,
+                                    profile_pic: img,
+                                    gender: gender
+                                }
+                            );
+                        }
+                        writeUserData();
+                        writeUserType();
+                        writeLoggedUserData();
+
+                    }).catch(error => {
+                        alert(error.message)
+                        console.log(error.message)
+                    })
+
             })
             .catch(error => alert(error.message))
 
-    }
+    };
 
 
     const handleGenresClick = (GenreId) => {

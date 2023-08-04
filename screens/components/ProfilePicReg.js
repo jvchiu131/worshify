@@ -5,7 +5,7 @@ import * as ImagePicker from 'expo-image-picker';
 import uuid from 'uuid';
 import { storage } from '../../firebase';
 import { auth, db } from '../../firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 import { ref, set } from 'firebase/database';
 
 
@@ -64,13 +64,25 @@ const ProfilePicReg = ({ fname, lname, email, bday, age, address, password }) =>
         return await getDownloadURL(storageRef);
     }
 
+    const actionCode = {
+        url: 'https://worshify-52a66.firebaseapp.com/',
+        handleCodeInApp: true
+    }
 
-    const handleSignup = () => {
-        createUserWithEmailAndPassword(auth, email, password)
+
+
+    const handleSignup = async () => {
+        await createUserWithEmailAndPassword(auth, email, password)
             .then(userCredentials => {
                 const user = userCredentials.user;
-                // console.log(user.email);
 
+                sendEmailVerification(user, actionCode)
+                    .then(() => {
+                        alert('Registration Successful. Email Verification Sent!')
+                    }).catch(error => {
+                        alert(error.message)
+                        console.log("error here")
+                    })
 
                 //writes data on the database
                 const writeUserData = () => {
@@ -112,21 +124,12 @@ const ProfilePicReg = ({ fname, lname, email, bday, age, address, password }) =>
                     );
                 }
 
-                const sendEmailVerification = async () => {
-                    // Send email verification
-                    await user.sendEmailVerification({
-                        handleCodeInApp: true,
-                        url: 'https://worshify-52a66.firebaseapp.com/'
-                    });
 
-                }
 
 
                 writeUserData();
                 writeUserType();
                 writeLoggedUserData();
-                sendEmailVerification();
-
             })
             .catch(error => alert(error.message))
 

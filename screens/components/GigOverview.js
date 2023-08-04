@@ -30,7 +30,7 @@ const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress,
     const [startTime, setStartTime] = useState(StartTime || new Date());
     const [endTime, setEndTime] = useState(EndTime || new Date());
 
-
+    // handles the gig overview of the creation of Gig for user review
 
     //handles gig creation
     //add gig details at the same time in PostGigs and UserGigs

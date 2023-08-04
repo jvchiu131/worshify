@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, ImageBackground, Dimensions, ScrollView } from 'react-native'
 import React, { useState, useEffect } from 'react'
-import { child, onValue, ref, remove, update, get } from 'firebase/database';
+import { child, onValue, ref, remove, update, get, set, push } from 'firebase/database';
 import { db, auth } from '../../firebase';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
@@ -40,7 +40,7 @@ const GigDetails = ({ postID }) => {
         };
     }, []);
 
-
+    //extraction of postDetails of the chosen gig
     useEffect(() => {
         const fetchGigData = async () => {
             const dbRef = ref(db, 'gigPosts/' + postID);
@@ -71,8 +71,8 @@ const GigDetails = ({ postID }) => {
         };
 
         fetchGigData();
+    }, [counter])
 
-    }, [])
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -187,6 +187,13 @@ const GigDetails = ({ postID }) => {
             },
             body: JSON.stringify(message),
         });
+
+        const notificationRef = ref(db, 'users/usersNotification/' + userData.key)
+        const newNotificationRef = push(notificationRef);
+        await set(newNotificationRef, {
+            title: 'Musician Applied!',
+            body: 'A musician applied to your gig!',
+        })
     }
 
 
@@ -209,6 +216,15 @@ const GigDetails = ({ postID }) => {
             },
             body: JSON.stringify(message),
         });
+
+        const notificationRef = ref(db, 'users/usersNotification/' + userData.key)
+        const newNotificationRef = push(notificationRef);
+        await set(newNotificationRef, {
+            title: 'Musician Cancelled',
+            body: 'A musician cancelled in one of your gig.',
+        })
+
+
     }
 
 
@@ -259,6 +275,14 @@ const GigDetails = ({ postID }) => {
         await remove(dbRef)
     }
 
+    // Function to get the label for the button based on gigStatus
+    const getApplyButtonLabel = () => {
+        if (postDetails.gigStatus === 'Done' || postDetails.gigStatus === 'Cancel' || postDetails.gigStatus === 'Upcoming') {
+            return "Gig is not accepting application";
+        } else {
+            return applied || alreadyApplied ? "Cancel Application" : "Apply Gig";
+        }
+    };
 
     return (
         <View style={styles.root}>
@@ -273,6 +297,10 @@ const GigDetails = ({ postID }) => {
                     </View>
                     <View style={styles.statusContainer}>
                         <Text style={styles.statusChip}>{postDetails.gigStatus}</Text>
+                    </View>
+
+                    <View style={styles.statusContainer}>
+                        <Text style={{ ...styles.statusChip, marginTop: 10, marginBottom: 20 }}>{postDetails.Event_Type}</Text>
                     </View>
 
                     <View style={styles.dateTimeContainer}>
@@ -339,28 +367,27 @@ const GigDetails = ({ postID }) => {
 
             <View style={styles.btnContainer}>
 
-                {applied || alreadyApplied ? (
-
-                    <Button mode='elevated'
-                        onPress={async () => { deleteGig(), await sendCancelNotification(clientToken) }}
-                        loading={loading}
-                        buttonColor='red'
-                        textColor='white'
-                        style={styles.btnStyle}>
-                        Cancel Application
-                    </Button>
-
-                ) : (
-                    <Button mode='elevated'
-                        onPress={async () => { applyGig(), await sendPushNotification(clientToken); }}
-                        loading={loading}
-                        buttonColor='#0EB080'
-                        textColor='white'
-                        style={styles.btnStyle}>
-                        Apply Gig
-                    </Button>
-
-                )}
+                <Button
+                    mode="elevated"
+                    onPress={() => {
+                        if (postDetails.gigStatus === 'Done' || postDetails.gigStatus === 'Cancel' || postDetails.gigStatus === 'Upcoming') {
+                            // Do nothing if the gig is not accepting applications anymore
+                        } else if (applied || alreadyApplied) {
+                            deleteGig();
+                            sendCancelNotification(clientToken);
+                        } else {
+                            applyGig();
+                            sendPushNotification(clientToken);
+                        }
+                    }}
+                    loading={loading}
+                    buttonColor={postDetails.gigStatus === 'Done' || postDetails.gigStatus === 'Cancel' || postDetails.gigStatus === 'Upcoming' ? 'gray' : applied || alreadyApplied ? 'red' : '#0EB080'}
+                    textColor="white"
+                    style={styles.btnStyle}
+                    disabled={postDetails.gigStatus === 'Done' || postDetails.gigStatus === 'Cancel' || postDetails.gigStatus === 'Upcoming'}
+                >
+                    {getApplyButtonLabel()}
+                </Button>
 
             </View>
         </View>

@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
         padding: 10,
         marginBottom: 10,
         flexDirection: 'row',
-        height: '5%',
+        height: '10%',
         borderRadius: 10
     },
     gigNameStyle: {

@@ -26,13 +26,7 @@ const FindMusician = ({ selectedGender,
         if (selectedInstruments.includes(instrument)) {
             setSelectedInstruments(selectedInstruments.filter((item) => item !== instrument));
         } else {
-            if (selectedInstruments.length < 3) {
-                setSelectedInstruments([...selectedInstruments, instrument]);
-            } else {
-                // Show a warning or notify the user that they can only select three instruments
-                // You can use an alert or any other user-friendly message to inform the user.
-                alert("You can only select up to three instruments.")
-            }
+            setSelectedInstruments([...selectedInstruments, instrument]);
         }
     };
 
@@ -40,17 +34,9 @@ const FindMusician = ({ selectedGender,
         if (selectedGenres.includes(genre)) {
             setSelectedGenres(selectedGenres.filter((item) => item !== genre));
         } else {
-            if (selectedGenres.length < 3) {
-                setSelectedGenres([...selectedGenres, genre]);
-            } else {
-                // Show a warning or notify the user that they can only select three genres
-                // You can use an alert or any other user-friendly message to inform the user.
-                // console.log('You can only select up to three genres.');
-                alert("You can only select up to three genres.")
-            }
+            setSelectedGenres([...selectedGenres, genre]);
         }
     };
-
     const handleReset = () => {
         setSelectedGender(null);
         setSelectedInstruments([]);
@@ -61,11 +47,19 @@ const FindMusician = ({ selectedGender,
     const isInstrumentSelected = (instrument) => selectedInstruments.includes(instrument);
     const isGenreSelected = (genre) => selectedGenres.includes(genre);
 
-    // useEffect(() => {
-    //     console.log(selectedGender)
-    //     console.log(selectedGenres)
-    //     console.log(selectedInstruments)
-    // }, [])
+    const handleFindMatch = () => {
+        // Check if any selection has been made
+        if (!selectedGender && selectedInstruments.length === 0 && selectedGenres.length === 0) {
+            alert(
+                "No Selection",
+                "Please select at least one option to find a match.",
+                [{ text: "OK", onPress: () => { } }]
+            );
+        } else {
+            closeModal(); // Close the modal if any selection has been made
+        }
+    };
+
 
 
 
@@ -157,13 +151,13 @@ const FindMusician = ({ selectedGender,
                         <Text>Select the genres that you play</Text>
                     </View>
                     <View style={styles.btnContainer}>
-                        <TouchableOpacity style={[styles.btnStyles, isGenreSelected('Pop') && { backgroundColor: '#0EB080' }]}
-                            onPress={() => handleGenreSelection('Pop')}>
+                        <TouchableOpacity style={[styles.btnStyles, isGenreSelected('Worship Pop') && { backgroundColor: '#0EB080' }]}
+                            onPress={() => handleGenreSelection('Worship Pop')}>
                             <Text style={styles.btnTxt}>Pop</Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={[styles.btnStyles, isGenreSelected('Rock') && { backgroundColor: '#0EB080' }]}
-                            onPress={() => handleGenreSelection('Rock')}>
+                        <TouchableOpacity style={[styles.btnStyles, isGenreSelected('Christian Rock') && { backgroundColor: '#0EB080' }]}
+                            onPress={() => handleGenreSelection('Christian Rock')}>
                             <Text style={styles.btnTxt}>Rock</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={[styles.btnStyles, isGenreSelected('Country') && { backgroundColor: '#0EB080' }]}
@@ -189,8 +183,8 @@ const FindMusician = ({ selectedGender,
                     </View>
 
                     <View style={styles.btnContainer}>
-                        <TouchableOpacity style={[styles.btnStyles, isGenreSelected('R&B') && { backgroundColor: '#0EB080' }]}
-                            onPress={() => handleGenreSelection('R&B')}>
+                        <TouchableOpacity style={[styles.btnStyles, isGenreSelected('Christian R&B') && { backgroundColor: '#0EB080' }]}
+                            onPress={() => handleGenreSelection('Christian R&B')}>
                             <Text style={styles.btnTxt}>R&B</Text>
                         </TouchableOpacity>
 
@@ -211,7 +205,7 @@ const FindMusician = ({ selectedGender,
                             <Text style={styles.btnTxt}>Reset</Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={[styles.btnStyles, { backgroundColor: '#0EB080' }]} onPress={closeModal}>
+                        <TouchableOpacity style={[styles.btnStyles, { backgroundColor: '#0EB080' }]} onPress={() => handleFindMatch()}>
                             <Text style={styles.btnTxt}>Find Match</Text>
                         </TouchableOpacity>
                     </View>

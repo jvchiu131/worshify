@@ -209,6 +209,7 @@ const ClientGigDetails = ({ postID }) => {
                     ...existingData,
                     rating,
                     review,
+
                 };
                 await update(ratingRef, newData);
 
@@ -219,11 +220,16 @@ const ClientGigDetails = ({ postID }) => {
                 const newData = {
                     rating: rating,
                     review: review,
+                    userName: userData.firstName,
+                    userLname: userData.lastName,
+                    userPic: userData.profilePic
                 };
                 await set(ratingRef, newData);
                 hideRatings()
                 showAccepted()
             }
+            setRating(null)
+            setReview('');
             hideRatings()
             showAccepted()
 
@@ -315,10 +321,19 @@ const ClientGigDetails = ({ postID }) => {
             },
             body: JSON.stringify(message),
         });
+
+        const notificationRef = ref(db, 'users/usersNotification/' + userId)
+        const newNotificationRef = push(notificationRef);
+        await set(newNotificationRef, {
+            title: 'Gig Done',
+            body: 'A gig that you applied is done! Please rate and give your feedback to the event!',
+        })
     }
 
 
-
+    const handleHide = (data) => {
+        setModalVisible(data)
+    };
 
 
     return (
@@ -447,12 +462,10 @@ const ClientGigDetails = ({ postID }) => {
                 onRequestClose={hideGigModal}
             >
 
-                <Appbar.Header style={styles.appBarStyle}>
-                    <Appbar.BackAction onPress={hideGigModal} color='white' />
-                </Appbar.Header>
+
 
                 <View>
-                    <AppliedProfile {...props} />
+                    <AppliedProfile {...props} hideModal={handleHide} />
                 </View>
 
             </Modal>
@@ -578,7 +591,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         height: 95,
         padding: 10,
-        marginBottom: 10
+        marginBottom: 10,
+
     },
     acceptedPicContainer: {
         width: '25%',
@@ -599,7 +613,7 @@ const styles = StyleSheet.create({
         height: '50%',
         width: '90%',
         backgroundColor: '#F9F9F9',
-        borderRadius: 15
+        borderRadius: 15,
     },
     acceptedContainer: {
         padding: 10,

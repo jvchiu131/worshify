@@ -85,6 +85,7 @@ const MusicianDashboard = () => {
     const responseListener = useRef();
     const user = auth.currentUser;
     const uid = user.uid;
+    const [modalVisibility, setModalVisibility] = useState(false);
 
 
 
@@ -150,6 +151,8 @@ const MusicianDashboard = () => {
                         <RecommendedGigs />
                     </View>
                 </View>
+
+
             </View>
 
 

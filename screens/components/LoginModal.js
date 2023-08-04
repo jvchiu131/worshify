@@ -23,10 +23,15 @@ const LoginModal = () => {
     const handleLogin = () => {
         signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
+
+
                 // Signed in 
                 const user = userCredential.user;
-                navigation.navigate('DashScreen');
-
+                if (user.emailVerified) {
+                    navigation.navigate('DashScreen');
+                } else {
+                    alert('Please verify your email!')
+                }
                 // ...
             })
             .catch((error) => {

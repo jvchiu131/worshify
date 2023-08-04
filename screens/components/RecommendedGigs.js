@@ -22,6 +22,7 @@ const RecommendedGigs = () => {
     const uid = user.uid;
     const [userInstrument, setUserInstruments] = useState([]);
     const [userGenre, setUserGenre] = useState([])
+    const [userGender, setUserGender] = useState();
     const [gigGenre, setGigGenre] = useState([]);
     const [gigInstrument, setGigInstrument] = useState([]);
     const [recommendedGigs, setRecommendedGigs] = useState([]);
@@ -29,7 +30,7 @@ const RecommendedGigs = () => {
     const [selectedItem, setSelectedItem] = useState();
     const showModal = () => setModalVisible(true);
     const hideModal = () => setModalVisible(false);
-
+    const [counter, setCounter] = useState(0);
 
     useEffect(() => {
         const userInstrumentRef = ref(db, 'users/musician/' + uid + '/instruments');
@@ -42,6 +43,23 @@ const RecommendedGigs = () => {
 
     }, [uid])
 
+
+
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            // Update the count every second
+            setCounter(prevCount => prevCount + 1);
+        }, 500);
+
+        console.log(counter)
+        // Clean up the interval when the component unmounts
+        return () => {
+            clearInterval(interval);
+        };
+    }, []);
+
+
     useEffect(() => {
         const userGenreRef = ref(db, 'users/musician/' + uid + '/genre');
         onValue(userGenreRef, (snapshot) => {
@@ -49,6 +67,16 @@ const RecommendedGigs = () => {
             setUserGenre(genreData);
 
         })
+
+    }, [uid])
+
+    useEffect(() => {
+        const userGenderRef = ref(db, 'users/musician/' + uid + '/gender')
+        onValue(userGenderRef, (snapshot) => {
+            const genderData = snapshot.val();
+            setUserGender(genderData);
+        })
+
 
     }, [uid])
 
@@ -94,12 +122,24 @@ const RecommendedGigs = () => {
 
                 const instrumentsGig = gig.InstrumentsNeeded.map((inst) => inst.name)
                 const genreGig = gig.GenreNeeded;
+                const genderGig = gig.gender;
 
-
+                const matchedGender = userGender === genderGig;
                 const matchedGenre = genreGig.filter((genre) => userGenre.includes(genre));
                 const matchedInstruments = instrumentsGig.filter((instrument) => userInstrument.includes(instrument));
-                const totalGenreAndInstrument = userGenre.length + userInstrument.length
-                const calculatePercentage = ((matchedGenre.length + matchedInstruments.length) / totalGenreAndInstrument) * 100;
+                let totalGenreAndInstrument = userGenre.length + userInstrument.length
+
+                if (matchedGender) {
+                    totalGenreAndInstrument += 1
+                }
+
+                let matchedItemsCount = matchedGenre.length + matchedInstruments.length;
+
+                if (matchedGender) {
+                    matchedItemsCount += 1
+                }
+
+                const calculatePercentage = (matchedItemsCount / totalGenreAndInstrument) * 100;
 
                 return { ...gig, calculatePercentage };
 
@@ -109,12 +149,12 @@ const RecommendedGigs = () => {
             const topGigs = gigSorted.slice(0, 5);
             setRecommendedGigs(topGigs);
         });
-    }, [userGenre])
+    }, [counter])
 
 
-    const renderItem = ({ item }) => {
+    const renderItem = ({ item, index }) => {
         return (
-            <TouchableOpacity style={styles.container} onPress={() => { handleModal(item.key) }}>
+            <TouchableOpacity style={styles.container} onPress={() => { handleModal(item.key) }} key={item.postID.toString()}>
                 <View style={styles.imageContainer}>
                     <ImageBackground source={{ uri: item.GigImage }} style={styles.imgStyle} >
                     </ImageBackground>
@@ -157,9 +197,10 @@ const RecommendedGigs = () => {
             <FlatList
                 data={recommendedGigs}
                 renderItem={renderItem}
-                keyExtractor={(item) => item.key}
+                keyExtractor={(item) => item.postID}
                 ItemSeparatorComponent={renderSeparator}
                 horizontal
+                refreshing
             />
 
             <Modal

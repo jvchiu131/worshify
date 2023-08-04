@@ -20,6 +20,22 @@ const UserProfileCard = () => {
 
 
     const [userDetails, setUserDetails] = useState([]);
+    const [userRatings, setUserRatings] = useState();
+    const [counter, setCounter] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            // Update the count every second
+            setCounter(prevCount => prevCount + 1);
+        }, 500);
+
+        console.log(counter)
+        // Clean up the interval when the component unmounts
+        return () => {
+            clearInterval(interval);
+        };
+    }, []);
+
 
 
     useEffect(() => {
@@ -36,9 +52,33 @@ const UserProfileCard = () => {
             }
             setUserDetails(userData);
         })
-    }, [])
+    }, [uid])
 
 
+    useEffect(() => {
+        if (userDetails.accountType === "Musician") {
+            const ratingRef = ref(db, 'users/musicianRatings/' + uid)
+            onValue(ratingRef, (snapshot) => {
+                let totalRating = 0;
+                let length = 0;
+
+                snapshot.forEach((child) => {
+                    const rating = child.val().rating;
+                    //limits the rating to maximum of 5
+                    const limitRating = Math.min(rating, 5);
+                    totalRating += limitRating;
+                    length++;
+                });
+
+                if (length > 0) {
+                    const avgRating = totalRating / length;
+                    setUserRatings(avgRating);
+                } else {
+                    console.log('No ratings')
+                }
+            })
+        }
+    }, [counter])
 
 
 
@@ -69,6 +109,15 @@ const UserProfileCard = () => {
                             <Text style={styles.emailTxtStyle}>{userDetails.email}</Text>
                         </View>
 
+                        {userRatings ? (
+                            <View style={styles.ratingContainer}>
+                                <Entypo name="star" size={14} color="yellow" />
+                                <Text style={styles.ratingTxt}>
+                                    {userRatings}
+                                </Text>
+                            </View>
+                        ) : null}
+
                     </View>
                 </View>
             </View>
@@ -79,6 +128,17 @@ const UserProfileCard = () => {
 export default UserProfileCard
 
 const styles = StyleSheet.create({
+
+    ratingContainer: {
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
+    ratingTxt: {
+        color: 'white',
+        fontSize: 15,
+        marginLeft: 7
+
+    },
     accountTypeStyle: {
         color: '#0EB080',
         fontWeight: '800'
