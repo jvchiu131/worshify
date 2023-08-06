@@ -108,7 +108,7 @@ const ClientGigDetails = ({ postID }) => {
                 StartTime: snapshot.val().Gig_Start,
                 EndTime: snapshot.val().Gig_End,
                 InstrumentsNeeded: snapshot.val().Instruments_Needed,
-                GigImage: snapshot.val().Gig_Image,
+                // GigImage: snapshot.val().Gig_Image,
                 GigDate: snapshot.val().Gig_Date,
                 about: snapshot.val().about
             };

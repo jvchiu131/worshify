@@ -23,6 +23,7 @@ const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress,
     const [quantity, setQuantity] = useState(InstrumentsNeeded.map(() => 1));
     const [Gender, setGender] = useState(gender);
     const [open, setOpen] = useState(false);
+    const [address, setAddress] = useState();
     const [about, setAbout] = useState('');
     const [instrumentsNeeded, setInstrumentsNeeded] = useState(InstrumentsNeeded.map(instrument => ({ name: instrument, quantity: 1 })));
     const [gigCreated, setGigCreated] = useState(false);
@@ -49,7 +50,7 @@ const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress,
         set(UserGigsRef, {
             uid: uid,
             Gig_Name: gigName,
-            Gig_Address: gigAddress,
+            Gig_Address: address,
             Gig_Date: gigDate.toDateString(),
             Gig_Start: formatTime(StartTime),
             Gig_End: formatTime(EndTime),
@@ -67,7 +68,7 @@ const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress,
         set(GigPostsRef, {
             uid: uid,
             Gig_Name: gigName,
-            Gig_Address: gigAddress,
+            Gig_Address: address,
             Gig_Date: gigDate.toDateString(),
             Gig_Start: formatTime(StartTime),
             Gig_End: formatTime(EndTime),
@@ -88,6 +89,7 @@ const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress,
     useEffect(() => {
         console.log(gigDate.toDateString())
         console.log(formatTime(StartTime))
+        console.log(address)
     }, [])
 
     const handleQuantityChange = (index, value) => {
@@ -286,9 +288,10 @@ const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress,
                         <View style={styles.inputContainer}>
                             <Text>Gig Address:</Text>
                             <TextInput
-                                value={gigAddress}
-                                placeholder={gigAddress}
+                                value={address}
+                                placeholder="put address here"
                                 style={styles.inputStyle}
+                                onChangeText={(text) => setAddress(text)}
                             />
                         </View>
 
@@ -444,7 +447,7 @@ const styles = StyleSheet.create({
     },
     scrollViewContent: {
         flexGrow: 1,
-        paddingBottom: 550,
+        paddingBottom: 700,
     },
     instrumentsContainer: {
         borderWidth: 2,

@@ -6,6 +6,7 @@ import { EvilIcons } from '@expo/vector-icons';
 import { Appbar } from 'react-native-paper';
 import AddPortfolio from './AddPortfolio';
 import { AirbnbRating, Rating } from 'react-native-ratings';
+import { signOut } from "firebase/auth";
 
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('screen');
@@ -24,6 +25,18 @@ const UserMusicianDetails = () => {
     const [review, setReview] = useState([]);
     const [counter, setCounter] = useState(0);
     const [revUsers, setRevUsers] = useState([]);
+
+
+
+
+    // const handleSignOut = () => {
+    //     signOut(auth).then(() => {
+    //         // Sign-out successful.
+
+    //       }).catch((error) => {
+    //         // An error happened.
+    //       });
+    // }
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -236,6 +249,13 @@ const UserMusicianDetails = () => {
                                 )
                             })}
                         </ScrollView>
+
+
+                        {/* <View>
+                            <TouchableOpacity>
+                                <Text>Sign Out</Text>
+                            </TouchableOpacity>
+                        </View> */}
 
                     </View>
                 </View>

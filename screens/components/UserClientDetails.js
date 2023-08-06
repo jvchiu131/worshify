@@ -1,7 +1,7 @@
 import {
     StyleSheet, Text, View, Dimensions, TouchableOpacity, Animated,
     TouchableWithoutFeedback, FlatList, ImageBackground, RefreshControl,
-    Modal
+    Modal, ScrollView
 } from 'react-native'
 import React, { useState, useEffect, useCallback } from 'react'
 import { Ionicons } from '@expo/vector-icons';
@@ -60,36 +60,38 @@ const UserClientDetails = () => {
     const renderItem = ({ item }) => {
 
         return (
-            <TouchableOpacity style={styles.renderStyle} onPress={() => handleItemPress(item.postID)}>
+            <ScrollView contentContainerStyle={styles.scrollContainer} >
+                <TouchableOpacity style={styles.renderStyle} onPress={() => handleItemPress(item.postID)}>
 
-                <View style={styles.container}>
-                    <View style={styles.imgContainer}>
-                        <ImageBackground source={{ uri: item.GigImage }} style={styles.imgStyle}>
-                        </ImageBackground>
-                    </View>
-                    <View style={styles.txtContainer}>
-                        <View style={styles.titleContainer}>
-                            <Text style={styles.titleStyle}>{item.GigName}</Text>
+                    <View style={styles.container}>
+                        <View style={styles.imgContainer}>
+                            <ImageBackground source={{ uri: item.GigImage }} style={styles.imgStyle}>
+                            </ImageBackground>
                         </View>
-                        <View style={styles.addressContainer}>
-                            <EvilIcons name="location" size={15} color="#0EB080" />
-                            <Text style={styles.txtStyle}>{item.GigAddress}</Text>
-                        </View>
-
-                        <View style={styles.dateContainer}>
-                            <View style={styles.dateTimeContainer}>
-                                <MaterialIcons name="date-range" size={15} color="#0EB080" style={{ marginRight: 5 }} />
-                                <Text style={styles.txtStyle}>{item.GigDate}</Text>
+                        <View style={styles.txtContainer}>
+                            <View style={styles.titleContainer}>
+                                <Text style={styles.titleStyle}>{item.GigName}</Text>
                             </View>
-                            <View style={styles.dateTimeContainer}>
-                                <FontAwesome5 name="clock" size={15} color="#0EB080" style={{ marginRight: 5 }} />
-                                <Text style={styles.txtStyle}>{item.StartTime} - {item.EndTime}</Text>
+                            <View style={styles.addressContainer}>
+                                <EvilIcons name="location" size={15} color="#0EB080" />
+                                <Text style={styles.txtStyle}>{item.GigAddress}</Text>
                             </View>
-                        </View>
 
+                            <View style={styles.dateContainer}>
+                                <View style={styles.dateTimeContainer}>
+                                    <MaterialIcons name="date-range" size={15} color="#0EB080" style={{ marginRight: 5 }} />
+                                    <Text style={styles.txtStyle}>{item.GigDate}</Text>
+                                </View>
+                                <View style={styles.dateTimeContainer}>
+                                    <FontAwesome5 name="clock" size={15} color="#0EB080" style={{ marginRight: 5 }} />
+                                    <Text style={styles.txtStyle}>{item.StartTime} - {item.EndTime}</Text>
+                                </View>
+                            </View>
+
+                        </View>
                     </View>
-                </View>
-            </TouchableOpacity>
+                </TouchableOpacity>
+            </ScrollView>
 
         )
     }
@@ -145,6 +147,10 @@ const UserClientDetails = () => {
 export default UserClientDetails
 
 const styles = StyleSheet.create({
+    scrollContainer: {
+        flexGrow: 1,
+        paddingRight: 550
+    },
     appBarStyle: {
         backgroundColor: '#151414',
     },
