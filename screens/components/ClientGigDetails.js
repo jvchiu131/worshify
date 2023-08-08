@@ -18,7 +18,7 @@ import { AirbnbRating, Rating } from 'react-native-ratings';
 const { height: screenHeight } = Dimensions.get('screen');
 const { width: screenWidth } = Dimensions.get('screen');
 
-const ClientGigDetails = ({ postID }) => {
+const ClientGigDetails = ({ postID, handleBtnClose }) => {
 
     const [postDetails, setPostDetails] = useState([]);
     const [instruments, setInstruments] = useState([]);
@@ -48,6 +48,7 @@ const ClientGigDetails = ({ postID }) => {
     const [acceptedVisible, setAcceptedVisible] = useState(false);
     const showAccepted = () => setAcceptedVisible(true);
     const hideAccepted = () => setAcceptedVisible(false);
+    const [gigExist, setGigExist] = useState(false);
 
     const [open, setOpen] = useState(false);
     const [items, setItems] = useState([
@@ -62,11 +63,20 @@ const ClientGigDetails = ({ postID }) => {
 
     const [counter, setCounter] = useState(0);
 
+
+    // useEffect(() => {
+    //     // if (postDetails.Event_Type === null) {
+    //     //     navigation.goBack();
+    //     // }
+    //     console.log(postDetails.Event_Type)
+    // }, [])
+
+
     useEffect(() => {
         const interval = setInterval(() => {
             // Update the count every second
             setCounter(prevCount => prevCount + 1);
-        }, 500);
+        }, 300);
 
         console.log(counter)
         // Clean up the interval when the component unmounts
@@ -86,34 +96,46 @@ const ClientGigDetails = ({ postID }) => {
         showRatings()
         hideAccepted()
         const variable = acceptedUsers.some((user) => user.key === selectedUserKey)
-        console.log(variable);
-        console.log(ratingsVisible)
-        console.log(selectedUserKey)
-        console.log(acceptedUsers)
     };
+
+    // useEffect(() => {
+    //     const dbRef = ref(db, 'gigPosts/' + postID);
+    //     onValue(dbRef, (snapshot) => {
+    //         if (snapshot.exists()) {
+    //             setGigExist(true);
+    //         } else {
+    //             setGigExist(false);
+    //             handleBtnClose(false);
+    //         }
+    //     })
+    // }, [counter]);
 
 
 
     useEffect(() => {
         const dbRef = ref(db, 'gigPosts/' + postID);
         onValue(dbRef, (snapshot) => {
-            const gigData = {
-                key: snapshot.key,
-                Event_Type: snapshot.val().Event_Type,
-                GigAddress: snapshot.val().Gig_Address,
-                postID: snapshot.val().postID,
-                GigName: snapshot.val().Gig_Name,
-                uid: snapshot.val().uid,
-                GenreNeeded: snapshot.val().Genre_Needed,
-                StartTime: snapshot.val().Gig_Start,
-                EndTime: snapshot.val().Gig_End,
-                InstrumentsNeeded: snapshot.val().Instruments_Needed,
-                // GigImage: snapshot.val().Gig_Image,
-                GigDate: snapshot.val().Gig_Date,
-                about: snapshot.val().about
-            };
+            if (snapshot.exists()) {
+                const gigData = {
+                    key: snapshot.key,
+                    Event_Type: snapshot.val().Event_Type,
+                    GigAddress: snapshot.val().Gig_Address,
+                    postID: snapshot.val().postID,
+                    GigName: snapshot.val().Gig_Name,
+                    uid: snapshot.val().uid,
+                    GenreNeeded: snapshot.val().Genre_Needed,
+                    StartTime: snapshot.val().Gig_Start,
+                    EndTime: snapshot.val().Gig_End,
+                    InstrumentsNeeded: snapshot.val().Instruments_Needed,
+                    // GigImage: snapshot.val().Gig_Image,
+                    GigDate: snapshot.val().Gig_Date,
+                    about: snapshot.val().about
+                };
 
-            setPostDetails(gigData);
+                setPostDetails(gigData);
+            } else {
+                handleBtnClose(false)
+            }
         });
 
     }, [postID])
@@ -248,16 +270,15 @@ const ClientGigDetails = ({ postID }) => {
     const props = { userId, postID };
 
 
+    //handles Gig Archive
     const archiveGig = () => {
         const archiveRef = ref(db, 'archiveGigs/' + uid + '/' + postID)
         set(archiveRef, postDetails)
         setArchived(true);
-        navigation.goBack();
+        handleBtnClose(false);
         deleteGig();
     }
-    useEffect(() => {
-        console.log(rating)
-    }, [rating])
+
 
 
 

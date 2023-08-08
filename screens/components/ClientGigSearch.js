@@ -173,7 +173,9 @@ const ClientGigSearch = () => {
     };
 
 
-
+    const handleClose = (data) => {
+        setModalVisible(data);
+    }
 
 
     return (
@@ -222,7 +224,7 @@ const ClientGigSearch = () => {
                         </TouchableOpacity>
                     </Appbar.Header>
 
-                    <ClientGigDetails {...props} />
+                    <ClientGigDetails {...props} handleBtnClose={handleClose} />
                 </Modal>
             </View >
 

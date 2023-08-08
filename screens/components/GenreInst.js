@@ -26,6 +26,8 @@ const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType
     const [modalVisible, setModalVisible] = useState(false);
     const user = auth.currentUser;
     const uid = user.uid;
+    const [isInstrumentSelected, setIsInstrumentSelected] = useState(false);
+    const [isGenreSelected, setIsGenreSelected] = useState(false);
 
     const handleModalBtn = () => {
         setModalVisible(true);
@@ -49,6 +51,16 @@ const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType
         // console.log(img);
     }, [])
 
+    useEffect(() => {
+        setIsInstrumentSelected(selectedInstruments.length > 0);
+    }, [selectedInstruments])
+
+
+    useEffect(() => {
+        setIsGenreSelected(selectedGenres.length > 0);
+    }, [selectedGenres])
+
+
 
 
     const handleInstrumentsClick = (buttonId) => {
@@ -66,52 +78,6 @@ const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType
 
 
 
-    //handles gig creation
-    //add gig details at the same time in PostGigs and UserGigs
-    const handleCreateGig = () => {
-
-        //Generates GigPost Key
-        const newGigsRefKey = push(child(ref_db(db), 'gigs')).key;
-        const UserGigsRef = ref_db(db, 'users/' + '/client/' + uid + '/gigs/' + newGigsRefKey);
-        const GigPostsRef = ref_db(db, 'gigPosts/' + '/' + newGigsRefKey);
-
-        set(UserGigsRef, {
-            Organizer: fname + lname,
-            uid: uid,
-            Gig_Name: gigName,
-            Gig_Address: gigAddress,
-            Gig_Date: gigDate,
-            Gig_Start: StartTime,
-            Gig_End: EndTime,
-            Event_Type: eventType,
-            Instruments_Needed: { ...selectedInstruments },
-            Genre_Needed: { ...selectedGenres },
-            postID: newGigsRefKey,
-            Gig_Image: img,
-            Gender: gender,
-            MusicianType: musicianType
-        });
-
-
-        set(GigPostsRef, {
-            Organizer: fname + lname,
-            uid: uid,
-            Gig_Name: gigName,
-            Gig_Address: gigAddress,
-            Gig_Date: gigDate,
-            Gig_Start: StartTime,
-            Gig_End: EndTime,
-            Event_Type: eventType,
-            Instruments_Needed: { ...selectedInstruments },
-            Genre_Needed: { ...selectedGenres },
-            postID: newGigsRefKey,
-            Gig_Image: img,
-            Gender: gender,
-            MusicianType: musicianType
-        });
-
-
-    }
 
     const props = {
         InstrumentsNeeded: selectedInstruments, GenreNeeded: selectedGenres, uid: uid, gigName: gigName,
@@ -133,6 +99,8 @@ const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType
             setSelectedGenres([...selectedGenres, GenreId]);
 
         }
+
+
     }
 
 
@@ -140,13 +108,15 @@ const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType
 
 
     const handleClick = () => {
-        Animated.timing(ContentValue, {
-            toValue: 0,
-            duration: 300,
-            useNativeDriver: false,
-        }).start()
-        SetIsClicked(true);
+        if (isInstrumentSelected) {
+            Animated.timing(ContentValue, {
+                toValue: 0,
+                duration: 300,
+                useNativeDriver: false,
+            }).start()
+            SetIsClicked(true);
 
+        }
     }
 
 
@@ -307,8 +277,8 @@ const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType
 
                                 <View style={styles.BtnRow}>
                                     {/* state changed */}
-                                    <TouchableOpacity onPress={handleModalBtn}>
-                                        <View style={styles.button}>
+                                    <TouchableOpacity onPress={handleModalBtn} disabled={!isGenreSelected}>
+                                        <View style={[styles.button, !isGenreSelected ? { backgroundColor: '#A0A0A0' } : null]}>
                                             <Text style={styles.txtStyle}>View Overview</Text>
                                         </View>
                                     </TouchableOpacity>
@@ -477,8 +447,8 @@ const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType
                         </View>
 
                         <View style={styles.BtnRow}>
-                            <TouchableOpacity onPress={handleClick}>
-                                <View style={styles.button}>
+                            <TouchableOpacity onPress={() => handleClick()} disabled={!isInstrumentSelected}>
+                                <View style={[styles.button, !isInstrumentSelected ? { backgroundColor: '#A0A0A0' } : null]}>
                                     <Text style={styles.txtStyle}>Next</Text>
                                 </View>
                             </TouchableOpacity>

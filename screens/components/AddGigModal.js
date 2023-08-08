@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, Animated, Dimensions, Image, Platform, ScrollView } from 'react-native'
 import React from 'react'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import GenreInst from './GenreInst'
 import { storage } from '../../firebase'
 import { ref as ref_storage, uploadBytes, getDownloadURL } from 'firebase/storage'
@@ -56,7 +56,7 @@ const AddGigModal = () => {
     const [endVisible, setEndVisible] = useState(false);
     const [imgUploaded, setImgUploaded] = useState(false)
     const [showPicker, setShowPicker] = useState(false);
-
+    const [isAllInputsFilled, setIsAllInputsFilled] = useState(false);
 
 
 
@@ -77,6 +77,27 @@ const AddGigModal = () => {
             setIsClicked(true);
         }
     };
+    const checkInputsFilled = () => {
+        if (
+            GigName &&
+            GigAddress &&
+            date instanceof Date &&
+            startTime instanceof Date &&
+            endTime instanceof Date &&
+            EventType &&
+            MusicianType &&
+            gender &&
+            image
+        ) {
+            setIsAllInputsFilled(true);
+        } else {
+            setIsAllInputsFilled(false);
+        }
+    };
+
+    useEffect(() => {
+        checkInputsFilled();
+    }, [GigName, GigAddress, date, startTime, endTime, EventType, MusicianType, gender, image]);
 
     //handles image upload
     const pickImage = async () => {
@@ -397,8 +418,8 @@ const AddGigModal = () => {
 
 
                         <View>
-                            <TouchableOpacity style={styles.btnContainer} onPress={handleBtn}>
-                                <View style={styles.button}>
+                            <TouchableOpacity style={styles.btnContainer} onPress={handleBtn} disabled={!isAllInputsFilled}>
+                                <View style={[styles.button, !isAllInputsFilled && { opacity: 0.5 }]}>
                                     <Text style={[styles.txtStyle, { color: 'white', fontWeight: 'bold' }]}>Next</Text>
                                 </View>
                             </TouchableOpacity>

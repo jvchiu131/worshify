@@ -23,7 +23,7 @@ const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress,
     const [quantity, setQuantity] = useState(InstrumentsNeeded.map(() => 1));
     const [Gender, setGender] = useState(gender);
     const [open, setOpen] = useState(false);
-    const [address, setAddress] = useState();
+    const [address, setAddress] = useState(gigAddress);
     const [about, setAbout] = useState('');
     const [instrumentsNeeded, setInstrumentsNeeded] = useState(InstrumentsNeeded.map(instrument => ({ name: instrument, quantity: 1 })));
     const [gigCreated, setGigCreated] = useState(false);
@@ -87,8 +87,8 @@ const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress,
     }
 
     useEffect(() => {
-        console.log(gigDate.toDateString())
-        console.log(formatTime(StartTime))
+        // console.log(gigDate.toDateString())
+        // console.log(formatTime(StartTime))
         console.log(address)
     }, [])
 
@@ -331,7 +331,7 @@ const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress,
 
                         <View>
                             <View style={styles.eventContainer}>
-                                <Text style={styles.txtStyles}>Sex:</Text>
+                                <Text style={styles.txtStyles}>Gender:</Text>
                                 <DropDownPicker
                                     open={open}
                                     value={Gender}
@@ -433,7 +433,7 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         borderColor: '#0EB080',
         width: '100%',
-        height: '40%',
+        height: '35%',
         justifyContent: 'center',
         alignItems: 'center',
         overflow: 'hidden'
