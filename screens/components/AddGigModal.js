@@ -253,7 +253,7 @@ const AddGigModal = ({ handleModal }) => {
 
 
                         <View style={styles.GigNameContainer}>
-                            <Text style={styles.txtStyles}>Gig Title</Text>
+                            <Text style={styles.txtStyles}>Gig Title *</Text>
                             <TextInput style={styles.inputStyle}
                                 value={GigName}
                                 placeholder='Enter gig name'
@@ -261,7 +261,7 @@ const AddGigModal = ({ handleModal }) => {
                         </View>
 
                         <View style={styles.GigNameContainer}>
-                            <Text style={styles.txtStyles}>Gig Address</Text>
+                            <Text style={styles.txtStyles}>Gig Address *</Text>
                             <TextInput style={styles.inputStyle}
                                 value={GigAddress}
                                 placeholder='Enter gig address'
@@ -269,7 +269,7 @@ const AddGigModal = ({ handleModal }) => {
                         </View>
                         <View style={styles.GigNameContainer}>
 
-                            <Text style={styles.txtStyles}>Date</Text>
+                            <Text style={styles.txtStyles}>Date *</Text>
                             {!showPicker && (
                                 <Pressable
                                     onPress={toggleDatepicker} style={styles.pressableContainer}>
@@ -303,7 +303,7 @@ const AddGigModal = ({ handleModal }) => {
                         <View style={styles.timeContainer}>
                             {!startVisible ? (
                                 <Pressable onPress={toggleTimepickerStart} style={styles.timePickerContainer}>
-                                    <Text style={styles.txtStyles}>Time Start:</Text>
+                                    <Text style={styles.txtStyles}>Time Start: *</Text>
                                     <TextInput
                                         placeholder='Choose Start Time'
                                         placeholderTextColor='#11182744'
@@ -326,7 +326,7 @@ const AddGigModal = ({ handleModal }) => {
 
                             {!endVisible ? (
                                 <Pressable onPress={toggleTimepickerEnd} style={styles.timePickerContainer}>
-                                    <Text style={styles.txtStyles}>Time End:</Text>
+                                    <Text style={styles.txtStyles}>Time End: *</Text>
                                     <TextInput
                                         placeholder='Choose End Time'
                                         placeholderTextColor='#11182744'
@@ -353,7 +353,7 @@ const AddGigModal = ({ handleModal }) => {
 
 
                         <View style={styles.eventContainer}>
-                            <Text style={styles.txtStyles}>Event Type</Text>
+                            <Text style={styles.txtStyles}>Event Type *</Text>
                             <DropDownPicker
                                 open={open}
                                 value={EventType}
@@ -370,7 +370,7 @@ const AddGigModal = ({ handleModal }) => {
 
                         <View style={styles.rowContainer}>
                             <View style={styles.musicianContainer}>
-                                <Text style={styles.txtStyles}>Musician Type</Text>
+                                <Text style={styles.txtStyles}>Musician Type *</Text>
                                 <DropDownPicker
                                     open={opentype}
                                     value={MusicianType}
@@ -385,7 +385,7 @@ const AddGigModal = ({ handleModal }) => {
                             </View>
 
                             <View style={styles.genderContainer}>
-                                <Text style={styles.txtStyles}>Gender</Text>
+                                <Text style={styles.txtStyles}>Gender *</Text>
                                 <DropDownPicker
                                     open={opengender}
                                     value={gender}
@@ -409,7 +409,7 @@ const AddGigModal = ({ handleModal }) => {
                                 <>
                                     <MaterialIcons name="add-photo-alternate" size={24} color="black" />
                                     <Text>
-                                        Add Photo
+                                        Add Photo *
                                     </Text>
                                 </>
                             )}
