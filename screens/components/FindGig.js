@@ -40,13 +40,7 @@ const FindGig = ({ selectedGender,
         if (selectedInstruments.includes(instrument)) {
             setSelectedInstruments(selectedInstruments.filter((item) => item !== instrument));
         } else {
-            if (selectedInstruments.length < 3) {
-                setSelectedInstruments([...selectedInstruments, instrument]);
-            } else {
-                // Show a warning or notify the user that they can only select three instruments
-                // You can use an alert or any other user-friendly message to inform the user.
-                alert("You can only select up to three instruments.")
-            }
+            setSelectedInstruments([...selectedInstruments, instrument]);
         }
     };
 
@@ -54,14 +48,7 @@ const FindGig = ({ selectedGender,
         if (selectedGenres.includes(genre)) {
             setSelectedGenres(selectedGenres.filter((item) => item !== genre));
         } else {
-            if (selectedGenres.length < 3) {
-                setSelectedGenres([...selectedGenres, genre]);
-            } else {
-                // Show a warning or notify the user that they can only select three genres
-                // You can use an alert or any other user-friendly message to inform the user.
-                // console.log('You can only select up to three genres.');
-                alert("You can only select up to three genres.")
-            }
+            setSelectedGenres([...selectedGenres, genre]);
         }
     };
 

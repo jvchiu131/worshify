@@ -62,11 +62,7 @@ const MusicianGigSearch = () => {
         setSelectedGenres(genres);
     };
 
-    useEffect(() => {
-        console.log(selectedGender)
-        console.log(selectedGenres)
-        console.log(selectedInstruments)
-    }, [])
+
 
     const props = { postID: selectedItem };
 
@@ -140,6 +136,9 @@ const MusicianGigSearch = () => {
                 const genreGig = gig.GenreNeeded;
                 const genderGig = gig.gigGender;
 
+                // console.log(genderGig)
+                // console.log(selectedGender);
+
                 setGigGenre(genreGig);
                 setGigInstrument(instrumentsGig);
                 setGigGender(genderGig);
@@ -150,19 +149,20 @@ const MusicianGigSearch = () => {
                 const totalItem = genderMatch + selectedInstruments.length + selectedGenres.length;
                 const matchedGenre = genreGig.filter((genre) => selectedGenres.includes(genre));
                 const matchedInstruments = gigInstrument.filter((instrument) => selectedInstruments.includes(instrument));
-                const calculatePercentage = ((matchedGenre.length + matchedInstruments.length) / totalItem) * 100;
+                const calculatePercentage = ((matchedGenre.length + matchedInstruments.length + genderMatch) / totalItem) * 100;
 
                 console.log(calculatePercentage)
 
                 return { ...gig, calculatePercentage };
 
             });
-
-            const gigSorted = gigScore.sort((a, b) => b.calculatePercentage - a.calculatePercentage);
+            // Remove musicians with NaN or 0 percentage
+            const validGigs = gigScore.filter((gig) => !isNaN(gig.calculatePercentage) && gig.calculatePercentage > 0);
+            const gigSorted = validGigs.sort((a, b) => b.calculatePercentage - a.calculatePercentage);
             const topGigs = gigSorted.slice(0, 5);
             setMatchedGigs(topGigs)
         });
-    }, [selectedGenres])
+    }, [selectedGenres, selectedGender, selectedInstruments])
 
 
 
@@ -179,6 +179,10 @@ const MusicianGigSearch = () => {
                     <View style={styles.txtContainer}>
                         <View style={styles.titleContainer}>
                             <Text style={styles.titleStyle}>{item.GigName}</Text>
+                            {isFilterApplied ? (
+                                <Text style={{ fontWeight: 'bold', color: "#0EB080" }}>{Math.round(item.calculatePercentage)}%</Text>)
+                                : null}
+
                         </View>
                         <View style={styles.addressContainer}>
                             <EvilIcons name="location" size={15} color="#0EB080" />

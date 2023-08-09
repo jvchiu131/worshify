@@ -75,7 +75,7 @@ const FeaturedMusician = () => {
     return (
         <ScrollView contentContainerStyle={styles.scrollContainer} horizontal={true}>
             {featuredMusicians.map((musician) => (
-                <TouchableOpacity key={musician.userId} style={styles.musicianContainer} onPress={handleItemPress(musician.userId)}>
+                <TouchableOpacity key={musician.userId} style={styles.musicianContainer} onPress={() => handleItemPress(musician.userId)}>
                     <View>
                         <View style={styles.imgContainer}>
                             <ImageBackground source={{ uri: musician.profilePic }} style={{ height: '100%', width: '100%' }}>
