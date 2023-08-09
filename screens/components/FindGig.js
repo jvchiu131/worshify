@@ -100,7 +100,7 @@ const FindGig = ({ selectedGender,
                 <View style={styles.typeContainer}>
                     <View style={styles.titleContainer}>
                         <Text style={{ fontWeight: 'bold', fontSize: 17 }}>Instruments</Text>
-                        <Text>Select <Text style={{ color: '#0EB080', fontWeight: 'bold' }}>three</Text> instruments that you play</Text>
+                        <Text>Select the <Text style={{ color: '#0EB080', fontWeight: 'bold' }}>instruments</Text> that you play</Text>
 
                     </View>
                     <View style={styles.btnContainer}>
@@ -156,7 +156,7 @@ const FindGig = ({ selectedGender,
                 <View style={styles.typeContainer}>
                     <View style={styles.titleContainer}>
                         <Text style={{ fontWeight: 'bold', fontSize: 17 }}>Genre</Text>
-                        <Text>Select the genres that you play</Text>
+                        <Text>Select the <Text style={{ color: '#0EB080', fontWeight: 'bold' }}>genres</Text> that you play</Text>
                     </View>
                     <View style={styles.btnContainer}>
                         <TouchableOpacity style={[styles.btnStyles, isGenreSelected('Worship Pop') && { backgroundColor: '#0EB080' }]}
