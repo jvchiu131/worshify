@@ -120,7 +120,7 @@ const RecommendedGigs = () => {
 
             const gigScore = gigDetails.map((gig) => {
 
-                const instrumentsGig = gig.InstrumentsNeeded.map((inst) => inst.name)
+                const instrumentsGig = gig.InstrumentsNeeded.map((inst) => inst.name) || [];
                 const genreGig = gig.GenreNeeded;
                 const genderGig = gig.gender;
 

@@ -63,7 +63,7 @@ const MusicianSearch = () => {
 
 
     const handleItemPress = (key) => {
-        console.log('item presseedd', key)
+
         setSelectedItem(key);
         // showModal();
         navigation.navigate('MusicianProfile', { userId: key });
@@ -110,8 +110,6 @@ const MusicianSearch = () => {
                 })
             });
 
-
-
             const musicianScore = musicianDetails.map((musician) => {
                 const instrumentsMusician = musician.instruments;
                 const genreMusician = musician.genre;
@@ -132,7 +130,7 @@ const MusicianSearch = () => {
 
                 const calculatePercentage = ((matchedGenre.length + matchedInstruments.length + genderMatch) / totalItem) * 100;
 
-                console.log(matchedGenre)
+
 
                 return { ...musician, calculatePercentage };
 
@@ -141,6 +139,7 @@ const MusicianSearch = () => {
             const musicianSorted = musicianScore.sort((a, b) => b.calculatePercentage - a.calculatePercentage);
             const topMusicians = musicianSorted.slice(0, 5);
             setMatchedMusicians(topMusicians)
+
         });
 
     }, [selectedGenres])

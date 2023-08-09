@@ -65,9 +65,11 @@ const FeaturedGig = () => {
 
 
 
+
+
             const gigScore = gigDetails.map((gig) => {
-                const instrumentsGig = gig.InstrumentsNeeded.map((inst) => inst.name)
-                const genreGig = gig.GenreNeeded;
+                const instrumentsGig = gig.InstrumentsNeeded?.map((inst) => inst.name) || [];
+                const genreGig = gig.GenreNeeded?.length ? gig.GenreNeeded : [];
 
                 const matchedGenre = genreGig.filter((genre) => userGenre.includes(genre));
                 const matchedInstruments = instrumentsGig.filter((instrument) =>
