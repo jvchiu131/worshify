@@ -20,7 +20,7 @@ import uuid from 'uuid';
 const { height: screenHeight } = Dimensions.get('screen');
 const { width: screenWidth } = Dimensions.get("screen");
 
-const AddGigModal = () => {
+const AddGigModal = ({ handleModal }) => {
 
     const [image, setImage] = useState(null);
     const [isClicked, setIsClicked] = useState(false);
@@ -240,7 +240,7 @@ const AddGigModal = () => {
                     <Animated.View
                         style={{ right: ContentValue }}>
                         {isClicked ? (
-                            <GenreInst {...props} />
+                            <GenreInst {...props} handleParentModal={handleModal} />
                         ) : null}
                     </Animated.View>
                 ) : (

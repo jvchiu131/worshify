@@ -1,3 +1,4 @@
+import Toast from 'react-native-toast-message';
 import {
     StyleSheet, Text, View, Dimensions, TouchableOpacity, Animated,
     TouchableWithoutFeedback, FlatList, ImageBackground, RefreshControl,
@@ -35,7 +36,33 @@ const ClientGigSearch = () => {
     const uid = user.uid;
     const navigation = useNavigation()
 
-    const showAddGig = () => setShowModal(true);
+    const showAddGig = () => {
+        setShowModal(true)
+
+    };
+
+    const toastHandle = () => {
+        Toast.show({
+            type: 'success',
+            text1: 'Your gig has been successfully created!'
+        })
+    }
+
+    const handleGigOverview = (data) => {
+        setShowModal(data);
+
+        // Check if the data is false
+        if (data === false) {
+            // Show the toast
+            Toast.show({
+                type: 'success',
+                text1: 'Your gig has been successfully created!',
+                visibilityTime: 6000, // Optional: Set the time the toast should be visible (in milliseconds)
+                autoHide: true
+            });
+        }
+    };
+
     const hideAddGig = () => setShowModal(false);
 
 
@@ -51,17 +78,12 @@ const ClientGigSearch = () => {
             setRefreshing(false);
         }, 2000)
     }, [])
-    useEffect(() => {
-        console.log(modalVisible)
-    }, [])
-
-
-
 
 
     const handleItemPress = (key) => {
         setSelectedItem(key);
         showGigModal();
+
     };
 
     const props = { postID: selectedItem };
@@ -204,7 +226,7 @@ const ClientGigSearch = () => {
                     <Appbar.Header style={styles.appBarStyle}>
                         <Appbar.BackAction onPress={hideAddGig} color='white' />
                     </Appbar.Header>
-                    <AddGigModal />
+                    <AddGigModal handleModal={handleGigOverview} />
                 </Modal>
 
                 <Modal
@@ -234,6 +256,10 @@ const ClientGigSearch = () => {
 
 
 
+            <Toast
+                type='success'
+                visibilityTime={6000}
+            />
 
         </View >
     )

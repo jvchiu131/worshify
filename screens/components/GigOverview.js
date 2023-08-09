@@ -4,10 +4,10 @@ import DropDownPicker from 'react-native-dropdown-picker'
 import { ref as ref_db, set, push, child, onValue, DataSnapshot } from 'firebase/database';
 import { db } from '../../firebase';
 import DateTimePicker from '@react-native-community/datetimepicker'
-
+import Toast from 'react-native-toast-message'
 const { height: screenHeight, width: screenWidth } = Dimensions.get('screen');
 
-const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress, gigDate, StartTime, EndTime, eventType, img, gender, musicianType }) => {
+const GigOverview = ({ handleGrandParentModal, InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress, gigDate, StartTime, EndTime, eventType, img, gender, musicianType, handleModal }) => {
 
 
     const [items, setItems] = useState([
@@ -32,6 +32,14 @@ const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress,
     const [endTime, setEndTime] = useState(EndTime || new Date());
 
     // handles the gig overview of the creation of Gig for user review
+
+
+    const toastHandle = () => {
+        Toast.show({
+            type: 'success',
+            text1: 'Your gig has been successfully created!'
+        })
+    }
 
     //handles gig creation
     //add gig details at the same time in PostGigs and UserGigs
@@ -81,16 +89,16 @@ const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress,
             gender: Gender,
             musicianType: musicianType
         });
-
+        // toastHandle();
         setGigCreated(true);
 
+        setTimeout(() => {
+            handleModal(false);
+            handleGrandParentModal(false);
+        }, 1500)
     }
 
-    useEffect(() => {
-        // console.log(gigDate.toDateString())
-        // console.log(formatTime(StartTime))
-        console.log(address)
-    }, [])
+
 
     const handleQuantityChange = (index, value) => {
         const newQuantity = [...quantity];
@@ -181,6 +189,7 @@ const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress,
 
     return (
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
+
             <View style={styles.root}>
                 <View style={styles.container}>
                     <View style={styles.titleContainer}>
@@ -382,7 +391,6 @@ const GigOverview = ({ InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress,
                     </View>
 
                 </View>
-
             </View>
         </ScrollView>
     )

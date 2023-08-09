@@ -8,14 +8,14 @@ import { ref as ref_db, set, push, child, onValue, DataSnapshot } from 'firebase
 import { useEffect } from 'react';
 import GigOverview from './GigOverview';
 import { Appbar } from 'react-native-paper';
-
+import Toast from 'react-native-toast-message'
 
 const { height: screenHeight } = Dimensions.get('screen');
 const { width: screenWidth } = Dimensions.get('screen');
 
 
 
-const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType, img, gender, musicianType }) => {
+const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType, img, gender, musicianType, handleParentModal }) => {
 
     const [selectedInstruments, setSelectedInstruments] = useState([]);
     const [selectedGenres, setSelectedGenres] = useState([]);
@@ -35,6 +35,10 @@ const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType
 
     const handleModalClose = () => {
         setModalVisible(false);
+    }
+
+    const handleGOModal = (data) => {
+        setModalVisible(data);
     }
 
     //getting the First and Last name
@@ -290,7 +294,9 @@ const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType
                                     <Appbar.Header style={styles.appbarStyle}>
                                         <Appbar.BackAction onPress={handleModalClose} color='white' />
                                     </Appbar.Header>
-                                    <GigOverview {...props} />
+                                    <GigOverview {...props} handleModal={handleGOModal} handleGrandParentModal={handleParentModal} />
+                                    <Toast
+                                        type='success' />
                                 </Modal>
 
                             </View>

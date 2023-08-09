@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import ClientGigSearch from '../components/ClientGigSearch';
 import MusicianGigSearch from '../components/MusicianGigSearch';
 import Header from '../components/Header';
-
+import { Toast } from 'react-native-toast-message/lib/src/Toast';
 
 const { height: screenHeight } = Dimensions.get('screen');
 const { width: screenWidth } = Dimensions.get('screen');
@@ -52,7 +52,10 @@ const GigSearch = () => {
                 )}
 
             </View>
-
+            <Toast
+                type='success'
+                visibilityTime={6000}
+            />
         </View>
     )
 }

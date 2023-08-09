@@ -98,17 +98,6 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
         const variable = acceptedUsers.some((user) => user.key === selectedUserKey)
     };
 
-    // useEffect(() => {
-    //     const dbRef = ref(db, 'gigPosts/' + postID);
-    //     onValue(dbRef, (snapshot) => {
-    //         if (snapshot.exists()) {
-    //             setGigExist(true);
-    //         } else {
-    //             setGigExist(false);
-    //             handleBtnClose(false);
-    //         }
-    //     })
-    // }, [counter]);
 
 
 

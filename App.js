@@ -20,6 +20,8 @@ import { Text, View, Button, Platform, StyleSheet, Alert } from 'react-native';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { LogBox } from 'react-native';
+import Toast from 'react-native-toast-message';
+
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -137,6 +139,8 @@ function BottomTab() {
         />
       </Tab.Navigator>
       <StatusBar style='light' />
+      <Toast
+        type='success' />
     </>
   );
 }
