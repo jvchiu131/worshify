@@ -213,16 +213,7 @@ const ArchiveGig = ({ postID }) => {
             </ScrollView>
 
 
-            {/* <View style={styles.btnContainer}>
-                <Button mode='elevated'
-                    onPress={() => archiveGig()}
-                    loading={loading}
-                    buttonColor='#0EB080'
-                    textColor='white'
-                    style={styles.btnStyle}>
-                    {archived ? (<Text>Gig Archived</Text>) : (<Text>Archive Gig</Text>)}
-                </Button>
-            </View> */}
+
 
 
         </View>
@@ -238,8 +229,6 @@ const styles = StyleSheet.create({
     },
     appliedContainer: {
         padding: 15,
-        borderWidth: 2,
-        borderColor: 'red',
     },
     appliedUserContainer: {
         flexDirection: 'row',
@@ -377,8 +366,6 @@ const styles = StyleSheet.create({
         zIndex: 2,
         top: -15,
         backgroundColor: 'white',
-
-
     },
     imgContainer: {
         height: '25%',

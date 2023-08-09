@@ -157,7 +157,8 @@ const styles = StyleSheet.create({
     root: {
         height: '75%',
         padding: 15,
-        borderRadius: 15
+        borderRadius: 15,
+
     },
     header: {
         margin: 15
@@ -174,6 +175,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#222222',
         borderRadius: 20,
         padding: 25,
+
+        width: screenWidth / 1.1
     },
     btnContainer: {
         padding: 5,
