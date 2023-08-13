@@ -12,7 +12,7 @@ import * as ImagePicker from 'expo-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { Pressable } from 'react-native'
 import uuid from 'uuid';
-
+import DynamicScheduling from './DynamicScheduling'
 
 
 
@@ -62,28 +62,35 @@ const AddGigModal = ({ handleModal }) => {
 
     const handleBtn = () => {
         // Check if the selected gig date is in the future
-        const currentDate = new Date();
-        if (date < currentDate) {
-            alert(
-                "The selected gig date is invalid. Please input an appropriate date.",
-                [{ text: "OK", onPress: () => { } }]
-            );
-        } else {
-            Animated.timing(ContentValue, {
-                toValue: 0,
-                duration: 300,
-                useNativeDriver: false,
-            }).start();
-            setIsClicked(true);
-        }
+        // const currentDate = new Date();
+        // if (date < currentDate) {
+        //     alert(
+        //         "The selected gig date is invalid. Please input an appropriate date.",
+        //         [{ text: "OK", onPress: () => { } }]
+        //     );
+        // } else {
+        //     Animated.timing(ContentValue, {
+        //         toValue: 0,
+        //         duration: 300,
+        //         useNativeDriver: false,
+        //     }).start();
+        //     setIsClicked(true);
+        // }
+
+        Animated.timing(ContentValue, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: false,
+        }).start();
+        setIsClicked(true);
     };
     const checkInputsFilled = () => {
         if (
             GigName &&
-            GigAddress &&
-            date instanceof Date &&
-            startTime instanceof Date &&
-            endTime instanceof Date &&
+            // GigAddress &&
+            // date instanceof Date &&
+            // startTime instanceof Date &&
+            // endTime instanceof Date &&
             EventType &&
             MusicianType &&
             gender &&
@@ -240,7 +247,8 @@ const AddGigModal = ({ handleModal }) => {
                     <Animated.View
                         style={{ right: ContentValue }}>
                         {isClicked ? (
-                            <GenreInst {...props} handleParentModal={handleModal} />
+                            // <GenreInst {...props} handleParentModal={handleModal} />
+                            <DynamicScheduling {...props} handleParentModal={handleModal} />
                         ) : null}
                     </Animated.View>
                 ) : (

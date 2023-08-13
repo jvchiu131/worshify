@@ -175,7 +175,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#222222',
         borderRadius: 20,
         padding: 25,
-
         width: screenWidth / 1.1
     },
     btnContainer: {

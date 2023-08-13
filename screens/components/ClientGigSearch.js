@@ -51,16 +51,6 @@ const ClientGigSearch = () => {
     const handleGigOverview = (data) => {
         setShowModal(data);
 
-        // Check if the data is false
-        if (data === false) {
-            // Show the toast
-            Toast.show({
-                type: 'success',
-                text1: 'Your gig has been successfully created!',
-                visibilityTime: 6000, // Optional: Set the time the toast should be visible (in milliseconds)
-                autoHide: true
-            });
-        }
     };
 
     const hideAddGig = () => setShowModal(false);
