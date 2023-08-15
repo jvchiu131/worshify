@@ -22,6 +22,7 @@ const DynamicScheduling = ({ handleParentModal, gigName, eventType, img, gender,
     const [startVisible, setStartVisible] = useState(false);
     const [endVisible, setEndVisible] = useState(false);
     const [inputsValid, setInputsValid] = useState(false);
+    const [editIndex, setEditIndex] = useState(-1);
 
     useEffect(() => {
         // Perform validation here based on your requirements
@@ -35,12 +36,20 @@ const DynamicScheduling = ({ handleParentModal, gigName, eventType, img, gender,
 
 
     const handleConfirm = () => {
-        setConfirmations([...confirmations, { date, address, startTime, endTime }])
+        const editedConfirmation = { date, address, startTime, endTime };
+        if (editIndex !== -1) {
+            const updatedConfirmations = [...confirmations];
+            updatedConfirmations[editIndex] = editedConfirmation;
+            setConfirmations(updatedConfirmations);
+        } else {
+            setConfirmations([...confirmations, editedConfirmation]);
+        }
         setAddress('');
         setDate(new Date());
         setStartTime(new Date());
         setEndTime(new Date());
         setModalVisible(false);
+        setEditIndex(-1); // Reset the edit index
     }
 
 
@@ -139,7 +148,15 @@ const DynamicScheduling = ({ handleParentModal, gigName, eventType, img, gender,
                 </View>
 
                 {confirmations.map((confirmation, index) => (
-                    <TouchableOpacity key={index} style={styles.listContainer}>
+                    <TouchableOpacity key={index} style={styles.listContainer}
+                        onPress={() => {
+                            setAddress(confirmation.address);
+                            setDate(confirmation.date);
+                            setStartTime(confirmation.startTime);
+                            setEndTime(confirmation.endTime);
+                            setModalVisible(true);
+                            setEditIndex(index); // Set the index of the item being edited
+                        }}>
                         <TouchableOpacity style={styles.erase} onPress={() => handleRemoveConfirmation(index)}>
                             <AntDesign name="closecircle" size={20} color="red" />
                         </TouchableOpacity>
