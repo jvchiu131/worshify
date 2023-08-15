@@ -1,10 +1,10 @@
-import { StyleSheet, Text, View, Dimensions, TouchableOpacity, Modal, Pressable, TextInput } from 'react-native'
+import { StyleSheet, Text, View, Dimensions, TouchableOpacity, Modal, Pressable, TextInput, Touchable } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { AntDesign } from '@expo/vector-icons';
 import { Appbar } from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { MaterialIcons } from '@expo/vector-icons';
-
+import { EvilIcons } from '@expo/vector-icons';
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('screen');
 
@@ -21,6 +21,28 @@ const DynamicScheduling = ({ handleParentModal, gigName, eventType, img, gender,
     const [showPicker, setShowPicker] = useState(false);
     const [startVisible, setStartVisible] = useState(false);
     const [endVisible, setEndVisible] = useState(false);
+    const [inputsValid, setInputsValid] = useState(false);
+
+    useEffect(() => {
+        // Perform validation here based on your requirements
+        const addressValid = address.trim() !== '';
+        const dateValid = date instanceof Date;
+        const startTimeValid = startTime instanceof Date;
+        const endTimeValid = endTime instanceof Date;
+
+        setInputsValid(addressValid && dateValid && startTimeValid && endTimeValid);
+    }, [address, date, startTime, endTime]);
+
+
+    const handleConfirm = () => {
+        setConfirmations([...confirmations, { date, address, startTime, endTime }])
+        setAddress('');
+        setDate(new Date());
+        setStartTime(new Date());
+        setEndTime(new Date());
+        setModalVisible(false);
+    }
+
 
 
     const toggleDatepicker = () => {
@@ -99,9 +121,14 @@ const DynamicScheduling = ({ handleParentModal, gigName, eventType, img, gender,
         let time = new Date(rawTime);
         let hours = time.getHours();
         let minutes = time.getMinutes();
-
         return `${hours}:${minutes}`;
     }
+
+    const handleRemoveConfirmation = (index) => {
+        const updatedConfirmations = [...confirmations];
+        updatedConfirmations.splice(index, 1);
+        setConfirmations(updatedConfirmations);
+    };
 
     return (
         <View style={styles.root}>
@@ -110,6 +137,35 @@ const DynamicScheduling = ({ handleParentModal, gigName, eventType, img, gender,
                     <Text style={styles.titleTxt}>Add the <Text style={{ color: '#0EB080' }}>date</Text> and
                         <Text style={{ color: '#0EB080' }}> location</Text> of your <Text style={{ color: '#0EB080' }}>Gig</Text></Text>
                 </View>
+
+                {confirmations.map((confirmation, index) => (
+                    <TouchableOpacity key={index} style={styles.listContainer}>
+                        <TouchableOpacity style={styles.erase} onPress={() => handleRemoveConfirmation(index)}>
+                            <AntDesign name="closecircle" size={20} color="red" />
+                        </TouchableOpacity>
+                        <View style={styles.dateList}>
+                            <MaterialIcons name="date-range" size={24} color='#0EB080' style={styles.dateIcon} />
+                            <Text>Date: {confirmation.date.toDateString()}</Text>
+                        </View>
+
+                        <View style={styles.timeList}>
+
+                            <View style={styles.timeStyleList}>
+                                <MaterialIcons name="access-time" size={20} color='#0EB080' style={{ marginRight: 10 }} />
+                                <Text>Start: {formatTime(confirmation.startTime)}</Text>
+                            </View>
+                            <View style={styles.timeStyleList}>
+                                <MaterialIcons name="access-time" size={20} color='#0EB080' style={{ marginRight: 10 }} />
+                                <Text>End: {formatTime(confirmation.endTime)}</Text>
+                            </View>
+
+                        </View>
+                        <View style={styles.addressList}>
+                            <EvilIcons name="location" size={30} color='#0EB080' />
+                            <Text>Address: {confirmation.address}</Text>
+                        </View>
+                    </TouchableOpacity>
+                ))}
 
                 <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.btnContainer}>
                     <AntDesign name="plus" size={24} color='#0EB080' />
@@ -218,6 +274,19 @@ const DynamicScheduling = ({ handleParentModal, gigName, eventType, img, gender,
                                 </View>
 
 
+                                <View style={styles.btnConfirmContainer}>
+                                    <TouchableOpacity style={[styles.confirmBtn,
+                                    inputsValid ? null : { backgroundColor: 'gray' }]}
+                                        onPress={() => inputsValid && handleConfirm()}
+                                        disabled={!inputsValid}>
+                                        <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 17 }}>
+                                            Confirm
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
+
+
+
 
                             </View>
                         </View>
@@ -235,6 +304,51 @@ const DynamicScheduling = ({ handleParentModal, gigName, eventType, img, gender,
 export default DynamicScheduling
 
 const styles = StyleSheet.create({
+    erase: {
+        width: '11%',
+        marginBottom: 5
+    },
+    timeStyleList: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginLeft: 5,
+        width: '40%',
+        justifyContent: 'center'
+    },
+    dateList: {
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
+    timeList: {
+        flexDirection: 'row',
+        justifyContent: 'space-around'
+    },
+    addressList: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 5
+    },
+    listContainer: {
+        borderWidth: 2,
+        borderColor: '#0EB080',
+        width: '85%',
+        marginTop: 25,
+        borderRadius: 10,
+        padding: 10
+    },
+    btnConfirmContainer: {
+        alignItems: 'center',
+        width: '100%',
+        marginTop: '20%'
+    },
+    confirmBtn: {
+        borderRadius: 10,
+        backgroundColor: '#0EB080',
+        height: '35%',
+        width: '75%',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
     dateContainer: {
         borderWidth: 2,
         borderColor: 'red',
@@ -246,7 +360,6 @@ const styles = StyleSheet.create({
     txtTime: {
         color: 'black',
     },
-
     timeContainer: {
         flexDirection: 'row',
         alignItems: 'flex-start',
@@ -337,7 +450,8 @@ const styles = StyleSheet.create({
         height: '50%',
         width: '80%',
         backgroundColor: 'white',
-        borderRadius: 10
+        borderRadius: 10,
+
     },
     btnContainer: {
         borderWidth: 2,
