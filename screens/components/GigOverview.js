@@ -1,13 +1,16 @@
-import { StyleSheet, Text, View, Dimensions, TextInput, ScrollView, ImageBackground, TouchableOpacity, Pressable } from 'react-native'
+import { StyleSheet, Text, View, Dimensions, TextInput, ScrollView, ImageBackground, TouchableOpacity, Modal } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import DropDownPicker from 'react-native-dropdown-picker'
 import { ref as ref_db, set, push, child, onValue, DataSnapshot } from 'firebase/database';
 import { db } from '../../firebase';
+import { MaterialIcons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker'
+import { Ionicons } from '@expo/vector-icons';
 import Toast from 'react-native-toast-message'
+import { Feather } from '@expo/vector-icons';
 const { height: screenHeight, width: screenWidth } = Dimensions.get('screen');
 
-const GigOverview = ({ handleGrandParentModal, InstrumentsNeeded, GenreNeeded, uid, gigName, gigAddress, gigDate, StartTime, EndTime, eventType, img, gender, musicianType, handleModal }) => {
+const GigOverview = ({ handleGrandParentModal, InstrumentsNeeded, GenreNeeded, uid, gigName, schedule, eventType, img, gender, musicianType, handleModal }) => {
 
 
     const [items, setItems] = useState([
@@ -23,17 +26,14 @@ const GigOverview = ({ handleGrandParentModal, InstrumentsNeeded, GenreNeeded, u
     const [quantity, setQuantity] = useState(InstrumentsNeeded.map(() => 1));
     const [Gender, setGender] = useState(gender);
     const [open, setOpen] = useState(false);
-    const [address, setAddress] = useState(gigAddress);
     const [about, setAbout] = useState('');
     const [instrumentsNeeded, setInstrumentsNeeded] = useState(InstrumentsNeeded.map(instrument => ({ name: instrument, quantity: 1 })));
     const [gigCreated, setGigCreated] = useState(false);
-    const [date, setDate] = useState(gigDate || new Date());
-    const [startTime, setStartTime] = useState(StartTime || new Date());
-    const [endTime, setEndTime] = useState(EndTime || new Date());
+    const [modalVisible, setVisible] = useState(false);
+    const [selectedIndex, setSelectedIndex] = useState(null);
+
 
     // handles the gig overview of the creation of Gig for user review
-
-
     const toastHandle = () => {
         Toast.show({
             type: 'success',
@@ -55,13 +55,19 @@ const GigOverview = ({ handleGrandParentModal, InstrumentsNeeded, GenreNeeded, u
             quantity: quantity[index],
         }));
 
+        // Create an array of schedule objects
+        const scheduleArray = schedule.map((sched, index) => ({
+            index: index + 1,
+            date: sched.date.toDateString(),
+            startTime: formatTime(sched.startTime),
+            endTime: formatTime(sched.endTime),
+            address: sched.address,
+        }));
+
         set(UserGigsRef, {
             uid: uid,
             Gig_Name: gigName,
-            Gig_Address: address,
-            Gig_Date: gigDate.toDateString(),
-            Gig_Start: formatTime(StartTime),
-            Gig_End: formatTime(EndTime),
+            schedule: scheduleArray,
             Event_Type: eventType,
             Instruments_Needed: instruments,
             Genre_Needed: GenreNeeded,
@@ -76,10 +82,7 @@ const GigOverview = ({ handleGrandParentModal, InstrumentsNeeded, GenreNeeded, u
         set(GigPostsRef, {
             uid: uid,
             Gig_Name: gigName,
-            Gig_Address: address,
-            Gig_Date: gigDate.toDateString(),
-            Gig_Start: formatTime(StartTime),
-            Gig_End: formatTime(EndTime),
+            schedule: scheduleArray,
             Event_Type: eventType,
             Instruments_Needed: instruments,
             Genre_Needed: GenreNeeded,
@@ -95,8 +98,12 @@ const GigOverview = ({ handleGrandParentModal, InstrumentsNeeded, GenreNeeded, u
         setTimeout(() => {
             handleModal(false);
             handleGrandParentModal(false);
+            toastHandle()
         }, 1500)
     }
+
+
+
 
 
 
@@ -185,6 +192,26 @@ const GigOverview = ({ handleGrandParentModal, InstrumentsNeeded, GenreNeeded, u
 
         return `${hours}:${minutes}`;
     }
+    useEffect(() => {
+        schedule.map((sched) => {
+            console.log(sched);
+        })
+
+    }, [])
+
+    const handleSet = (index) => {
+        console.log(schedule[index])
+        setSelectedIndex(index);
+        setVisible(true)
+    }
+
+    const handleCloseSet = () => {
+        setSelectedIndex(null);
+        setVisible(false);
+    }
+    // useEffect(() => {
+    //     setVisible(false)
+    // }, [])
 
 
     return (
@@ -208,101 +235,79 @@ const GigOverview = ({ handleGrandParentModal, InstrumentsNeeded, GenreNeeded, u
                                 editable={false} />
                         </View>
 
-                        <View style={styles.timeContainer}>
-
-                            {!showPicker && (
-                                <Pressable
-                                    onPress={toggleDatepicker}>
-                                    <TextInput
-                                        placeholder='Choose Gig Date'
-                                        placeholderTextColor='#11182744'
-                                        value={date instanceof Date ? date.toDateString() : ''}
-                                        onChangeText={setDate}
-                                        editable={false}
-                                        style={styles.dateStyle}
-                                    />
-                                </Pressable>
-
-                            )}
-
-
-                            {showPicker && (
-                                <DateTimePicker
-                                    mode='date'
-                                    display='spinner'
-                                    value={date}
-                                    onChange={onChange}
-                                    is24Hour={false}
-                                />
-                            )}
-
-
-
-                            {!startVisible && (
-                                <Pressable
-                                    onPress={toggleTimepickerStart}>
-                                    <TextInput
-                                        placeholder='Choose Start Time'
-                                        placeholderTextColor='#11182744'
-                                        value={startTime instanceof Date ? formatTime(startTime) : ''}
-                                        onChangeText={setStartTime}
-                                        editable={false}
-                                        style={styles.dateStyle}
-                                    />
-                                </Pressable>
-
-                            )}
-
-
-                            {startVisible && (
-                                <DateTimePicker
-                                    mode='time'
-                                    display='spinner'
-                                    value={startTime}
-                                    onChange={onChangeStartTime}
-                                    is24Hour={false}
-                                />
-                            )}
-
-
-                            {!endVisible && (
-                                <Pressable
-                                    onPress={toggleTimepickerEnd}>
-                                    <TextInput
-                                        placeholder='Choose End Time'
-                                        placeholderTextColor='#11182744'
-                                        value={endTime instanceof Date ? formatTime(endTime) : ''}
-                                        onChangeText={setEndTime}
-                                        editable={false}
-                                        style={styles.dateStyle}
-                                    />
-                                </Pressable>
-
-                            )}
-
-
-                            {endVisible && (
-                                <DateTimePicker
-                                    mode='time'
-                                    display='spinner'
-                                    value={endTime}
-                                    onChange={onChangeEndTime}
-                                />
-                            )}
-
-
+                        <View style={styles.schedContainer}>
+                            <Text style={{ color: '#0EB080', fontWeight: 'bold', fontSize: 20, marginBottom: 20 }}>Sets</Text>
+                            <ScrollView horizontal={true} style={styles.schedScroll}>
+                                {schedule.map((sched, index) => (
+                                    <TouchableOpacity style={styles.schedItem} onPress={() => handleSet(index)}>
+                                        <Text style={{ fontSize: 20, fontWeight: '500' }}>Set</Text>
+                                        <View style={{
+                                            backgroundColor: '#F0F0F0',
+                                            height: 45,
+                                            width: 45,
+                                            borderRadius: 25,
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            marginTop: 10
+                                        }}>
+                                            <Text style={{ fontSize: 20, color: '#0EB080', fontWeight: 'bold' }}>{index + 1}</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                ))}
+                            </ScrollView>
                         </View>
 
+                        <Modal visible={modalVisible} animationType='slide' transparent>
+                            <View style={styles.modalContainer}>
+                                <View style={styles.modalContent}>
+                                    <Text style={{ fontWeight: 'bold' }}>Schedule and Location</Text>
 
-                        <View style={styles.inputContainer}>
-                            <Text>Gig Address:</Text>
-                            <TextInput
-                                value={address}
-                                placeholder="put address here"
-                                style={styles.inputStyle}
-                                onChangeText={(text) => setAddress(text)}
-                            />
-                        </View>
+
+                                    {modalVisible ? (
+                                        <View style={styles.modalDetails}>
+                                            <View style={{ marginTop: 15 }}>
+                                                <Text>Date:</Text>
+                                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                    <MaterialIcons name="date-range" size={24} color="black" />
+                                                    <Text>{schedule[selectedIndex].date.toDateString()}</Text>
+                                                </View>
+                                            </View>
+                                            <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginTop: 10 }}>
+                                                <View>
+                                                    <Text>Time Start:</Text>
+                                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                        <Feather name="clock" size={24} color="black" />
+                                                        <Text>{formatTime(schedule[selectedIndex].startTime)}</Text>
+                                                    </View>
+                                                </View>
+                                                <View>
+                                                    <Text>Time End:</Text>
+                                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                        <Feather name="clock" size={24} color="black" />
+                                                        <Text>{formatTime(schedule[selectedIndex].endTime)}</Text>
+                                                    </View>
+                                                </View>
+                                            </View>
+                                            <View style={{ marginTop: 10 }}>
+                                                <Text>Address:</Text>
+                                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                    <Ionicons name="location-outline" size={24} color="black" />
+                                                    <Text>{schedule[selectedIndex].address}</Text>
+                                                </View>
+                                            </View>
+
+                                            <TouchableOpacity onPress={() => handleCloseSet()} style={styles.closeSetBtn}>
+                                                <Text style={{ fontWeight: 'bold', color: 'white', fontSize: 15 }}>Close</Text>
+                                            </TouchableOpacity>
+
+                                        </View>
+                                    ) : null
+                                    }
+
+                                </View>
+                            </View>
+                        </Modal>
+
 
                         <View style={styles.inputContainer}>
                             <Text>Event Type:</Text>
@@ -399,6 +404,54 @@ const GigOverview = ({ handleGrandParentModal, InstrumentsNeeded, GenreNeeded, u
 export default GigOverview
 
 const styles = StyleSheet.create({
+    closeSetBtn: {
+        alignSelf: 'center',
+        backgroundColor: '#0EB080',
+        width: '70%',
+        height: '15%',
+        marginTop: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 10
+    },
+    modalDetails: {
+        height: '100%',
+        width: '100%'
+    },
+    modalContent: {
+        borderColor: '#0EB080',
+        borderRadius: 15,
+        backgroundColor: 'white',
+        height: '35%',
+        width: '80%',
+        borderWidth: 2,
+        elevation: 5,
+        alignItems: 'center',
+        padding: 20
+    },
+    modalContainer: {
+        height: '100%',
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    schedScroll: {
+        width: '100%',
+        height: '12%'
+    },
+    schedItem: {
+        borderWidth: 2,
+        borderColor: '#0EB080',
+        marginRight: 20,
+        borderRadius: 15,
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '60%',
+    },
+    schedContainer: {
+        alignItems: 'center',
+        padding: 5,
+    },
     dateStyle: {
         borderWidth: 2,
         borderColor: '#0EB080',

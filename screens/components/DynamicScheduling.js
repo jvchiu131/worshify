@@ -1,10 +1,12 @@
-import { StyleSheet, Text, View, Dimensions, TouchableOpacity, Modal, Pressable, TextInput, Touchable } from 'react-native'
+import { StyleSheet, Text, View, Dimensions, TouchableOpacity, Modal, Pressable, TextInput, Touchable, Animated } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { AntDesign } from '@expo/vector-icons';
 import { Appbar } from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { MaterialIcons } from '@expo/vector-icons';
 import { EvilIcons } from '@expo/vector-icons';
+import GenreInst from './GenreInst';
+
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('screen');
 
@@ -23,6 +25,8 @@ const DynamicScheduling = ({ handleParentModal, gigName, eventType, img, gender,
     const [endVisible, setEndVisible] = useState(false);
     const [inputsValid, setInputsValid] = useState(false);
     const [editIndex, setEditIndex] = useState(-1);
+    const [isClicked, setIsClicked] = useState(false);
+    const ContentValue = useState(new Animated.Value(-600))[0]
 
     useEffect(() => {
         // Perform validation here based on your requirements
@@ -34,6 +38,16 @@ const DynamicScheduling = ({ handleParentModal, gigName, eventType, img, gender,
         setInputsValid(addressValid && dateValid && startTimeValid && endTimeValid);
     }, [address, date, startTime, endTime]);
 
+    const handleBtn = () => {
+
+        Animated.timing(ContentValue, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: false,
+        }).start();
+        setIsClicked(true);
+    };
+
 
     const handleConfirm = () => {
         const editedConfirmation = { date, address, startTime, endTime };
@@ -44,6 +58,7 @@ const DynamicScheduling = ({ handleParentModal, gigName, eventType, img, gender,
         } else {
             setConfirmations([...confirmations, editedConfirmation]);
         }
+
         setAddress('');
         setDate(new Date());
         setStartTime(new Date());
@@ -52,6 +67,11 @@ const DynamicScheduling = ({ handleParentModal, gigName, eventType, img, gender,
         setEditIndex(-1); // Reset the edit index
     }
 
+
+    const props = {
+        gigName: gigName, eventType: eventType, img: img,
+        gender: gender, musicianType: musicianType, schedule: confirmations, handleParentModal: handleParentModal
+    }
 
 
     const toggleDatepicker = () => {
@@ -90,12 +110,11 @@ const DynamicScheduling = ({ handleParentModal, gigName, eventType, img, gender,
 
             if (Platform.OS === 'android') {
                 toggleTimepickerStart()
-                // setStartTime(formatTime(currentTime));
                 setStartTime(new Date(currentTime));
             } else if (Platform.OS === 'ios') {
                 toggleTimepickerStart()
-                // setStartTime(formatTime(currentTime));
                 setStartTime(new Date(currentTime));
+
             }
 
         } else {
@@ -117,8 +136,8 @@ const DynamicScheduling = ({ handleParentModal, gigName, eventType, img, gender,
                 setEndTime(new Date(currentTime));
             } else if (Platform.OS === 'ios') {
                 toggleTimepickerStart()
-                // setStartTime(formatTime(currentTime));
-                setStartTime(new Date(currentTime));
+                setEndTime(new Date(currentTime));
+                // setStartTime(new Date(currentTime));
             }
 
         } else {
@@ -141,179 +160,194 @@ const DynamicScheduling = ({ handleParentModal, gigName, eventType, img, gender,
 
     return (
         <View style={styles.root}>
-            <View style={styles.container}>
-                <View style={styles.titleContainer}>
-                    <Text style={styles.titleTxt}>Add the <Text style={{ color: '#0EB080' }}>date</Text> and
-                        <Text style={{ color: '#0EB080' }}> location</Text> of your <Text style={{ color: '#0EB080' }}>Gig</Text></Text>
-                </View>
+            {isClicked ? (
+                <Animated.View
+                    style={{ right: ContentValue }}>
+                    {isClicked ? (
+                        <GenreInst {...props} />
+                    ) : null}
+                </Animated.View>
+            ) : (
+                <View style={styles.container}>
+                    <View style={styles.titleContainer}>
+                        <Text style={styles.titleTxt}>Add the <Text style={{ color: '#0EB080' }}>date</Text> and
+                            <Text style={{ color: '#0EB080' }}> location</Text> of your <Text style={{ color: '#0EB080' }}>Gig</Text></Text>
+                    </View>
 
-                {confirmations.map((confirmation, index) => (
-                    <TouchableOpacity key={index} style={styles.listContainer}
-                        onPress={() => {
-                            setAddress(confirmation.address);
-                            setDate(confirmation.date);
-                            setStartTime(confirmation.startTime);
-                            setEndTime(confirmation.endTime);
-                            setModalVisible(true);
-                            setEditIndex(index); // Set the index of the item being edited
-                        }}>
-                        <TouchableOpacity style={styles.erase} onPress={() => handleRemoveConfirmation(index)}>
-                            <AntDesign name="closecircle" size={20} color="red" />
-                        </TouchableOpacity>
-                        <View style={styles.dateList}>
-                            <MaterialIcons name="date-range" size={24} color='#0EB080' style={styles.dateIcon} />
-                            <Text>Date: {confirmation.date.toDateString()}</Text>
-                        </View>
-
-                        <View style={styles.timeList}>
-
-                            <View style={styles.timeStyleList}>
-                                <MaterialIcons name="access-time" size={20} color='#0EB080' style={{ marginRight: 10 }} />
-                                <Text>Start: {formatTime(confirmation.startTime)}</Text>
-                            </View>
-                            <View style={styles.timeStyleList}>
-                                <MaterialIcons name="access-time" size={20} color='#0EB080' style={{ marginRight: 10 }} />
-                                <Text>End: {formatTime(confirmation.endTime)}</Text>
+                    {confirmations.map((confirmation, index) => (
+                        <TouchableOpacity key={index} style={styles.listContainer}
+                            onPress={() => {
+                                setAddress(confirmation.address);
+                                setDate(confirmation.date);
+                                setStartTime(confirmation.startTime);
+                                setEndTime(confirmation.endTime);
+                                setModalVisible(true);
+                                setEditIndex(index); // Set the index of the item being edited
+                            }}>
+                            <TouchableOpacity style={styles.erase} onPress={() => handleRemoveConfirmation(index)}>
+                                <AntDesign name="closecircle" size={20} color="red" />
+                            </TouchableOpacity>
+                            <View style={styles.dateList}>
+                                <MaterialIcons name="date-range" size={24} color='#0EB080' style={styles.dateIcon} />
+                                <Text>Date: {confirmation.date.toDateString()}</Text>
                             </View>
 
-                        </View>
-                        <View style={styles.addressList}>
-                            <EvilIcons name="location" size={30} color='#0EB080' />
-                            <Text>Address: {confirmation.address}</Text>
-                        </View>
-                    </TouchableOpacity>
-                ))}
+                            <View style={styles.timeList}>
 
-                <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.btnContainer}>
-                    <AntDesign name="plus" size={24} color='#0EB080' />
-                </TouchableOpacity>
-
-
-                <View style={styles.modalStyle}>
-                    <Modal
-                        visible={modalVisible}
-                        animationType='slide'
-                        transparent
-                        style={styles.modalStyle}>
-
-                        <View style={styles.modalStyle}>
-                            <View style={styles.modalView}>
-                                <Appbar.BackAction onPress={() => setModalVisible(false)} color='black' size={20} />
-
-                                <View style={styles.GigNameContainer}>
-                                    <Text style={styles.txtStyles}>Gig Address *</Text>
-                                    <TextInput style={styles.inputStyle}
-                                        value={address}
-                                        placeholder='Enter gig address'
-                                        onChangeText={text => setAddress(text)} />
+                                <View style={styles.timeStyleList}>
+                                    <MaterialIcons name="access-time" size={20} color='#0EB080' style={{ marginRight: 10 }} />
+                                    <Text>Start: {formatTime(confirmation.startTime)}</Text>
                                 </View>
-                                <View style={styles.GigNameContainer}>
+                                <View style={styles.timeStyleList}>
+                                    <MaterialIcons name="access-time" size={20} color='#0EB080' style={{ marginRight: 10 }} />
+                                    <Text>End: {formatTime(confirmation.endTime)}</Text>
+                                </View>
 
-                                    <Text style={styles.txtStyles}>Date *</Text>
-                                    {!showPicker && (
-                                        <Pressable
-                                            onPress={toggleDatepicker} style={styles.pressableContainer}>
-                                            <View style={styles.inputContainer}>
-                                                <MaterialIcons name="date-range" size={24} color="#1E1E1E" style={styles.dateIcon} />
-                                                <TextInput
-                                                    placeholder='Choose Gig Date'
-                                                    placeholderTextColor='#11182744'
-                                                    value={date instanceof Date ? date.toDateString() : ''}
-                                                    onChangeText={setDate}
-                                                    editable={false}
-                                                    style={styles.txtTime}
+                            </View>
+                            <View style={styles.addressList}>
+                                <EvilIcons name="location" size={30} color='#0EB080' />
+                                <Text>Address: {confirmation.address}</Text>
+                            </View>
+                        </TouchableOpacity>
+                    ))}
+
+                    <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.btnContainer}>
+                        <AntDesign name="plus" size={24} color='#0EB080' />
+                    </TouchableOpacity>
+
+
+                    <TouchableOpacity style={{ ...styles.btnContainer, backgroundColor: '#0EB080' }} onPress={() => handleBtn()}>
+                        <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 20 }}>Next</Text>
+                    </TouchableOpacity>
+
+
+                    <View style={styles.modalStyle}>
+                        <Modal
+                            visible={modalVisible}
+                            animationType='slide'
+                            transparent
+                            style={styles.modalStyle}>
+
+                            <View style={styles.modalStyle}>
+                                <View style={styles.modalView}>
+                                    <Appbar.BackAction onPress={() => setModalVisible(false)} color='black' size={20} />
+
+                                    <View style={styles.GigNameContainer}>
+                                        <Text style={styles.txtStyles}>Gig Address *</Text>
+                                        <TextInput style={styles.inputStyle}
+                                            value={address}
+                                            placeholder='Enter gig address'
+                                            onChangeText={text => setAddress(text)} />
+                                    </View>
+                                    <View style={styles.GigNameContainer}>
+
+                                        <Text style={styles.txtStyles}>Date *</Text>
+                                        {!showPicker && (
+                                            <Pressable
+                                                onPress={toggleDatepicker} style={styles.pressableContainer}>
+                                                <View style={styles.inputContainer}>
+                                                    <MaterialIcons name="date-range" size={24} color="#1E1E1E" style={styles.dateIcon} />
+                                                    <TextInput
+                                                        placeholder='Choose Gig Date'
+                                                        placeholderTextColor='#11182744'
+                                                        value={date instanceof Date ? date.toDateString() : ''}
+                                                        onChangeText={setDate}
+                                                        editable={false}
+                                                        style={styles.txtTime}
+                                                    />
+                                                </View>
+                                            </Pressable>
+
+                                        )}
+                                        {showPicker && (
+                                            <View style={styles.dateContainer}>
+                                                <DateTimePicker
+                                                    mode='date'
+                                                    display='calendar'
+                                                    value={date}
+                                                    onChange={onChange}
+                                                    is24Hour={false}
                                                 />
                                             </View>
-                                        </Pressable>
+                                        )}
 
-                                    )}
-                                    {showPicker && (
-                                        <View style={styles.dateContainer}>
+                                    </View>
+                                    <View style={styles.timeContainer}>
+                                        {!startVisible ? (
+                                            <Pressable onPress={toggleTimepickerStart} style={styles.timePickerContainer}>
+                                                <Text style={styles.txtStyles}>Time Start: *</Text>
+                                                <TextInput
+                                                    placeholder='Choose Start Time'
+                                                    placeholderTextColor='#11182744'
+                                                    value={startTime instanceof Date ? formatTime(startTime) : ''}
+                                                    onChangeText={setStartTime}
+                                                    editable={false}
+                                                    style={styles.timeStyle}
+                                                />
+                                                <MaterialIcons name="access-time" size={24} color="#1E1E1E" style={styles.pickerIcon} />
+                                            </Pressable>
+                                        ) : startVisible ? (
+
                                             <DateTimePicker
-                                                mode='date'
-                                                display='spinner'
-                                                value={date}
-                                                onChange={onChange}
+                                                mode='time'
+                                                display='compact'
+                                                value={startTime}
+                                                onChange={onChangeStartTime}
                                                 is24Hour={false}
                                             />
-                                        </View>
-                                    )}
+                                        ) : null}
 
-                                </View>
-                                <View style={styles.timeContainer}>
-                                    {!startVisible ? (
-                                        <Pressable onPress={toggleTimepickerStart} style={styles.timePickerContainer}>
-                                            <Text style={styles.txtStyles}>Time Start: *</Text>
-                                            <TextInput
-                                                placeholder='Choose Start Time'
-                                                placeholderTextColor='#11182744'
-                                                value={startTime instanceof Date ? formatTime(startTime) : ''}
-                                                onChangeText={setStartTime}
-                                                editable={false}
-                                                style={styles.timeStyle}
+                                        {!endVisible ? (
+                                            <Pressable onPress={toggleTimepickerEnd} style={styles.timePickerContainer}>
+                                                <Text style={styles.txtStyles}>Time End: *</Text>
+                                                <TextInput
+                                                    placeholder='Choose End Time'
+                                                    placeholderTextColor='#11182744'
+                                                    value={endTime instanceof Date ? formatTime(endTime) : ''}
+                                                    onChangeText={setEndTime}
+                                                    editable={false}
+                                                    style={styles.timeStyle}
+
+                                                />
+                                                <MaterialIcons name="access-time" size={24} color="#1E1E1E" style={styles.pickerIcon} />
+                                            </Pressable>
+                                        ) : (
+                                            <DateTimePicker
+                                                mode='time'
+                                                display='compact'
+                                                value={endTime}
+                                                onChange={onChangeEndTime}
+                                                is24Hour={false}
                                             />
-                                            <MaterialIcons name="access-time" size={24} color="#1E1E1E" style={styles.pickerIcon} />
-                                        </Pressable>
-                                    ) : startVisible ? (
+                                        )}
+                                    </View>
 
-                                        <DateTimePicker
-                                            mode='time'
-                                            display='compact'
-                                            value={startTime}
-                                            onChange={onChangeStartTime}
-                                            is24Hour={false}
-                                        />
-                                    ) : null}
 
-                                    {!endVisible ? (
-                                        <Pressable onPress={toggleTimepickerEnd} style={styles.timePickerContainer}>
-                                            <Text style={styles.txtStyles}>Time End: *</Text>
-                                            <TextInput
-                                                placeholder='Choose End Time'
-                                                placeholderTextColor='#11182744'
-                                                value={endTime instanceof Date ? formatTime(endTime) : ''}
-                                                onChangeText={setEndTime}
-                                                editable={false}
-                                                style={styles.timeStyle}
+                                    <View style={styles.btnConfirmContainer}>
+                                        <TouchableOpacity style={[styles.confirmBtn,
+                                        inputsValid ? null : { backgroundColor: 'gray' }]}
+                                            onPress={() => inputsValid && handleConfirm()}
+                                            disabled={!inputsValid}>
+                                            <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 17 }}>
+                                                Confirm
+                                            </Text>
+                                        </TouchableOpacity>
+                                    </View>
 
-                                            />
-                                            <MaterialIcons name="access-time" size={24} color="#1E1E1E" style={styles.pickerIcon} />
-                                        </Pressable>
-                                    ) : (
-                                        <DateTimePicker
-                                            mode='time'
-                                            display='compact'
-                                            value={endTime}
-                                            onChange={onChangeEndTime}
-                                            is24Hour={false}
-                                        />
-                                    )}
+
+
+
                                 </View>
-
-
-                                <View style={styles.btnConfirmContainer}>
-                                    <TouchableOpacity style={[styles.confirmBtn,
-                                    inputsValid ? null : { backgroundColor: 'gray' }]}
-                                        onPress={() => inputsValid && handleConfirm()}
-                                        disabled={!inputsValid}>
-                                        <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 17 }}>
-                                            Confirm
-                                        </Text>
-                                    </TouchableOpacity>
-                                </View>
-
-
-
-
                             </View>
-                        </View>
 
-                    </Modal>
+                        </Modal>
+                    </View>
+
+
+
                 </View>
+            )}
 
-
-
-            </View>
         </View>
     )
 }
@@ -321,6 +355,10 @@ const DynamicScheduling = ({ handleParentModal, gigName, eventType, img, gender,
 export default DynamicScheduling
 
 const styles = StyleSheet.create({
+    nxtBtn: {
+        borderWidth: 2,
+        borderColor: "red"
+    },
     erase: {
         width: '11%',
         marginBottom: 5

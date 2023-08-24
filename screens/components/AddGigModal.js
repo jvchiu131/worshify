@@ -27,9 +27,6 @@ const AddGigModal = ({ handleModal }) => {
     const ContentValue = useState(new Animated.Value(-600))[0]
     const [GigName, setGigName] = useState();
     const [GigAddress, setGigAddress] = useState();
-    const [date, setDate] = useState(new Date());
-    const [startTime, setStartTime] = useState(new Date());
-    const [endTime, setEndTime] = useState(new Date());
     const [EventType, setEventType] = useState(null);
     const [open, setOpen] = useState(false);
     const [items, setItems] = useState([
@@ -61,21 +58,7 @@ const AddGigModal = ({ handleModal }) => {
 
 
     const handleBtn = () => {
-        // Check if the selected gig date is in the future
-        // const currentDate = new Date();
-        // if (date < currentDate) {
-        //     alert(
-        //         "The selected gig date is invalid. Please input an appropriate date.",
-        //         [{ text: "OK", onPress: () => { } }]
-        //     );
-        // } else {
-        //     Animated.timing(ContentValue, {
-        //         toValue: 0,
-        //         duration: 300,
-        //         useNativeDriver: false,
-        //     }).start();
-        //     setIsClicked(true);
-        // }
+
 
         Animated.timing(ContentValue, {
             toValue: 0,
@@ -84,13 +67,11 @@ const AddGigModal = ({ handleModal }) => {
         }).start();
         setIsClicked(true);
     };
+
+
     const checkInputsFilled = () => {
         if (
             GigName &&
-            // GigAddress &&
-            // date instanceof Date &&
-            // startTime instanceof Date &&
-            // endTime instanceof Date &&
             EventType &&
             MusicianType &&
             gender &&
@@ -104,7 +85,7 @@ const AddGigModal = ({ handleModal }) => {
 
     useEffect(() => {
         checkInputsFilled();
-    }, [GigName, GigAddress, date, startTime, endTime, EventType, MusicianType, gender, image]);
+    }, [GigName, EventType, MusicianType, gender, image]);
 
     //handles image upload
     const pickImage = async () => {
@@ -154,90 +135,18 @@ const AddGigModal = ({ handleModal }) => {
 
 
     const props = {
-        gigName: GigName, gigAddress: GigAddress, gigDate: date,
-        StartTime: startTime, EndTime: endTime, eventType: EventType, img: image,
+        gigName: GigName, eventType: EventType, img: image,
         gender: gender, musicianType: MusicianType
     };
 
-    const toggleDatepicker = () => {
-        setShowPicker(!showPicker)
-    };
 
-    const onChange = ({ type }, selectedDate) => {
-        if (type == 'set') {
-            const currentDate = selectedDate;
-            setDate(new Date(currentDate));
+    // const formatTime = (rawTime) => {
+    //     let time = new Date(rawTime);
+    //     let hours = time.getHours();
+    //     let minutes = time.getMinutes();
 
-            if (Platform.OS === 'android') {
-                toggleDatepicker()
-                // setDate(currentDate.toDateString());
-                setDate(new Date(currentDate))
-            } else if (Platform.OS === 'ios') {
-                toggleDatepicker()
-                // setDate(currentDate.toDateString());
-                setDate(new Date(currentDate))
-            }
-
-        } else {
-            toggleDatepicker();
-        }
-    };
-
-
-    const toggleTimepickerStart = () => {
-        setStartVisible(!startVisible)
-    };
-
-    const onChangeStartTime = ({ type }, selectedTime) => {
-        if (type == 'set') {
-            const currentTime = new Date(selectedTime);
-            setStartTime(currentTime);
-
-            if (Platform.OS === 'android') {
-                toggleTimepickerStart()
-                // setStartTime(formatTime(currentTime));
-                setStartTime(new Date(currentTime));
-            } else if (Platform.OS === 'ios') {
-                toggleTimepickerStart()
-                // setStartTime(formatTime(currentTime));
-                setStartTime(new Date(currentTime));
-            }
-
-        } else {
-            toggleTimepickerStart();
-        }
-    };
-
-    const toggleTimepickerEnd = () => {
-        setEndVisible(!endVisible)
-    };
-
-    const onChangeEndTime = ({ type }, selectedTime) => {
-        if (type == 'set') {
-            const currentTime = new Date(selectedTime);
-            setEndTime(currentTime);
-
-            if (Platform.OS === 'android') {
-                toggleTimepickerEnd()
-                setEndTime(new Date(currentTime));
-            } else if (Platform.OS === 'ios') {
-                toggleTimepickerStart()
-                // setStartTime(formatTime(currentTime));
-                setStartTime(new Date(currentTime));
-            }
-
-        } else {
-            toggleTimepickerEnd();
-        }
-    };
-
-    const formatTime = (rawTime) => {
-        let time = new Date(rawTime);
-        let hours = time.getHours();
-        let minutes = time.getMinutes();
-
-        return `${hours}:${minutes}`;
-    }
+    //     return `${hours}:${minutes}`;
+    // }
 
     return (
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
@@ -267,97 +176,6 @@ const AddGigModal = ({ handleModal }) => {
                                 placeholder='Enter gig name'
                                 onChangeText={text => setGigName(text)} />
                         </View>
-
-                        <View style={styles.GigNameContainer}>
-                            <Text style={styles.txtStyles}>Gig Address *</Text>
-                            <TextInput style={styles.inputStyle}
-                                value={GigAddress}
-                                placeholder='Enter gig address'
-                                onChangeText={text => setGigAddress(text)} />
-                        </View>
-                        <View style={styles.GigNameContainer}>
-
-                            <Text style={styles.txtStyles}>Date *</Text>
-                            {!showPicker && (
-                                <Pressable
-                                    onPress={toggleDatepicker} style={styles.pressableContainer}>
-                                    <View style={styles.inputContainer}>
-                                        <MaterialIcons name="date-range" size={24} color="#1E1E1E" style={styles.dateIcon} />
-                                        <TextInput
-                                            placeholder='Choose Gig Date'
-                                            placeholderTextColor='#11182744'
-                                            value={date instanceof Date ? date.toDateString() : ''}
-                                            onChangeText={setDate}
-                                            editable={false}
-                                            style={styles.txtTime}
-                                        />
-                                    </View>
-                                </Pressable>
-
-                            )}
-
-
-                            {showPicker && (
-                                <DateTimePicker
-                                    mode='date'
-                                    display='spinner'
-                                    value={date}
-                                    onChange={onChange}
-                                    is24Hour={false}
-                                />
-                            )}
-
-                        </View>
-                        <View style={styles.timeContainer}>
-                            {!startVisible ? (
-                                <Pressable onPress={toggleTimepickerStart} style={styles.timePickerContainer}>
-                                    <Text style={styles.txtStyles}>Time Start: *</Text>
-                                    <TextInput
-                                        placeholder='Choose Start Time'
-                                        placeholderTextColor='#11182744'
-                                        value={startTime instanceof Date ? formatTime(startTime) : ''}
-                                        onChangeText={setStartTime}
-                                        editable={false}
-                                        style={styles.timeStyle}
-                                    />
-                                    <MaterialIcons name="access-time" size={24} color="#1E1E1E" style={styles.pickerIcon} />
-                                </Pressable>
-                            ) : (
-                                <DateTimePicker
-                                    mode='time'
-                                    display='compact'
-                                    value={startTime}
-                                    onChange={onChangeStartTime}
-                                    is24Hour={false}
-                                />
-                            )}
-
-                            {!endVisible ? (
-                                <Pressable onPress={toggleTimepickerEnd} style={styles.timePickerContainer}>
-                                    <Text style={styles.txtStyles}>Time End: *</Text>
-                                    <TextInput
-                                        placeholder='Choose End Time'
-                                        placeholderTextColor='#11182744'
-                                        value={endTime instanceof Date ? formatTime(endTime) : ''}
-                                        onChangeText={setEndTime}
-                                        editable={false}
-                                        style={styles.timeStyle}
-
-                                    />
-                                    <MaterialIcons name="access-time" size={24} color="#1E1E1E" style={styles.pickerIcon} />
-                                </Pressable>
-                            ) : (
-                                <DateTimePicker
-                                    mode='time'
-                                    display='compact'
-                                    value={endTime}
-                                    onChange={onChangeEndTime}
-                                    is24Hour={false}
-                                />
-                            )}
-                        </View>
-
-
 
 
                         <View style={styles.eventContainer}>

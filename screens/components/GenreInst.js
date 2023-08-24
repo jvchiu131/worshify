@@ -15,7 +15,7 @@ const { width: screenWidth } = Dimensions.get('screen');
 
 
 
-const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType, img, gender, musicianType, handleParentModal }) => {
+const GenreInst = ({ gigName, gigAddress, schedule, eventType, img, gender, musicianType, handleParentModal }) => {
 
     const [selectedInstruments, setSelectedInstruments] = useState([]);
     const [selectedGenres, setSelectedGenres] = useState([]);
@@ -85,8 +85,8 @@ const GenreInst = ({ gigName, gigAddress, gigDate, StartTime, EndTime, eventType
 
     const props = {
         InstrumentsNeeded: selectedInstruments, GenreNeeded: selectedGenres, uid: uid, gigName: gigName,
-        gigAddress: gigAddress, gigDate: gigDate, StartTime: StartTime, EndTime: EndTime, eventType: eventType, img: img,
-        gender: gender, musicianType: musicianType
+        schedule: schedule, eventType: eventType, img: img,
+        gender: gender, musicianType: musicianType, handleGrandParentModal: handleGOModal, handleModal: handleParentModal
     }
 
 
