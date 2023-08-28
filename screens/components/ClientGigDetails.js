@@ -13,7 +13,7 @@ import DropDownPicker from 'react-native-dropdown-picker'
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { AirbnbRating, Rating } from 'react-native-ratings';
-
+import { MaterialIcons } from '@expo/vector-icons';
 
 const { height: screenHeight } = Dimensions.get('screen');
 const { width: screenWidth } = Dimensions.get('screen');
@@ -49,6 +49,7 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
     const showAccepted = () => setAcceptedVisible(true);
     const hideAccepted = () => setAcceptedVisible(false);
     const [gigExist, setGigExist] = useState(false);
+    const [schedule, setSchedule] = useState([]);
 
     const [open, setOpen] = useState(false);
     const [items, setItems] = useState([
@@ -60,16 +61,11 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
     ]);
     const [gigStatus, setGigStatus] = useState(null);
     const [selectedUserKey, setSelectedUserKey] = useState(null);
-
     const [counter, setCounter] = useState(0);
+    const [selectedIndex, setSelectedIndex] = useState(null);
+    const [visible, setVisible] = useState(false);
 
 
-    // useEffect(() => {
-    //     // if (postDetails.Event_Type === null) {
-    //     //     navigation.goBack();
-    //     // }
-    //     console.log(postDetails.Event_Type)
-    // }, [])
 
 
     useEffect(() => {
@@ -108,13 +104,11 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
                 const gigData = {
                     key: snapshot.key,
                     Event_Type: snapshot.val().Event_Type,
-                    GigAddress: snapshot.val().Gig_Address,
                     postID: snapshot.val().postID,
                     GigName: snapshot.val().Gig_Name,
                     uid: snapshot.val().uid,
+                    schedule: snapshot.val().schedule,
                     GenreNeeded: snapshot.val().Genre_Needed,
-                    StartTime: snapshot.val().Gig_Start,
-                    EndTime: snapshot.val().Gig_End,
                     InstrumentsNeeded: snapshot.val().Instruments_Needed,
                     GigImage: snapshot.val().Gig_Image,
                     GigDate: snapshot.val().Gig_Date,
@@ -128,6 +122,19 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
         });
 
     }, [postID])
+
+    useEffect(() => {
+        const dbRef = ref(db, 'gigPosts/' + postID);
+        onValue(dbRef, (snapshot) => {
+            if (snapshot.exists()) {
+                setSchedule(snapshot.val().schedule);
+            } else {
+                handleBtnClose(false)
+            }
+        });
+
+    }, [postID])
+
 
     useEffect(() => {
         const userRef = ref(db, 'users/client/' + uid)
@@ -345,6 +352,20 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
         setModalVisible(data)
     };
 
+    const handleSet = (index) => {
+        setSelectedIndex(index);
+        setVisible(true)
+    }
+
+    const handleCloseSet = () => {
+        setSelectedIndex(null);
+        setVisible(false);
+    }
+
+    useEffect(() => {
+        console.log(schedule[1].address)
+    }, [])
+
 
     return (
         <View style={styles.root}>
@@ -358,26 +379,77 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
                         <Text style={styles.titleStyle}>{postDetails.GigName}</Text>
                     </View>
 
-                    <View style={styles.dateTimeContainer}>
-                        <View>
-                            <FontAwesome5 name="calendar-alt" size={30} color="#0EB080" />
-                        </View>
-
-                        <View style={styles.dateContainer}>
-                            <Text style={styles.dateTxt}>{postDetails.GigDate}</Text>
-                            <Text style={styles.timeTxt}>{postDetails.StartTime} - {postDetails.EndTime}</Text>
-                        </View>
-                    </View>
-
                     <View style={styles.AddressContainer}>
-                        <View>
-                            <Entypo name="location" size={30} color="#0EB080" />
-                        </View>
+                        {schedule.map((sched, index) => (
+                            <TouchableOpacity style={styles.schedItem} onPress={() => handleSet(index)}>
+                                <Text style={{ fontSize: 20, fontWeight: '500' }}>Set</Text>
+                                <View key={index} style={{
+                                    backgroundColor: '#F0F0F0',
+                                    height: 45,
+                                    width: 45,
+                                    borderRadius: 25,
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    marginTop: 10
+                                }}>
+                                    <Text style={{ fontSize: 20, color: '#0EB080', fontWeight: 'bold' }}>{index + 1}</Text>
+                                </View>
+                            </TouchableOpacity>
+                        ))}
 
-                        <View style={styles.LocationContainer}>
+                        {/* <View style={styles.LocationContainer}>
                             <Text style={styles.AddressTxt}>{postDetails.GigAddress}</Text>
-                        </View>
+                        </View> */}
                     </View>
+
+                    <Modal visible={visible} animationType='slide' transparent>
+                        <View style={styles.modalContainer}>
+                            <View style={styles.modalContent}>
+                                <Text style={{ fontWeight: 'bold' }}>Schedule and Location</Text>
+                                {visible ? (
+                                    <View style={styles.modalDetails}>
+                                        <View style={{ marginTop: 15 }}>
+                                            <Text>Date:</Text>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                <MaterialIcons name="date-range" size={24} color="black" />
+                                                <Text>{schedule[selectedIndex].date.toDateString()}</Text>
+                                            </View>
+                                        </View>
+                                        <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginTop: 10 }}>
+                                            <View>
+                                                <Text>Time Start:</Text>
+                                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                    <Feather name="clock" size={24} color="black" />
+                                                    <Text>{formatTime(schedule[selectedIndex].startTime)}</Text>
+                                                </View>
+                                            </View>
+                                            <View>
+                                                <Text>Time End:</Text>
+                                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                    <Feather name="clock" size={24} color="black" />
+                                                    <Text>{formatTime(schedule[selectedIndex].endTime)}</Text>
+                                                </View>
+                                            </View>
+                                        </View>
+                                        <View style={{ marginTop: 10 }}>
+                                            <Text>Address:</Text>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                <Ionicons name="location-outline" size={24} color="black" />
+                                                <Text>{schedule[selectedIndex].address}</Text>
+                                            </View>
+                                        </View>
+
+                                        <TouchableOpacity onPress={() => handleCloseSet()} style={styles.closeSetBtn}>
+                                            <Text style={{ fontWeight: 'bold', color: 'white', fontSize: 15 }}>Close</Text>
+                                        </TouchableOpacity>
+
+                                    </View>
+                                ) : null
+                                }
+
+                            </View>
+                        </View>
+                    </Modal>
 
                     <View style={styles.InstContainer}>
                         <View style={styles.instrumentStyle}>
@@ -584,6 +656,47 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
 export default ClientGigDetails
 
 const styles = StyleSheet.create({
+    closeSetBtn: {
+        alignSelf: 'center',
+        backgroundColor: '#0EB080',
+        width: '70%',
+        height: '15%',
+        marginTop: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 10
+    },
+    modalDetails: {
+        height: '100%',
+        width: '100%'
+    },
+    modalContent: {
+        borderColor: '#0EB080',
+        borderRadius: 15,
+        backgroundColor: 'white',
+        height: '35%',
+        width: '80%',
+        borderWidth: 2,
+        elevation: 5,
+        alignItems: 'center',
+        padding: 20
+    },
+    modalContainer: {
+        height: '100%',
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    schedItem: {
+        borderWidth: 2,
+        borderColor: '#0EB080',
+        marginRight: 20,
+        borderRadius: 15,
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '25%',
+        height: '60%'
+    },
     doneBtn: {
         width: '60%',
         backgroundColor: '#0EB080',
@@ -693,8 +806,7 @@ const styles = StyleSheet.create({
     },
     appliedContainer: {
         padding: 15,
-        borderWidth: 2,
-        borderColor: 'red',
+        top: screenHeight / 6
     },
     appliedUserContainer: {
         flexDirection: 'row',
@@ -800,8 +912,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         paddingLeft: 25,
         alignItems: 'center',
-        marginTop: 10,
-
     },
     dateTxt: {
         fontWeight: 'bold',
