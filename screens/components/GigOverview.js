@@ -74,6 +74,7 @@ const GigOverview = ({ handleGrandParentModal, InstrumentsNeeded, GenreNeeded, u
             postID: newGigsRefKey,
             Gig_Image: img,
             about: about,
+            gigStatus: 'Available',
             gender: Gender,
             musicianType: musicianType
         });
@@ -88,6 +89,7 @@ const GigOverview = ({ handleGrandParentModal, InstrumentsNeeded, GenreNeeded, u
             Genre_Needed: GenreNeeded,
             postID: newGigsRefKey,
             Gig_Image: img,
+            gigStatus: 'Available',
             about: about,
             gender: Gender,
             musicianType: musicianType

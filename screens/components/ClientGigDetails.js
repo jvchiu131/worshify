@@ -8,6 +8,8 @@ import { Button } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import AppliedProfile from './AppliedProfile';
 import { Appbar } from 'react-native-paper';
+import { Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
 import DropDownPicker from 'react-native-dropdown-picker'
 import * as Device from 'expo-device';
@@ -64,9 +66,12 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
     const [counter, setCounter] = useState(0);
     const [selectedIndex, setSelectedIndex] = useState(null);
     const [visible, setVisible] = useState(false);
-
-
-
+    const [gigModal, setGigModal] = useState(false);
+    const [doneBtnVisible, setDoneBtnVisible] = useState(false);
+    const [availBtnVisible, setAvailBtnVisible] = useState(false);
+    const [cancelBtnVisible, setCancelBtnVisible] = useState(false);
+    const [closeBtnVisible, setCloseBtnVisible] = useState(false);
+    const [onGoingBtnVisible, setOnGoingBtnVisible] = useState(false);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -96,7 +101,6 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
 
 
 
-
     useEffect(() => {
         const dbRef = ref(db, 'gigPosts/' + postID);
         onValue(dbRef, (snapshot) => {
@@ -112,7 +116,8 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
                     InstrumentsNeeded: snapshot.val().Instruments_Needed,
                     GigImage: snapshot.val().Gig_Image,
                     GigDate: snapshot.val().Gig_Date,
-                    about: snapshot.val().about
+                    about: snapshot.val().about,
+                    GigStatus: snapshot.val().gigStatus
                 };
 
                 setPostDetails(gigData);
@@ -288,20 +293,6 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
             .catch((error) => console.log(error))
     }
 
-    const handleGigStatus = () => {
-        const dbRefUser = ref(db, 'gigPosts/' + postID)
-        const dbRef = ref(db, 'users/client/' + uid + '/gigs/' + postID);
-
-        update(dbRefUser, {
-            gigStatus: gigStatus
-        })
-
-        update(dbRef, {
-            gigStatus: gigStatus
-        })
-    }
-
-
     useEffect(() => {
         const dbRef = ref(db, 'gigPosts/' + postID + '/usersApplied/')
 
@@ -353,7 +344,9 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
     };
 
     const handleSet = (index) => {
+        // console.log(index)
         setSelectedIndex(index);
+        // console.log(selectedIndex)
         setVisible(true)
     }
 
@@ -363,8 +356,133 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
     }
 
     useEffect(() => {
-        console.log(schedule[1].address)
-    }, [])
+        const addresses = schedule.map(item => item.date);
+        console.log(addresses[selectedIndex]);
+    }, [selectedIndex])
+
+
+    const address = schedule.map(item => item.address);
+    const date = schedule.map(item => item.date);
+    const start = schedule.map(item => item.startTime);
+    const end = schedule.map(item => item.endTime);
+
+
+    const handleGigModal = () => {
+        setGigModal(true);
+    }
+
+    useEffect(() => {
+        if (postDetails.GigStatus === 'Available') {
+            setDoneBtnVisible(false);
+            setAvailBtnVisible(false);
+            setCloseBtnVisible(true);
+            setOnGoingBtnVisible(true);
+            setCancelBtnVisible(true);
+        } else if (postDetails.GigStatus === 'On-going') {
+            setDoneBtnVisible(true);
+            setAvailBtnVisible(false);
+            setOnGoingBtnVisible(false);
+            setCancelBtnVisible(false);
+            setCloseBtnVisible(false);
+        } else if (postDetails.GigStatus === 'Close') {
+            setAvailBtnVisible(true);
+            setCloseBtnVisible(false);
+            setDoneBtnVisible(false);
+        } else if (postDetails.GigStatus === 'Cancel') {
+            setCloseBtnVisible(false);
+            setOnGoingBtnVisible(false);
+            setDoneBtnVisible(false);
+            setCancelBtnVisible(false);
+            setAvailBtnVisible(true);
+        } else if (postDetails.GigStatus === 'Done') {
+            setCloseBtnVisible(false);
+            setOnGoingBtnVisible(false);
+            setDoneBtnVisible(false);
+            setCancelBtnVisible(false);
+            setAvailBtnVisible(false);
+        }
+    }, [counter])
+
+
+    const handleCloseStatus = () => {
+        const dbRefUser = ref(db, 'gigPosts/' + postID)
+        const dbRef = ref(db, 'users/client/' + uid + '/gigs/' + postID);
+
+        update(dbRefUser, {
+            gigStatus: 'Close'
+        })
+
+        update(dbRef, {
+            gigStatus: 'Close'
+        })
+        setGigModal(false)
+
+    }
+
+    const handleCancelStatus = () => {
+        const dbRefUser = ref(db, 'gigPosts/' + postID)
+        const dbRef = ref(db, 'users/client/' + uid + '/gigs/' + postID);
+
+        update(dbRefUser, {
+            gigStatus: 'Cancel'
+        })
+
+        update(dbRef, {
+            gigStatus: 'Cancel'
+        })
+
+        setGigModal(false)
+
+    }
+
+    const handleOngoingStatus = () => {
+        const dbRefUser = ref(db, 'gigPosts/' + postID)
+        const dbRef = ref(db, 'users/client/' + uid + '/gigs/' + postID);
+
+        update(dbRefUser, {
+            gigStatus: 'On-going'
+        })
+
+        update(dbRef, {
+            gigStatus: 'On-going'
+        })
+
+        setGigModal(false)
+
+    }
+
+    const handleDoneStatus = () => {
+        const dbRefUser = ref(db, 'gigPosts/' + postID)
+        const dbRef = ref(db, 'users/client/' + uid + '/gigs/' + postID);
+
+        update(dbRefUser, {
+            gigStatus: 'Done'
+        })
+
+        update(dbRef, {
+            gigStatus: 'Done'
+        })
+
+        setGigModal(false)
+
+    }
+
+    const handleAvailableStatus = () => {
+        const dbRefUser = ref(db, 'gigPosts/' + postID)
+        const dbRef = ref(db, 'users/client/' + uid + '/gigs/' + postID);
+
+        update(dbRefUser, {
+            gigStatus: 'Available'
+        })
+
+        update(dbRef, {
+            gigStatus: 'Available'
+        })
+
+        setGigModal(false)
+
+    }
+
 
 
     return (
@@ -378,6 +496,97 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
                     <View style={styles.titleContainer}>
                         <Text style={styles.titleStyle}>{postDetails.GigName}</Text>
                     </View>
+
+                    <View style={{ paddingHorizontal: 25, flexDirection: 'row' }}>
+                        <TouchableOpacity style={{
+                            padding: 5,
+                            width: '14%',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            borderRadius: 10,
+                            backgroundColor: '#c5ebe0'
+                        }} onPress={() => handleGigModal()}>
+                            <AntDesign name="bars" size={24} color='#0EB080' />
+                        </TouchableOpacity>
+
+                        <View style={{
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            marginLeft: 15
+                        }}>
+                            <Text style={{ fontWeight: 'bold', fontSize: 20, color: '#0EB080' }}>{postDetails.GigStatus}</Text>
+                        </View>
+
+                    </View>
+
+                    <Modal
+                        visible={gigModal}
+                        transparent={true}
+                        animationType='slide'
+
+                    >
+                        <View style={{
+                            height: '100%',
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                        }}>
+                            <View style={styles.gigStatusModal}>
+                                <View>
+                                    <Text>Change Gig Status</Text>
+                                </View>
+
+                                <View style={styles.gigStatusContainer}>
+                                    {availBtnVisible ? (
+                                        <TouchableOpacity style={{ ...styles.gigStatusBtn, backgroundColor: '#0EB080' }}
+                                            onPress={() => handleAvailableStatus()}>
+                                            <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 15 }}>
+                                                Available
+                                            </Text>
+
+                                        </TouchableOpacity>
+
+                                    ) : closeBtnVisible ? (
+
+                                        <TouchableOpacity style={{ ...styles.gigStatusBtn, backgroundColor: 'gray' }}
+                                            onPress={() => handleCloseStatus()}>
+                                            <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 15 }}>
+                                                Close
+                                            </Text>
+                                        </TouchableOpacity>
+                                    ) : <></>}
+                                    {cancelBtnVisible ? (
+                                        <TouchableOpacity style={{ ...styles.gigStatusBtn, backgroundColor: 'red' }}
+                                            onPress={() => handleCancelStatus()}>
+                                            <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 15 }}>
+                                                Cancel
+                                            </Text>
+                                        </TouchableOpacity>
+                                    ) : null}
+                                    {onGoingBtnVisible ? (
+                                        <TouchableOpacity style={{ ...styles.gigStatusBtn, backgroundColor: '#FABF35' }}
+                                            onPress={() => handleOngoingStatus()}>
+                                            <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 15 }}>
+                                                On-going
+                                            </Text>
+                                        </TouchableOpacity>
+                                    ) : null}
+                                    {doneBtnVisible ? (
+                                        <TouchableOpacity style={{ ...styles.gigStatusBtn, backgroundColor: '#0EB080' }}
+                                            onPress={() => handleDoneStatus()}>
+                                            <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 15 }}>
+                                                Done
+                                            </Text>
+                                        </TouchableOpacity>
+                                    ) : null}
+                                </View>
+
+
+                                <TouchableOpacity onPress={() => setGigModal(false)}>
+                                    <Text>Close</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </Modal>
 
                     <View style={styles.AddressContainer}>
                         {schedule.map((sched, index) => (
@@ -397,9 +606,7 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
                             </TouchableOpacity>
                         ))}
 
-                        {/* <View style={styles.LocationContainer}>
-                            <Text style={styles.AddressTxt}>{postDetails.GigAddress}</Text>
-                        </View> */}
+
                     </View>
 
                     <Modal visible={visible} animationType='slide' transparent>
@@ -408,11 +615,14 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
                                 <Text style={{ fontWeight: 'bold' }}>Schedule and Location</Text>
                                 {visible ? (
                                     <View style={styles.modalDetails}>
+
+
                                         <View style={{ marginTop: 15 }}>
                                             <Text>Date:</Text>
                                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                                 <MaterialIcons name="date-range" size={24} color="black" />
-                                                <Text>{schedule[selectedIndex].date.toDateString()}</Text>
+                                                <Text>{date[selectedIndex]}</Text>
+
                                             </View>
                                         </View>
                                         <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginTop: 10 }}>
@@ -420,14 +630,14 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
                                                 <Text>Time Start:</Text>
                                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                                     <Feather name="clock" size={24} color="black" />
-                                                    <Text>{formatTime(schedule[selectedIndex].startTime)}</Text>
+                                                    <Text>{start[selectedIndex]}</Text>
                                                 </View>
                                             </View>
                                             <View>
                                                 <Text>Time End:</Text>
                                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                                     <Feather name="clock" size={24} color="black" />
-                                                    <Text>{formatTime(schedule[selectedIndex].endTime)}</Text>
+                                                    <Text>{end[selectedIndex]}</Text>
                                                 </View>
                                             </View>
                                         </View>
@@ -435,13 +645,15 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
                                             <Text>Address:</Text>
                                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                                 <Ionicons name="location-outline" size={24} color="black" />
-                                                <Text>{schedule[selectedIndex].address}</Text>
+                                                <Text>{address[selectedIndex]}</Text>
                                             </View>
                                         </View>
 
                                         <TouchableOpacity onPress={() => handleCloseSet()} style={styles.closeSetBtn}>
                                             <Text style={{ fontWeight: 'bold', color: 'white', fontSize: 15 }}>Close</Text>
                                         </TouchableOpacity>
+
+
 
                                     </View>
                                 ) : null
@@ -491,21 +703,7 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
 
                     </View>
 
-                    <View>
-                        <Text style={styles.txtStyles}>Gig Status</Text>
-                        <DropDownPicker
-                            open={open}
-                            value={gigStatus}
-                            items={items}
-                            setOpen={setOpen}
-                            setValue={setGigStatus}
-                            setItems={setItems}
-                            dropDownDirection='BOTTOM'
-                            zIndex={30}
-                            placeholder={gigStatus}
-                            onChangeValue={handleGigStatus}
-                        />
-                    </View>
+
                 </View>
 
                 <View style={styles.appliedContainer}>
@@ -656,6 +854,26 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
 export default ClientGigDetails
 
 const styles = StyleSheet.create({
+    gigStatusContainer: {
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    gigStatusBtn: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '80%',
+        padding: 15,
+        marginBottom: 20,
+        borderRadius: 23
+    },
+    gigStatusModal: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'white',
+        width: '70%',
+        height: '60%'
+    },
     closeSetBtn: {
         alignSelf: 'center',
         backgroundColor: '#0EB080',
