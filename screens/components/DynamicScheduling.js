@@ -79,21 +79,50 @@ const DynamicScheduling = ({ handleParentModal, gigName, eventType, img, gender,
         setShowPicker(!showPicker)
     };
 
+    // const onChange = ({ type }, selectedDate) => {
+    //     if (type == 'set') {
+    //         const currentDate = selectedDate;
+    //         setDate(new Date(currentDate));
+
+    //         if (Platform.OS === 'android') {
+    //             toggleDatepicker()
+    //             // setDate(currentDate.toDateString());
+    //             setDate(new Date(currentDate))
+    //         } else if (Platform.OS === 'ios') {
+    //             toggleDatepicker()
+    //             // setDate(currentDate.toDateString());
+    //             setDate(new Date(currentDate))
+    //         }
+
+    //     } else {
+    //         toggleDatepicker();
+    //     }
+    // };
+
+
     const onChange = ({ type }, selectedDate) => {
         if (type == 'set') {
             const currentDate = selectedDate;
-            setDate(new Date(currentDate));
+            const currentDateWithoutTime = new Date(
+                currentDate.getFullYear(),
+                currentDate.getMonth(),
+                currentDate.getDate()
+            );
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
 
-            if (Platform.OS === 'android') {
-                toggleDatepicker()
-                // setDate(currentDate.toDateString());
-                setDate(new Date(currentDate))
-            } else if (Platform.OS === 'ios') {
-                toggleDatepicker()
-                // setDate(currentDate.toDateString());
-                setDate(new Date(currentDate))
+            // Check if the selected date is in the past
+            if (currentDateWithoutTime < today) {
+                // Handle the case where the selected date is in the past
+                // You can show an error message or prevent further action.
+                // For example:
+                alert('Please select a future date.');
+            } else {
+                // Update the date only if it's in the future
+                setDate(currentDate);
             }
 
+            toggleDatepicker();
         } else {
             toggleDatepicker();
         }

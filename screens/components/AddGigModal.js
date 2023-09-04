@@ -47,7 +47,7 @@ const AddGigModal = ({ handleModal }) => {
     const [itemsGender, setItemsGender] = useState([
         { label: 'Male', value: 'Male' },
         { label: 'Female', value: 'Female' },
-        { label: 'Anyone', value: 'Anyone' }
+        { label: 'Both', value: 'Both' }
     ]);
     const [startVisible, setStartVisible] = useState(false);
     const [endVisible, setEndVisible] = useState(false);
