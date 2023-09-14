@@ -36,6 +36,7 @@ const MusicianGigSearch = () => {
     const [gigGenre, setGigGenre] = useState([])
     const [gigInstrument, setGigInstrument] = useState([])
     const [isFilterApplied, setIsFilterApplied] = useState(false);
+    const [childData, setChildData] = useState();
 
     const handleItemPress = (key) => {
         setSelectedItem(key);
@@ -61,6 +62,8 @@ const MusicianGigSearch = () => {
     const handleGenreSelection = (genres) => {
         setSelectedGenres(genres);
     };
+
+
 
 
 
@@ -217,6 +220,11 @@ const MusicianGigSearch = () => {
     }
 
 
+    const handleModal = (data) => {
+        setModalVisible(data)
+    }
+
+
     return (
         <View style={styles.root}>
             <View style={styles.header}>
@@ -232,7 +240,7 @@ const MusicianGigSearch = () => {
                     <Appbar.BackAction onPress={hideModal} color='white' />
                 </Appbar.Header>
 
-                <GigDetails {...props} />
+                <GigDetails {...props} handleModal={handleModal} />
             </Modal>
 
 

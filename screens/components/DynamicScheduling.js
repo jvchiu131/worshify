@@ -79,25 +79,6 @@ const DynamicScheduling = ({ handleParentModal, gigName, eventType, img, gender,
         setShowPicker(!showPicker)
     };
 
-    // const onChange = ({ type }, selectedDate) => {
-    //     if (type == 'set') {
-    //         const currentDate = selectedDate;
-    //         setDate(new Date(currentDate));
-
-    //         if (Platform.OS === 'android') {
-    //             toggleDatepicker()
-    //             // setDate(currentDate.toDateString());
-    //             setDate(new Date(currentDate))
-    //         } else if (Platform.OS === 'ios') {
-    //             toggleDatepicker()
-    //             // setDate(currentDate.toDateString());
-    //             setDate(new Date(currentDate))
-    //         }
-
-    //     } else {
-    //         toggleDatepicker();
-    //     }
-    // };
 
 
     const onChange = ({ type }, selectedDate) => {

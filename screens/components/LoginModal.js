@@ -8,7 +8,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase'
 
 
-const LoginModal = () => {
+const LoginModal = ({ moveRegModal }) => {
 
 
 
@@ -92,9 +92,21 @@ const LoginModal = () => {
                         <Icon name="lock"
                             style={{ color: isFocused || password ? '#0EB080' : '#606060' }}
                             {...props} />} />
-                <TouchableOpacity>
-                    <Text style={styles.Ftext}>Forgot your password?</Text>
+
+                <View style={{ flexDirection: 'row' }}>
+                    <Text style={{ ...styles.Ftext, textAlign: 'left', marginRight: 15 }}>
+                        Don't have an account yet?
+                    </Text>
+
+                    <TouchableOpacity style={{ marginTop: 5 }}>
+                        <Text style={styles.Ftext}>Forgot your password?</Text>
+                    </TouchableOpacity>
+                </View>
+
+                <TouchableOpacity onPress={() => moveRegModal()}>
+                    <Text style={{ color: "#0EB080", fontWeight: 'bold', width: '20%' }}>Sign up</Text>
                 </TouchableOpacity>
+
             </View>
 
 

@@ -7,7 +7,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 
 const { width: screenWidth } = Dimensions.get('screen');
 
-const RegisterModal = () => {
+const RegisterModal = ({ moveLoginModal }) => {
 
     const [ClientContent, setClientContent] = useState(false);
     const [MusicianContent, setMusicianContent] = useState(false);
@@ -77,6 +77,13 @@ const RegisterModal = () => {
                                 <Text style={styles.buttonOutlineText}>
                                     Musician
                                 </Text>
+                            </TouchableOpacity>
+                        </View>
+
+                        <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 10 }}>
+                            <Text>Do you already have an account?</Text>
+                            <TouchableOpacity onPress={() => moveLoginModal()}>
+                                <Text style={{ color: "#0EB080", marginTop: 10, fontWeight: 'bold' }}>Sign in</Text>
                             </TouchableOpacity>
                         </View>
 

@@ -38,6 +38,17 @@ const ChatScreen = () => {
     }, [uid])
 
 
+
+    useEffect(() => {
+        const dbRef = ref(db, 'chatParticipants/' + chatRefKey);
+        onValue(dbRef, (snapshot) => {
+            console.log(snapshot.val());
+        })
+    })
+
+
+
+
     useEffect(() => {
 
         if (!chatExist) {
@@ -54,7 +65,7 @@ const ChatScreen = () => {
                         _id: child.key,
                         createdAt: new Date(createdAt),
                         text,
-                        user,
+                        user
                     });
                 });
                 setMessages(messageList.reverse());
@@ -158,8 +169,6 @@ const styles = StyleSheet.create({
         color: 'white'
     },
     chatStyle: {
-        borderWidth: 2,
-        borderColor: 'red',
         // top: screenHeight / 1.3,
         height: '85%'
     }

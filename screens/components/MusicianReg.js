@@ -22,7 +22,8 @@ const MusicianReg = () => {
     const [opengender, setOpenGender] = useState(false);
     const [itemsGender, setItemsGender] = useState([
         { label: 'Male', value: 'Male' },
-        { label: 'Female', value: 'Female' }
+        { label: 'Female', value: 'Female' },
+        { label: 'Both', value: 'Both' }
     ]);
     const ContentValue = useState(new Animated.Value(-600))[0]
     const [isClicked, setIsClicked] = useState(false);

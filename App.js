@@ -21,7 +21,7 @@ import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { LogBox } from 'react-native';
 import Toast from 'react-native-toast-message';
-
+import ClientProfile from './screens/components/ClientProfile';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -72,6 +72,7 @@ export default function App() {
         <Stack.Screen name='MusicianProfile' component={MusicianProfile} />
         <Stack.Screen name='EditGig' component={EditGig} />
         <Stack.Screen name='Applied' component={AppliedProfile} />
+        <Stack.Screen name='ClientProfile' component={ClientProfile} />
       </Stack.Navigator>
       <StatusBar style='auto' />
     </NavigationContainer>

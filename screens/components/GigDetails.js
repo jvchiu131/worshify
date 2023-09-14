@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ImageBackground, Dimensions, ScrollView } from 'react-native'
+import { StyleSheet, Text, View, ImageBackground, Dimensions, ScrollView, TouchableOpacity } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { child, onValue, ref, remove, update, get, set, push } from 'firebase/database';
 import { db, auth } from '../../firebase';
@@ -7,12 +7,14 @@ import { Entypo } from '@expo/vector-icons';
 import { Button } from 'react-native-paper';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
+import { useNavigation } from '@react-navigation/native';
+
 
 
 const { height: screenHeight } = Dimensions.get('screen');
 const { width: screenWidth } = Dimensions.get('screen');
 
-const GigDetails = ({ postID }) => {
+const GigDetails = ({ postID, handleModal }) => {
 
     const [postDetails, setPostDetails] = useState([]);
     const [instruments, setInstruments] = useState([]);
@@ -26,6 +28,9 @@ const GigDetails = ({ postID }) => {
     const user = auth.currentUser;
     const uid = user.uid;
     const [counter, setCounter] = useState(0);
+    const [selectedItem, setSelectedItem] = useState();
+
+    const navigation = useNavigation();
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -284,6 +289,14 @@ const GigDetails = ({ postID }) => {
         }
     };
 
+
+    const handleItemPress = (key) => {
+
+        setSelectedItem(key);
+        handleModal(false);
+        navigation.navigate('ClientProfile', { userId: key });
+    };
+
     return (
         <View style={styles.root}>
             <View style={styles.imgContainer}>
@@ -340,17 +353,21 @@ const GigDetails = ({ postID }) => {
                         </View>
                     </View>
 
-                    <View style={styles.organizerContainer}>
-                        <View style={styles.organizerPhotoContainer}>
-                            <ImageBackground style={{ height: '100%', width: '100%' }} source={{ uri: userData.profilePic }}>
+                    <TouchableOpacity onPress={() => handleItemPress(userData.key)}>
 
-                            </ImageBackground>
+                        <View style={styles.organizerContainer}>
+                            <View style={styles.organizerPhotoContainer}>
+                                <ImageBackground style={{ height: '100%', width: '100%' }} source={{ uri: userData.profilePic }}>
+
+                                </ImageBackground>
+                            </View>
+                            <View style={styles.organizerTxtContainer}>
+                                <Text>{userData?.firstName} {userData?.lastName}</Text>
+                                <Text style={{ color: '#706E8F', fontSize: 10 }}>Organizer</Text>
+                            </View>
                         </View>
-                        <View style={styles.organizerTxtContainer}>
-                            <Text>{userData?.firstName} {userData?.lastName}</Text>
-                            <Text style={{ color: '#706E8F', fontSize: 10 }}>Organizer</Text>
-                        </View>
-                    </View>
+
+                    </TouchableOpacity>
 
                     <View style={styles.aboutContainer}>
                         <View style={styles.aboutTitle}>

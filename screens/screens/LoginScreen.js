@@ -24,6 +24,7 @@ const LoginScreen = () => {
 
     const moveLoginModal = () => {
         setShowModal(true)
+        moveRegBack()
         Animated.timing(animValue, {
             toValue: 0,
             duration: 300,
@@ -33,6 +34,7 @@ const LoginScreen = () => {
     }
 
     const moveRegModal = () => {
+        moveBack()
         Animated.timing(regValue, {
             toValue: 0,
             duration: 300,
@@ -79,7 +81,7 @@ const LoginScreen = () => {
                     behavior='padding'>
                     {showModal ? (
                         <View style={styles.containerField}>
-                            <LoginModal />
+                            <LoginModal moveRegModal={moveRegModal} />
                         </View>
                     ) : (<></>
                     )}
@@ -93,7 +95,7 @@ const LoginScreen = () => {
                     behavior='padding' >
                     {showRegModal ? (
                         <View>
-                            <RegisterModal />
+                            <RegisterModal moveLoginModal={moveLoginModal} />
                         </View>
                     ) : (<></>
                     )}

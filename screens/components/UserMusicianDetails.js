@@ -202,7 +202,9 @@ const UserMusicianDetails = () => {
                                     animationType='slide'
                                     onRequestClose={hideModal}
                                 >
-                                    <Appbar.BackAction onPress={hideModal} style={styles.appBarStyle} />
+                                    <Appbar.Header>
+                                        <Appbar.BackAction onPress={hideModal} style={styles.appBarStyle} />
+                                    </Appbar.Header>
                                     <AddPortfolio />
 
                                 </Modal>
