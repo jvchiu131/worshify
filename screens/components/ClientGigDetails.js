@@ -333,7 +333,7 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
         const notificationRef = ref(db, 'users/usersNotification/' + userId)
         const newNotificationRef = push(notificationRef);
         await set(newNotificationRef, {
-            title: 'Gig Done',
+            title: 'Gig Done!',
             body: 'A gig that you applied is done! Please rate and give your feedback to the event!',
         })
     }
@@ -376,7 +376,7 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
             setDoneBtnVisible(false);
             setAvailBtnVisible(false);
             setCloseBtnVisible(true);
-            setOnGoingBtnVisible(true);
+            setOnGoingBtnVisible(false);
             setCancelBtnVisible(true);
         } else if (postDetails.GigStatus === 'On-going') {
             setDoneBtnVisible(true);
@@ -388,12 +388,13 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
             setAvailBtnVisible(true);
             setCloseBtnVisible(false);
             setDoneBtnVisible(false);
+            setOnGoingBtnVisible(true);
         } else if (postDetails.GigStatus === 'Cancel') {
             setCloseBtnVisible(false);
             setOnGoingBtnVisible(false);
             setDoneBtnVisible(false);
             setCancelBtnVisible(false);
-            setAvailBtnVisible(true);
+            setAvailBtnVisible(false);
         } else if (postDetails.GigStatus === 'Done') {
             setCloseBtnVisible(false);
             setOnGoingBtnVisible(false);
@@ -483,6 +484,11 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
 
     }
 
+    //replace the comment with attribute ratings
+    //attribute rating will be calculated by average and becomes the overall rating of the musician
+    //musician rating will be calculated by average from the individual organizers
+    //musician rating will determine the ranking of the recommended musicians in the organizer's main UI 
+    //possible to integrate the musician's average rating the matchmaking calculation
 
 
     return (

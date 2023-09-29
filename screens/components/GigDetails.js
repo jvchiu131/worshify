@@ -8,7 +8,7 @@ import { Button } from 'react-native-paper';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { useNavigation } from '@react-navigation/native';
-
+import { AntDesign } from '@expo/vector-icons';
 
 
 const { height: screenHeight } = Dimensions.get('screen');
@@ -29,6 +29,9 @@ const GigDetails = ({ postID, handleModal }) => {
     const uid = user.uid;
     const [counter, setCounter] = useState(0);
     const [selectedItem, setSelectedItem] = useState();
+    const [selectedIndex, setSelectedIndex] = useState();
+    const [visible, setVisible] = useState(false);
+    const [schedule, setSchedule] = useState([]);
 
     const navigation = useNavigation();
 
@@ -60,13 +63,10 @@ const GigDetails = ({ postID, handleModal }) => {
                         GigName: snapshot.val().Gig_Name,
                         uid: snapshot.val().uid,
                         GenreNeeded: snapshot.val().Genre_Needed,
-                        StartTime: snapshot.val().Gig_Start,
-                        EndTime: snapshot.val().Gig_End,
                         InstrumentsNeeded: snapshot.val().Instruments_Needed,
                         GigImage: snapshot.val().Gig_Image,
-                        GigDate: snapshot.val().Gig_Date,
                         about: snapshot.val().about,
-                        gigStatus: snapshot.val().gigStatus
+                        gigStatus: snapshot.val().gigStatus,
                     };
                     setPostDetails(gigData);
                 }
@@ -141,6 +141,29 @@ const GigDetails = ({ postID, handleModal }) => {
 
         fetchInstruments();
     }, [])
+
+
+    useEffect(() => {
+        const fetchInstruments = async () => {
+            const pathRef = child(ref(db), 'gigPosts/' + postID + '/schedule');
+            try {
+                const snapshot = await get(pathRef);
+                let data = [];
+                snapshot.forEach((child) => {
+                    data.push(child.val());
+                });
+                setSchedule(data);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        fetchInstruments();
+        // schedule.map((items) => (
+        //     console.log(items.index)
+        // ))
+    }, [])
+
 
     useEffect(() => {
         const fetchGenres = async () => {
@@ -296,6 +319,18 @@ const GigDetails = ({ postID, handleModal }) => {
         handleModal(false);
         navigation.navigate('ClientProfile', { userId: key });
     };
+    // const handleSet = (index) => {
+    //     // console.log(index)
+    //     setSelectedIndex(index);
+    //     // console.log(selectedIndex)
+    //     setVisible(true)
+    // }
+
+    // const handleCloseSet = () => {
+    //     setSelectedIndex(null);
+    //     setVisible(false);
+    // }
+
 
     return (
         <View style={styles.root}>
@@ -308,34 +343,43 @@ const GigDetails = ({ postID, handleModal }) => {
                     <View style={styles.titleContainer}>
                         <Text style={styles.titleStyle}>{postDetails.GigName}</Text>
                     </View>
-                    <View style={styles.statusContainer}>
-                        <Text style={styles.statusChip}>{postDetails.gigStatus}</Text>
+                    <View style={{ ...styles.statusContainer, flexDirection: 'row' }}>
+                        <AntDesign name="checkcircle" size={24} color="#0EB080" />
+                        <Text style={{ ...styles.statusChip, marginLeft: 15 }}>{postDetails.gigStatus}</Text>
                     </View>
 
-                    <View style={styles.statusContainer}>
+                    <View style={{ ...styles.statusContainer, alignItems: 'center', alignSelf: 'center' }}>
                         <Text style={{ ...styles.statusChip, marginTop: 10, marginBottom: 20 }}>{postDetails.Event_Type}</Text>
                     </View>
 
                     <View style={styles.dateTimeContainer}>
                         <View>
-                            <FontAwesome5 name="calendar-alt" size={30} color="#0EB080" />
+                            <Text>Schedule</Text>
                         </View>
 
                         <View style={styles.dateContainer}>
-                            <Text style={styles.dateTxt}>{postDetails.GigDate}</Text>
-                            <Text style={styles.timeTxt}>{postDetails.StartTime} - {postDetails.EndTime}</Text>
+
+                            {schedule.map((sched, index) => (
+                                <TouchableOpacity style={styles.schedItem}>
+                                    <Text style={{ fontSize: 20, fontWeight: '500' }}>Set</Text>
+                                    <View key={index} style={{
+                                        backgroundColor: '#F0F0F0',
+                                        height: 45,
+                                        width: 45,
+                                        borderRadius: 25,
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        marginTop: 10
+                                    }}>
+                                        <Text style={{ fontSize: 20, color: '#0EB080', fontWeight: 'bold' }}>{sched.index}</Text>
+                                    </View>
+                                </TouchableOpacity>
+                            ))}
+
                         </View>
                     </View>
 
-                    <View style={styles.AddressContainer}>
-                        <View>
-                            <Entypo name="location" size={30} color="#0EB080" />
-                        </View>
 
-                        <View style={styles.LocationContainer}>
-                            <Text style={styles.AddressTxt}>{postDetails.GigAddress}</Text>
-                        </View>
-                    </View>
 
                     <View style={styles.InstContainer}>
                         <View style={styles.instrumentStyle}>
@@ -398,10 +442,10 @@ const GigDetails = ({ postID, handleModal }) => {
                         }
                     }}
                     loading={loading}
-                    buttonColor={postDetails.gigStatus === 'Done' || postDetails.gigStatus === 'Cancel' || postDetails.gigStatus === 'Upcoming' ? 'gray' : applied || alreadyApplied ? 'red' : '#0EB080'}
+                    buttonColor={postDetails.gigStatus === 'Done' || postDetails.gigStatus === 'Cancel' || postDetails.gigStatus === 'Close' ? 'gray' : applied || alreadyApplied ? 'red' : '#0EB080'}
                     textColor="white"
                     style={styles.btnStyle}
-                    disabled={postDetails.gigStatus === 'Done' || postDetails.gigStatus === 'Cancel' || postDetails.gigStatus === 'Upcoming'}
+                    disabled={postDetails.gigStatus === 'Done' || postDetails.gigStatus === 'Cancel' || postDetails.gigStatus === 'Close' || postDetails.gigStatus === 'On-going'}
                 >
                     {getApplyButtonLabel()}
                 </Button>
@@ -414,6 +458,16 @@ const GigDetails = ({ postID, handleModal }) => {
 export default GigDetails
 
 const styles = StyleSheet.create({
+    schedItem: {
+        borderWidth: 2,
+        borderColor: '#0EB080',
+        marginRight: 20,
+        borderRadius: 15,
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '25%',
+        height: '100%'
+    },
     statusChip: {
         backgroundColor: '#0EB080',
         padding: 5,
@@ -425,8 +479,7 @@ const styles = StyleSheet.create({
         overflow: 'hidden'
     },
     statusContainer: {
-        alignItems: 'center',
-
+        width: '35%'
     },
     aboutContent: {
         textAlign: 'center'
@@ -529,12 +582,13 @@ const styles = StyleSheet.create({
     },
     dateContainer: {
         justifyContent: 'center',
-        marginLeft: 10
+        height: '100%',
+        width: '100%',
+        marginBottom: 10
     },
     dateTimeContainer: {
-        flexDirection: 'row',
-        paddingLeft: 25,
         alignItems: 'center',
+        height: '25%',
 
     },
     root: {
@@ -549,6 +603,7 @@ const styles = StyleSheet.create({
         zIndex: 2,
         top: -15,
         backgroundColor: 'white',
+        padding: 10
     },
     imgContainer: {
         height: '25%',
@@ -559,10 +614,12 @@ const styles = StyleSheet.create({
         height: '100%',
     },
     titleContainer: {
-        justifyContent: 'center',
+        // justifyContent: 'center',
         textAlign: 'left',
-        padding: 25,
-        flexDirection: 'row'
+        padding: 20,
+        flexDirection: 'row',
+        paddingHorizontal: 0
+
     },
     titleStyle: {
         color: "#0EB080",

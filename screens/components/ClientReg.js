@@ -75,13 +75,13 @@ const ClientReg = () => {
                     <View style={styles.headerContainer}>
                         <Text style={styles.header}>Create an Account as <Text style={{ color: '#0EB080' }}>Client</Text></Text>
                     </View>
-                    <View style={styles.subheaderContainer}>
+                    {/* <View style={styles.subheaderContainer}>
                         <Text style={styles.subHeader}>Do you already have an account?
                             <TouchableOpacity>
                                 <Text style={{ color: '#0EB080' }}> Sign In</Text>
                             </TouchableOpacity>
                         </Text>
-                    </View>
+                    </View> */}
 
                     <View style={styles.inputContainer}>
                         <View style={styles.nameContainer}>

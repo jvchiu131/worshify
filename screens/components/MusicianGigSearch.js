@@ -342,16 +342,17 @@ const styles = StyleSheet.create({
         fontSize: 11
     },
     root: {
-        height: screenHeight,
+        height: screenHeight / 1.2,
         width: screenWidth,
-        bottom: screenHeight / 5
+        bottom: screenHeight / 5,
+
     },
     container: {
         flexDirection: 'row',
         justifyContent: 'space-evenly',
     },
     renderStyle: {
-        marginHorizontal: 2
+        marginHorizontal: 2,
     },
     titleStyle: {
         color: 'white',
