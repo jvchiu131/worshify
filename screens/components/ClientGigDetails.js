@@ -175,10 +175,6 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
             setGenre(data);
         })
     }, [])
-
-
-
-
     useEffect(() => {
         const usersAppliedRef = ref(db, 'gigPosts/' + postID + '/usersApplied');
         onValue(usersAppliedRef, (snapshot) => {
@@ -262,15 +258,8 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
         }
 
     }
-
-
-
     //notify applied musicians if gig is edited
-
-
     const props = { userId, postID };
-
-
     //handles Gig Archive
     const archiveGig = () => {
         const archiveRef = ref(db, 'archiveGigs/' + uid + '/' + postID)
@@ -279,10 +268,6 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
         handleBtnClose(false);
         deleteGig();
     }
-
-
-
-
     const deleteGig = async () => {
         setLoading(true);
         const dbRefUser = ref(db, 'gigPosts/' + postID)
@@ -305,7 +290,7 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
 
     //handles the rating visibility
     useEffect(() => {
-        if (gigStatus === 'Done') {
+        if (postDetails.GigStatus === 'Done') {
             showAccepted()
         }
     }, [gigStatus])
@@ -813,7 +798,7 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
                     <View style={styles.ratingsContainer}>
                         <View style={styles.ratingBorder}>
                             <View style={styles.ratingTitle}>
-                                <Text style={{ fontWeight: 'bold', fontSize: 20 }}>Ratings and Reviews</Text>
+                                <Text style={{ fontWeight: 'bold', fontSize: 20 }}>Appropriateness</Text>
                             </View>
 
                             {/* Add the rating component here */}
@@ -822,7 +807,34 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
                                 count={5}
                                 defaultRating={3}
                                 showRating={true}
-                                size={40}
+                                size={20}
+                                onFinishRating={(rating) => setRating(rating)}
+                            />
+
+                            <View style={styles.ratingTitle}>
+                                <Text style={{ fontWeight: 'bold', fontSize: 20 }}>Punctuality</Text>
+                            </View>
+
+                            <AirbnbRating
+                                reviews={["Poor", "Fair", "Good", "Very Good", "Excellent"]}
+                                count={5}
+                                defaultRating={3}
+                                showRating={true}
+                                size={20}
+                                onFinishRating={(rating) => setRating(rating)}
+                            />
+
+                            <View style={styles.ratingTitle}>
+                                <Text style={{ fontWeight: 'bold', fontSize: 20 }}>Skills</Text>
+                            </View>
+
+
+                            <AirbnbRating
+                                reviews={["Poor", "Fair", "Good", "Very Good", "Excellent"]}
+                                count={5}
+                                defaultRating={3}
+                                showRating={true}
+                                size={20}
                                 onFinishRating={(rating) => setRating(rating)}
                             />
 
@@ -991,7 +1003,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 10,
         marginTop: 10,
-        height: '35%'
+        height: '20%'
     },
     ratingTitles: {
         borderColor: 'lightgray',

@@ -44,9 +44,15 @@ const UpcomingGigs = () => {
                     </View>
                     <View style={styles.txtContainer}>
                         <Text style={styles.gigNameStyle}>{gigPost.Gig_Name}</Text>
-                        <Text style={styles.gigNameStyle}>{gigPost.Gig_Date}</Text>
-                        <Text style={styles.gigNameStyle}>{gigPost.Gig_Start}</Text>
-                        <Text style={styles.gigNameStyle}>{gigPost.Gig_End}</Text>
+                        <View style={[gigPost.gigStatus === 'Available' ? styles.gigStatusGreen :
+                            gigPost.gigStatus === 'Cancel' ? styles.gigStatusRed :
+                                gigPost.gigStatus === 'On-going' ? styles.gigStatusYellow :
+                                    gigPost.gigStatus === 'Done' ? styles.gigStatusGreen :
+                                        styles.gigStatusGray]}>
+                            <Text style={styles.gigStatusStyle}>
+                                {gigPost.gigStatus}
+                            </Text>
+                        </View>
                     </View>
 
                 </TouchableOpacity>
@@ -71,13 +77,26 @@ const UpcomingGigs = () => {
 export default UpcomingGigs;
 
 const styles = StyleSheet.create({
+    gigStatusGreen: {
+        backgroundColor: "#0EB080", // Green color
+    },
+    gigStatusRed: {
+        backgroundColor: 'red', // Red color
+    },
+    gigStatusYellow: {
+        backgroundColor: '#FABF35', // Yellow color
+    },
+    gigStatusGray: {
+        backgroundColor: '#808080', // Gray color
+    },
     appBarStyle: {
         backgroundColor: '#151414',
         justifyContent: 'space-between'
     },
     txtContainer: {
-        width: '80%',
-        height: '100%'
+        width: '75%',
+        height: '100%',
+
     },
     imgContainer: {
         height: '100%',
@@ -95,7 +114,13 @@ const styles = StyleSheet.create({
         borderRadius: 10
     },
     gigNameStyle: {
-        color: 'white'
+        color: 'white',
+        width: '95%',
+        marginBottom: '5%'
+    },
+    gigStatusStyle: {
+        color: 'white',
+        fontWeight: 'bold',
     },
     scrollContainer: {
         flexGrow: 1,

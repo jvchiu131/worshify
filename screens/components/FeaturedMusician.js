@@ -8,6 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 
 const FeaturedMusician = () => {
     const [featuredMusicians, setFeaturedMusicians] = useState([]);
+    const [ratingsMusician, setRatingsMusician] = useState([]);
 
     const navigation = useNavigation();
 
@@ -19,6 +20,7 @@ const FeaturedMusician = () => {
     };
 
     //handles the fetching and calculation of musician's rating
+    //add the average of the musician with 3 ratings based on the each attribute with the given rating of clients
     useEffect(() => {
         const ratingRef = ref(db, 'users/musicianRatings/');
         onValue(ratingRef, (snapshot) => {
@@ -30,7 +32,6 @@ const FeaturedMusician = () => {
 
                 childSnapshot.forEach((rating) => {
                     const ratingValue = rating.val().rating;
-                    console.log(ratingValue)
                     totalRatings += ratingValue;
                     numRatings += 1; // Increment the number of ratings for each child
                 });

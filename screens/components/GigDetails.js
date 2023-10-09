@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ImageBackground, Dimensions, ScrollView, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, ImageBackground, Dimensions, ScrollView, TouchableOpacity, Modal } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { child, onValue, ref, remove, update, get, set, push } from 'firebase/database';
 import { db, auth } from '../../firebase';
@@ -9,7 +9,9 @@ import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { useNavigation } from '@react-navigation/native';
 import { AntDesign } from '@expo/vector-icons';
-
+import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 
 const { height: screenHeight } = Dimensions.get('screen');
 const { width: screenWidth } = Dimensions.get('screen');
@@ -313,23 +315,29 @@ const GigDetails = ({ postID, handleModal }) => {
     };
 
 
-    const handleItemPress = (key) => {
+    const handleSet = (index) => {
+        // console.log(index)
+        setSelectedIndex(index);
+        // console.log(selectedIndex)
+        setVisible(true)
+    }
 
+    const handleCloseSet = () => {
+        setSelectedIndex(null);
+        setVisible(false);
+    }
+
+    const handleItemPress = (key) => {
         setSelectedItem(key);
         handleModal(false);
         navigation.navigate('ClientProfile', { userId: key });
     };
-    // const handleSet = (index) => {
-    //     // console.log(index)
-    //     setSelectedIndex(index);
-    //     // console.log(selectedIndex)
-    //     setVisible(true)
-    // }
 
-    // const handleCloseSet = () => {
-    //     setSelectedIndex(null);
-    //     setVisible(false);
-    // }
+    const address = schedule.map(item => item.address);
+    const date = schedule.map(item => item.date);
+    const start = schedule.map(item => item.startTime);
+    const end = schedule.map(item => item.endTime);
+
 
 
     return (
@@ -360,7 +368,7 @@ const GigDetails = ({ postID, handleModal }) => {
                         <View style={styles.dateContainer}>
 
                             {schedule.map((sched, index) => (
-                                <TouchableOpacity style={styles.schedItem}>
+                                <TouchableOpacity style={styles.schedItem} onPress={() => handleSet(index)}>
                                     <Text style={{ fontSize: 20, fontWeight: '500' }}>Set</Text>
                                     <View key={index} style={{
                                         backgroundColor: '#F0F0F0',
@@ -378,6 +386,61 @@ const GigDetails = ({ postID, handleModal }) => {
 
                         </View>
                     </View>
+
+
+                    <Modal visible={visible} animationType='slide' transparent>
+                        <View style={styles.modalContainer}>
+                            <View style={styles.modalContent}>
+                                <Text style={{ fontWeight: 'bold' }}>Schedule and Location</Text>
+                                {visible ? (
+                                    <View style={styles.modalDetails}>
+
+
+                                        <View style={{ marginTop: 15 }}>
+                                            <Text>Date:</Text>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                <MaterialIcons name="date-range" size={24} color="black" />
+                                                <Text>{date[selectedIndex]}</Text>
+
+                                            </View>
+                                        </View>
+                                        <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginTop: 10 }}>
+                                            <View>
+                                                <Text>Time Start:</Text>
+                                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                    <Feather name="clock" size={24} color="black" />
+                                                    <Text>{start[selectedIndex]}</Text>
+                                                </View>
+                                            </View>
+                                            <View>
+                                                <Text>Time End:</Text>
+                                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                    <Feather name="clock" size={24} color="black" />
+                                                    <Text>{end[selectedIndex]}</Text>
+                                                </View>
+                                            </View>
+                                        </View>
+                                        <View style={{ marginTop: 10 }}>
+                                            <Text>Address:</Text>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                <Ionicons name="location-outline" size={24} color="black" />
+                                                <Text>{address[selectedIndex]}</Text>
+                                            </View>
+                                        </View>
+
+                                        <TouchableOpacity onPress={() => handleCloseSet()} style={styles.closeSetBtn}>
+                                            <Text style={{ fontWeight: 'bold', color: 'white', fontSize: 15 }}>Close</Text>
+                                        </TouchableOpacity>
+
+
+
+                                    </View>
+                                ) : null
+                                }
+
+                            </View>
+                        </View>
+                    </Modal>
 
 
 
@@ -449,7 +512,6 @@ const GigDetails = ({ postID, handleModal }) => {
                 >
                     {getApplyButtonLabel()}
                 </Button>
-
             </View>
         </View>
     )
@@ -458,6 +520,37 @@ const GigDetails = ({ postID, handleModal }) => {
 export default GigDetails
 
 const styles = StyleSheet.create({
+    closeSetBtn: {
+        alignSelf: 'center',
+        backgroundColor: '#0EB080',
+        width: '70%',
+        height: '15%',
+        marginTop: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 10
+    },
+    modalDetails: {
+        height: '100%',
+        width: '100%'
+    },
+    modalContent: {
+        borderColor: '#0EB080',
+        borderRadius: 15,
+        backgroundColor: 'white',
+        height: '35%',
+        width: '80%',
+        borderWidth: 2,
+        elevation: 5,
+        alignItems: 'center',
+        padding: 20
+    },
+    modalContainer: {
+        height: '100%',
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
     schedItem: {
         borderWidth: 2,
         borderColor: '#0EB080',

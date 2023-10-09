@@ -78,7 +78,6 @@ const ClientGigSearch = () => {
 
     const props = { postID: selectedItem };
 
-
     useEffect(() => {
 
         const dbRef = db_ref(db, 'users/client/' + uid + '/gigs');
@@ -89,16 +88,13 @@ const ClientGigSearch = () => {
                 gigDetails.push({
                     key: childSnapshot.key,
                     Event_Type: childSnapshot.val().Event_Type,
-                    GigAddress: childSnapshot.val().Gig_Address,
                     postID: childSnapshot.val().postID,
                     GigName: childSnapshot.val().Gig_Name,
                     uid: childSnapshot.val().uid,
                     GenreNeeded: childSnapshot.Genre_Needed,
-                    StartTime: childSnapshot.val().Gig_Start,
-                    EndTime: childSnapshot.val().Gig_End,
                     InstrumentsNeeded: childSnapshot.val().Instruments_Needed,
                     GigImage: childSnapshot.val().Gig_Image,
-                    GigDate: childSnapshot.val().Gig_Date
+                    GigStatus: childSnapshot.val().gigStatus
                 })
             })
             setGigData(gigDetails)
@@ -107,12 +103,34 @@ const ClientGigSearch = () => {
     }, [])
 
 
+    useEffect(() => {
+
+        gigData.map((item) => {
+            if (item.GigStatus === 'Available') {
+                console.log('aere')
+            }
+        })
+
+    }, [])
+
+
 
     const renderItem = ({ item }) => {
 
+        let gigStatusStyle = styles.gigStatusGray; // Default gray color
+
+        if (item.GigStatus === 'Available') {
+            gigStatusStyle = styles.gigStatusGreen;
+        } else if (item.GigStatus === 'Cancel') {
+            gigStatusStyle = styles.gigStatusRed;
+        } else if (item.GigStatus === 'On-going') {
+            gigStatusStyle = styles.gigStatusYellow;
+        } else if (item.GigStatus === 'Done') {
+            gigStatusStyle = styles.gigStatusGreen;
+        }
+
         return (
             <TouchableOpacity style={styles.renderStyle} onPress={() => handleItemPress(item.postID)}>
-
                 <View style={styles.container}>
                     <View style={styles.imgContainer}>
                         <ImageBackground source={{ uri: item.GigImage }} style={styles.imgStyle}>
@@ -123,21 +141,9 @@ const ClientGigSearch = () => {
                             <Text style={styles.titleStyle}>{item.GigName}</Text>
                         </View>
                         <View style={styles.addressContainer}>
-                            <EvilIcons name="location" size={15} color="#0EB080" />
-                            <Text style={styles.txtStyle}>{item.GigAddress}</Text>
-                        </View>
 
-                        <View style={styles.dateContainer}>
-                            <View style={styles.dateTimeContainer}>
-                                <MaterialIcons name="date-range" size={15} color="#0EB080" style={{ marginRight: 5 }} />
-                                <Text style={styles.txtStyle}>{item.GigDate}</Text>
-                            </View>
-                            <View style={styles.dateTimeContainer}>
-                                <FontAwesome5 name="clock" size={15} color="#0EB080" style={{ marginRight: 5 }} />
-                                <Text style={styles.txtStyle}>{item.StartTime} - {item.EndTime}</Text>
-                            </View>
+                            <Text style={[styles.txtStyle, gigStatusStyle]}>{item.GigStatus}</Text>
                         </View>
-
                     </View>
                 </View>
             </TouchableOpacity>
@@ -258,6 +264,18 @@ const ClientGigSearch = () => {
 export default ClientGigSearch
 
 const styles = StyleSheet.create({
+    gigStatusGreen: {
+        backgroundColor: "#0EB080", // Green color
+    },
+    gigStatusRed: {
+        backgroundColor: 'red', // Red color
+    },
+    gigStatusYellow: {
+        backgroundColor: '#FABF35', // Yellow color
+    },
+    gigStatusGray: {
+        backgroundColor: '#808080', // Gray color
+    },
     appBarStyle: {
         backgroundColor: '#151414',
         justifyContent: 'space-between'
@@ -322,7 +340,11 @@ const styles = StyleSheet.create({
     },
     txtStyle: {
         color: 'white',
-        fontSize: 11
+        fontSize: 11,
+        padding: 5,
+        borderRadius: 10,
+        overflow: 'hidden',
+        fontWeight: 'bold'
     },
     renderStyle: {
         marginHorizontal: 2,
