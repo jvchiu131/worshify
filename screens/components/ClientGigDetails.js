@@ -153,7 +153,8 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
                 key: snapshot.key,
                 firstName: snapshot.val().first_name,
                 lastName: snapshot.val().lname,
-                profilePic: snapshot.val().profile_pic
+                profilePic: snapshot.val().profile_pic,
+                banningPoints: snapshot.val().banningPoints
             };
             setUserData(userData)
         });
@@ -415,9 +416,9 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
     }
 
 
-    useEffect(() => {
-        console.log(schedule[0].date);
-    }, [])
+    // useEffect(() => {
+    //     console.log(schedule[0].date);
+    // }, [])
 
 
     const handleBanPoints = () => {
@@ -428,7 +429,7 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
 
         if (daysDifference <= 3) {
             // Show the confirmation modal
-            setShowConfirmationModal(true);
+            // setShowConfirmationModal(true);
             // Client is trying to cancel within 3 days of the first scheduled date
             const banningPoints = userData.banningPoints || 0; // Get current banning points from the database
             if (banningPoints < 3) {
@@ -456,6 +457,10 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
     const handleCancelStatus = () => {
         const dbRefUser = ref(db, 'gigPosts/' + postID)
         const dbRef = ref(db, 'users/client/' + uid + '/gigs/' + postID);
+
+        setShowConfirmationModal(true);
+
+        handleBanPoints();
 
         update(dbRefUser, {
             gigStatus: 'Cancel'

@@ -32,13 +32,40 @@ const ClientGigSearch = () => {
     const [refreshing, setRefreshing] = useState(false);
     const [selectedItem, setSelectedItem] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
+    const [banPoints, setBanPoints] = useState();
+    const [banned, setBanned] = useState(false);
     const user = auth.currentUser;
     const uid = user.uid;
     const navigation = useNavigation()
 
-    const showAddGig = () => {
-        setShowModal(true)
 
+    useEffect(() => {
+        const dbRef = db_ref(db, 'users/client/' + uid);
+        onValue(dbRef, (snapshot) => {
+            setBanPoints(snapshot.val().banningPoints);
+        });
+
+
+
+    }, [])
+
+    // const showAddGig = () => {
+    //     setShowModal(true)
+
+    // };
+    const showAddGig = () => {
+        // const oneWeekInMillis = 7 * 24 * 60 * 60 * 1000; // 1 week in milliseconds
+        // const currentDate = new Date();
+
+        // Check if the user has 3 or more ban points and is within the ban duration (1 week)
+        if (banPoints >= 3) {
+            Toast.show({
+                type: 'error',
+                text1: 'Account is banned. Please contact support.'
+            });
+        } else {
+            setShowModal(true);
+        }
     };
 
     const toastHandle = () => {

@@ -5,6 +5,7 @@ import { TouchableOpacity } from 'react-native'
 import LoginModal from '../components/LoginModal'
 import RegisterModal from '../components/RegisterModal'
 import { TouchableWithoutFeedback } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
 import Logo from '../components/assets/Logo'
 
 
@@ -14,6 +15,8 @@ const { height: screenHeight } = Dimensions.get('window');
 
 const LoginScreen = () => {
 
+
+    const navigation = useNavigation();
     const animValue = useState(new Animated.Value(-600))[0]
     const regValue = useState(new Animated.Value(-600))[0]
 
@@ -31,6 +34,10 @@ const LoginScreen = () => {
             useNativeDriver: false
         }).start()
 
+    }
+
+    const handleCasualUser = () => {
+        navigation.navigate('DashScreen');
     }
 
     const moveRegModal = () => {
@@ -115,6 +122,12 @@ const LoginScreen = () => {
                     onPress={moveRegModal}
                     style={[styles.rootbtn, styles.rootbtnOutline]}>
                     <Text style={styles.buttonOutlineText}>Register</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    onPress={handleCasualUser}
+                    style={[styles.rootbtn, styles.rootbtnOutline]}>
+                    <Text style={styles.buttonOutlineText}>Casual User</Text>
                 </TouchableOpacity>
             </View>
             <StatusBar style='light' />
