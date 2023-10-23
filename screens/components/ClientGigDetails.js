@@ -74,6 +74,7 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
     const [cancelBtnVisible, setCancelBtnVisible] = useState(false);
     const [closeBtnVisible, setCloseBtnVisible] = useState(false);
     const [onGoingBtnVisible, setOnGoingBtnVisible] = useState(false);
+    const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -358,9 +359,7 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
     const start = schedule.map(item => item.startTime);
     const end = schedule.map(item => item.endTime);
 
-    useEffect(() => {
-        console.log(schedule[0].date);
-    }, [])
+
 
 
     const handleGigModal = () => {
@@ -413,6 +412,44 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
             gigStatus: 'Close'
         })
         setGigModal(false)
+    }
+
+
+    useEffect(() => {
+        console.log(schedule[0].date);
+    }, [])
+
+
+    const handleBanPoints = () => {
+        const currentDate = new Date();
+        const firstScheduledDate = new Date(schedule[0].date);
+        const timeDifference = firstScheduledDate.getTime() - currentDate.getTime();
+        const daysDifference = Math.ceil(timeDifference / (1000 * 3600 * 24));
+
+        if (daysDifference <= 3) {
+            // Show the confirmation modal
+            setShowConfirmationModal(true);
+            // Client is trying to cancel within 3 days of the first scheduled date
+            const banningPoints = userData.banningPoints || 0; // Get current banning points from the database
+            if (banningPoints < 3) {
+                // Increment banning points
+                const updatedBanningPoints = banningPoints + 1;
+                // Update banning points in the database
+                const userRef = ref(db, 'users/client/' + uid);
+                update(userRef, {
+                    banningPoints: updatedBanningPoints
+                });
+                if (updatedBanningPoints === 3) {
+                    // Ban the account
+                    update(userRef, {
+                        isBanned: true
+                    });
+                }
+            }
+        } else {
+            // Client is canceling the gig with more than 3 days difference
+            // Implement normal cancellation logic here
+        }
 
     }
 
@@ -878,6 +915,44 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
                     </View>
                 )}
             </View>
+
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={showConfirmationModal}
+                onRequestClose={() => {
+                    setShowConfirmationModal(false);
+                }}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalText}>
+                            Canceling this gig within 3 days of the first scheduled date may lead to account suspension.
+                            Are you sure you want to proceed?
+                        </Text>
+                        <TouchableOpacity
+                            style={styles.modalButton}
+                            onPress={() => {
+                                // Client confirmed the cancellation, implement the logic to update banning points and ban account
+                                // ...
+                                setShowConfirmationModal(false);
+                            }}
+                        >
+                            <Text style={styles.buttonText}>Yes, Cancel</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.modalButton}
+                            onPress={() => {
+                                // Client canceled the cancellation, do nothing or handle accordingly
+                                // ...
+                                setShowConfirmationModal(false);
+                            }}
+                        >
+                            <Text style={styles.buttonText}>No, Keep Gig</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
 
         </View>
     )
