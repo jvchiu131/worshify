@@ -31,7 +31,7 @@ const FeaturedMusician = () => {
                 let numRatings = 0; // Track the number of ratings
 
                 childSnapshot.forEach((rating) => {
-                    const ratingValue = rating.val().rating;
+                    const ratingValue = rating.val().averageRating;
                     totalRatings += ratingValue;
                     numRatings += 1; // Increment the number of ratings for each child
                 });

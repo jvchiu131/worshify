@@ -103,18 +103,6 @@ const ClientGigSearch = () => {
     }, [])
 
 
-    useEffect(() => {
-
-        gigData.map((item) => {
-            if (item.GigStatus === 'Available') {
-                console.log('aere')
-            }
-        })
-
-    }, [])
-
-
-
     const renderItem = ({ item }) => {
 
         let gigStatusStyle = styles.gigStatusGray; // Default gray color
@@ -186,6 +174,7 @@ const ClientGigSearch = () => {
                 ]
             );
         } else {
+            hideGigModal();
             navigation.navigate('EditGig', { ...props });
         }
     };
@@ -237,7 +226,7 @@ const ClientGigSearch = () => {
                     <Appbar.Header style={styles.appBarStyle}>
                         <Appbar.BackAction onPress={hideGigModal} color='white' />
 
-                        <TouchableOpacity onPress={handleEditBtn}>
+                        <TouchableOpacity onPress={() => handleEditBtn()}>
                             <FontAwesome5 name="edit" size={24} color="white" style={{ padding: 15 }} />
                         </TouchableOpacity>
                     </Appbar.Header>

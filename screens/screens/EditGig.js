@@ -1,14 +1,16 @@
-import { StyleSheet, Text, View, Dimensions, TextInput, ScrollView, Button, TouchableOpacity, Pressable } from 'react-native'
+import { StyleSheet, Text, View, Dimensions, TextInput, ScrollView, Button, TouchableOpacity, Pressable, Modal } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { useRoute } from '@react-navigation/native'
 import { Appbar } from 'react-native-paper'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import DropDownPicker from 'react-native-dropdown-picker'
-import { ref, set, push, child, onValue, DataSnapshot, update } from 'firebase/database';
+import { ref, set, push, child, onValue, DataSnapshot, update, get } from 'firebase/database';
 import { db } from '../../firebase';
 import { auth } from '../../firebase'
-
+import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get("screen")
 
@@ -21,10 +23,8 @@ const EditGig = () => {
     const { postID } = route.params
     const [gigData, setGigData] = useState([]);
     const [gigName, setGigName] = useState();
-    const [gigAddress, setGigAddress] = useState();
     const [gigPhoto, setGigPhoto] = useState();
     const [about, setAbout] = useState();
-    const [date, setDate] = useState(new Date());
     const [gender, setGender] = useState();
     const [instruments, setInstruments] = useState([]);
     const [genre, setGenre] = useState(gigData.genreNeeded || []);
@@ -39,14 +39,14 @@ const EditGig = () => {
     const [showPicker, setShowPicker] = useState(false);
     const [startVisible, setStartVisible] = useState(false);
     const [endVisible, setEndVisible] = useState(false);
-    const [gigCreated, setGigCreated] = useState(false);
-    const [startTime, setStartTime] = useState(new Date());
-    const [endTime, setEndTime] = useState(new Date());
+    const [schedule, setSchedule] = useState([]);
+    const [visible, setVisible] = useState(false);
+    const [selectedIndex, setSelectedIndex] = useState();
 
     const [sex, setSex] = useState([
         { label: 'Male', value: 'Male' },
         { label: 'Female', value: 'Female' },
-        { label: 'Anyone', value: 'Anyone' },
+        { label: 'Both', value: 'Both' },
 
     ]);
     const [open, setOpen] = useState(false);
@@ -79,16 +79,12 @@ const EditGig = () => {
             const gig = {
                 key: snapshot.key,
                 eventType: snapshot.val().Event_Type,
-                gigAddress: snapshot.val().Gig_Address,
                 postID: snapshot.val().postID,
                 gigName: snapshot.val().Gig_Name,
                 uid: snapshot.val().uid,
                 genreNeeded: snapshot.Genre_Needed,
-                startTime: snapshot.val().Gig_Start,
-                endTime: snapshot.val().Gig_End,
                 instrumentsNeeded: snapshot.val().Instruments_Needed,
                 gigImage: snapshot.val().Gig_Image,
-                gigDate: snapshot.val().Gig_Date,
                 about: snapshot.val().about,
                 gender: snapshot.val().gender
             }
@@ -96,6 +92,28 @@ const EditGig = () => {
             setGigData(gig);
         })
     }, [])
+
+    useEffect(() => {
+        const fetchInstruments = async () => {
+            const pathRef = child(ref(db), 'gigPosts/' + postID + '/schedule');
+            try {
+                const snapshot = await get(pathRef);
+                let data = [];
+                snapshot.forEach((child) => {
+                    data.push(child.val());
+                });
+                setSchedule(data);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        fetchInstruments();
+        // schedule.map((items) => (
+        //     console.log(items.index)
+        // ))
+    }, [])
+
 
 
     const handleInstrumentChange = (index, field, value) => {
@@ -128,12 +146,8 @@ const EditGig = () => {
             if (gig) {
                 setGigData(gig);
                 setGigName(gig.Gig_Name || '');
-                setGigAddress(gig.Gig_Address || '');
                 setGigPhoto(gig.Gig_Image || '');
-                setStartTime(new Date(gig.Gig_Start) || '');
-                setEndTime(new Date(gig.Gig_End) || '');
                 setAbout(gig.about || '');
-                setDate(new Date(gig.Gig_Date) || '');
                 setGender(gig.gender || '');
                 setInstruments(gig.Instruments_Needed || []);
                 setGenre(gig.Genre_Needed || []);
@@ -156,10 +170,6 @@ const EditGig = () => {
         update(UserGigsRef, {
             uid: uid,
             Gig_Name: gigName,
-            Gig_Address: gigAddress,
-            Gig_Date: date,
-            Gig_Start: startTime,
-            Gig_End: endTime,
             Event_Type: eventType,
             about: about,
             gender: gender
@@ -169,10 +179,6 @@ const EditGig = () => {
         update(GigPostsRef, {
             uid: uid,
             Gig_Name: gigName,
-            Gig_Address: gigAddress,
-            Gig_Date: date,
-            Gig_Start: startTime,
-            Gig_End: endTime,
             Event_Type: eventType,
             about: about,
             gender: gender
@@ -269,6 +275,23 @@ const EditGig = () => {
         return `${hours}:${minutes}`;
     }
 
+    const handleSet = (index) => {
+        // console.log(index)
+        setSelectedIndex(index);
+        // console.log(selectedIndex)
+        setVisible(true)
+    }
+
+    const handleCloseSet = () => {
+        setSelectedIndex(null);
+        setVisible(false);
+    }
+
+    const address = schedule.map(item => item.address);
+    const date = schedule.map(item => item.date);
+    const start = schedule.map(item => item.startTime);
+    const end = schedule.map(item => item.endTime);
+
 
     return (
         <View style={styles.root}>
@@ -293,95 +316,81 @@ const EditGig = () => {
                                 onChangeText={text => setGigName(text)} />
                         </View>
 
-                        <View style={styles.timeContainer}>
-                            <View>
-                                {!showPicker && (
-                                    <Pressable
-                                        onPress={toggleDatepicker}>
-                                        <TextInput
-                                            placeholder='Select Date:'
-                                            placeholderTextColor='#11182744'
-                                            value={date instanceof Date ? date.toDateString() : ''}
-                                            onChangeText={setDate}
-                                            editable={false}
-                                            style={styles.dateStyle}
-                                        />
-                                    </Pressable>
 
-                                )}
-
-
-                                {showPicker && (
-                                    <DateTimePicker
-                                        mode='date'
-                                        display='spinner'
-                                        value={date}
-                                        onChange={onChange}
-                                        is24Hour={false}
-                                    />
-                                )}
-                            </View>
-
-
-                            <View>
-                                {!startVisible && (
-                                    <Pressable
-                                        onPress={toggleTimepickerStart}>
-                                        <TextInput
-                                            placeholder='Select Start Time:'
-                                            placeholderTextColor='#11182744'
-                                            value={startTime instanceof Date ? formatTime(startTime) : ''}
-                                            onChangeText={setStartTime}
-                                            editable={false}
-                                            style={styles.dateStyle}
-                                        />
-                                    </Pressable>
-
-                                )}
-
-
-                                {startVisible && (
-                                    <DateTimePicker
-                                        mode='time'
-                                        display='spinner'
-                                        value={startTime}
-                                        onChange={onChangeStartTime}
-                                        is24Hour={false}
-                                    />
-                                )}
-                            </View>
-
-
-                            <View>
-
-                                {!endVisible && (
-                                    <Pressable
-                                        onPress={toggleTimepickerEnd}>
-                                        <TextInput
-                                            placeholder='Select End Time'
-                                            placeholderTextColor='#11182744'
-                                            value={endTime instanceof Date ? formatTime(endTime) : ''}
-                                            onChangeText={setEndTime}
-                                            editable={false}
-                                            style={styles.dateStyle}
-                                        />
-                                    </Pressable>
-
-                                )}
-
-
-                                {endVisible && (
-                                    <DateTimePicker
-                                        mode='time'
-                                        display='spinner'
-                                        value={endTime}
-                                        onChange={onChangeEndTime}
-                                    />
-                                )}
-                            </View>
+                        <View style={styles.AddressContainer}>
+                            {schedule.map((sched, index) => (
+                                <TouchableOpacity style={styles.schedItem} onPress={() => handleSet(index)}>
+                                    <Text style={{ fontSize: 20, fontWeight: '500' }}>Set</Text>
+                                    <View key={index} style={{
+                                        backgroundColor: '#F0F0F0',
+                                        height: 45,
+                                        width: 45,
+                                        borderRadius: 25,
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        marginTop: 10
+                                    }}>
+                                        <Text style={{ fontSize: 20, color: '#0EB080', fontWeight: 'bold' }}>{index + 1}</Text>
+                                    </View>
+                                </TouchableOpacity>
+                            ))}
 
 
                         </View>
+
+                        <Modal visible={visible} animationType='slide' transparent>
+                            <View style={styles.modalContainer}>
+                                <View style={styles.modalContent}>
+                                    <Text style={{ fontWeight: 'bold' }}>Schedule and Location</Text>
+                                    {visible ? (
+                                        <View style={styles.modalDetails}>
+                                            <View style={{ marginTop: 15 }}>
+                                                <Text>Date:</Text>
+                                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                    <MaterialIcons name="date-range" size={24} color="black" />
+                                                    <Text>{date[selectedIndex]}</Text>
+
+                                                </View>
+                                            </View>
+                                            <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginTop: 10 }}>
+                                                <View>
+                                                    <Text>Time Start:</Text>
+                                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                        <Feather name="clock" size={24} color="black" />
+                                                        <Text>{start[selectedIndex]}</Text>
+                                                    </View>
+                                                </View>
+                                                <View>
+                                                    <Text>Time End:</Text>
+                                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                        <Feather name="clock" size={24} color="black" />
+                                                        <Text>{end[selectedIndex]}</Text>
+                                                    </View>
+                                                </View>
+                                            </View>
+                                            <View style={{ marginTop: 10 }}>
+                                                <Text>Address:</Text>
+                                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                    <Ionicons name="location-outline" size={24} color="black" />
+                                                    <Text>{address[selectedIndex]}</Text>
+                                                </View>
+                                            </View>
+
+                                            <TouchableOpacity onPress={() => handleCloseSet()} style={styles.closeSetBtn}>
+                                                <Text style={{ fontWeight: 'bold', color: 'white', fontSize: 15 }}>Close</Text>
+                                            </TouchableOpacity>
+
+
+
+                                        </View>
+                                    ) : null
+                                    }
+
+                                </View>
+                            </View>
+                        </Modal>
+
+
 
                         <View style={styles.inputContainer}>
                             <Text>Event Type:</Text>
@@ -502,6 +511,106 @@ const EditGig = () => {
 export default EditGig
 
 const styles = StyleSheet.create({
+    closeSetBtn: {
+        alignSelf: 'center',
+        backgroundColor: '#0EB080',
+        width: '70%',
+        height: '15%',
+        marginTop: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 10
+    },
+    modalDetails: {
+        height: '100%',
+        width: '100%'
+    },
+    modalContent: {
+        borderColor: '#0EB080',
+        borderRadius: 15,
+        backgroundColor: 'white',
+        height: '35%',
+        width: '80%',
+        borderWidth: 2,
+        elevation: 5,
+        alignItems: 'center',
+        padding: 20
+    },
+    modalContainer: {
+        height: '100%',
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    chip: {
+        borderWidth: 2,
+        borderColor: '#0EB080',
+        borderRadius: 10,
+        padding: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginHorizontal: 15
+
+    },
+    btnTxtStyle: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 15,
+    },
+    btnStyle: {
+        width: '80%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 25,
+
+    },
+    btnContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        bottom: 20
+    },
+    AddressTxt: {
+        fontWeight: 'bold',
+        fontSize: 13
+    },
+    LocationContainer: {
+        justifyContent: 'center',
+        marginLeft: 10,
+
+    },
+    AddressContainer: {
+        flexDirection: 'row',
+        paddingLeft: 25,
+        alignItems: 'center',
+    },
+    schedItem: {
+        borderWidth: 2,
+        borderColor: '#0EB080',
+        marginRight: 20,
+        borderRadius: 15,
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '28%',
+        height: '40%'
+    },
+    dateTxt: {
+        fontWeight: 'bold',
+        fontSize: 13
+    },
+    timeTxt: {
+        color: '#747688',
+        fontSize: 12
+    },
+    dateContainer: {
+        justifyContent: 'center',
+        marginLeft: 10
+    },
+    dateTimeContainer: {
+        flexDirection: 'row',
+        paddingLeft: 25,
+        alignItems: 'center',
+
+    },
     timeContainer: {
         width: '100%',
         marginTop: 2,
@@ -562,14 +671,10 @@ const styles = StyleSheet.create({
         padding: 15
     },
     root: {
-        borderWidth: 2,
-        borderColor: 'red',
         height: screenHeight,
         width: screenWidth
     },
     container: {
-        borderWidth: 2,
-        borderColor: 'red',
         padding: 20
     },
     detailsContainer: {

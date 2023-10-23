@@ -81,16 +81,14 @@ const MusicianGigSearch = () => {
                 gigDetails.push({
                     key: childSnapshot.key,
                     Event_Type: childSnapshot.val().Event_Type,
-                    GigAddress: childSnapshot.val().Gig_Address,
                     postID: childSnapshot.val().postID,
                     GigName: childSnapshot.val().Gig_Name,
                     uid: childSnapshot.val().uid,
                     GenreNeeded: childSnapshot.Genre_Needed,
-                    StartTime: childSnapshot.val().Gig_Start,
-                    EndTime: childSnapshot.val().Gig_End,
                     InstrumentsNeeded: childSnapshot.val().Instruments_Needed,
                     GigImage: childSnapshot.val().Gig_Image,
-                    GigDate: childSnapshot.val().Gig_Date
+                    GigStatus: childSnapshot.val().gigStatus
+
                 })
             })
             setGigData(gigDetails)
@@ -118,17 +116,14 @@ const MusicianGigSearch = () => {
                 gigDetails.push({
                     key: childSnapshot.key,
                     Event_Type: childSnapshot.val().Event_Type,
-                    GigAddress: childSnapshot.val().Gig_Address,
                     postID: childSnapshot.val().postID,
                     GigName: childSnapshot.val().Gig_Name,
                     uid: childSnapshot.val().uid,
                     GenreNeeded: childSnapshot.val().Genre_Needed,
-                    StartTime: childSnapshot.val().Gig_Start,
-                    EndTime: childSnapshot.val().Gig_End,
                     InstrumentsNeeded: childSnapshot.val().Instruments_Needed,
                     GigImage: childSnapshot.val().Gig_Image,
-                    GigDate: childSnapshot.val().Gig_Date,
-                    gigGender: childSnapshot.val().gender
+                    gigGender: childSnapshot.val().gender,
+                    GigStatus: childSnapshot.val().gigStatus
                 });
             });
 
@@ -167,9 +162,19 @@ const MusicianGigSearch = () => {
         });
     }, [selectedGenres, selectedGender, selectedInstruments])
 
-
-
     const renderItem = ({ item }) => {
+
+        let gigStatusStyle = styles.gigStatusGray; // Default gray color
+
+        if (item.GigStatus === 'Available') {
+            gigStatusStyle = styles.gigStatusGreen;
+        } else if (item.GigStatus === 'Cancel') {
+            gigStatusStyle = styles.gigStatusRed;
+        } else if (item.GigStatus === 'On-going') {
+            gigStatusStyle = styles.gigStatusYellow;
+        } else if (item.GigStatus === 'Done') {
+            gigStatusStyle = styles.gigStatusGreen;
+        }
 
         return (
             <TouchableOpacity style={styles.renderStyle} onPress={() => handleItemPress(item.postID)}>
@@ -188,20 +193,9 @@ const MusicianGigSearch = () => {
 
                         </View>
                         <View style={styles.addressContainer}>
-                            <EvilIcons name="location" size={15} color="#0EB080" />
-                            <Text style={styles.txtStyle}>{item.GigAddress}</Text>
+                            <Text style={[styles.txtStyle, gigStatusStyle]}>{item.GigStatus}</Text>
                         </View>
 
-                        <View style={styles.dateContainer}>
-                            <View style={styles.dateTimeContainer}>
-                                <MaterialIcons name="date-range" size={15} color="#0EB080" style={{ marginRight: 5 }} />
-                                <Text style={styles.txtStyle}>{item.GigDate}</Text>
-                            </View>
-                            <View style={styles.dateTimeContainer}>
-                                <FontAwesome5 name="clock" size={15} color="#0EB080" style={{ marginRight: 5 }} />
-                                <Text style={styles.txtStyle}>{item.StartTime} - {item.EndTime}</Text>
-                            </View>
-                        </View>
 
                     </View>
                 </View>
@@ -302,6 +296,18 @@ const MusicianGigSearch = () => {
 export default MusicianGigSearch
 
 const styles = StyleSheet.create({
+    gigStatusGreen: {
+        backgroundColor: "#0EB080", // Green color
+    },
+    gigStatusRed: {
+        backgroundColor: 'red', // Red color
+    },
+    gigStatusYellow: {
+        backgroundColor: '#FABF35', // Yellow color
+    },
+    gigStatusGray: {
+        backgroundColor: '#808080', // Gray color
+    },
     btnContainer: {
         padding: 5,
         alignItems: 'flex-end',
@@ -339,7 +345,12 @@ const styles = StyleSheet.create({
     },
     txtStyle: {
         color: 'white',
-        fontSize: 11
+        fontSize: 11,
+        padding: 5,
+        borderRadius: 10,
+        overflow: 'hidden',
+        fontWeight: 'bold',
+        width: '100%'
     },
     root: {
         height: screenHeight / 1.2,
