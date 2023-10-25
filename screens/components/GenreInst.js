@@ -3,6 +3,8 @@ import React, { useState } from 'react'
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
+import { Fontisto } from '@expo/vector-icons';
 import { auth, db } from '../../firebase';
 import { ref as ref_db, set, push, child, onValue, DataSnapshot } from 'firebase/database';
 import { useEffect } from 'react';
@@ -149,7 +151,7 @@ const GenreInst = ({ gigName, gigAddress, schedule, eventType, img, gender, musi
                                             ]}
                                             onPress={() => handleGenresClick("Worship Pop")}>
 
-                                            <Entypo name="vinyl" size={24} color="black" />
+                                            <MaterialCommunityIcons name="microphone-variant" size={24} color="black" />
                                             <Text>Worship Pop</Text>
 
                                         </TouchableOpacity>
@@ -164,7 +166,7 @@ const GenreInst = ({ gigName, gigAddress, schedule, eventType, img, gender, musi
                                             ]}
                                             onPress={() => handleGenresClick("Christian Rock")}>
 
-                                            <Entypo name="vinyl" size={24} color="black" />
+                                            <MaterialCommunityIcons name="guitar-electric" size={24} color="black" />
                                             <Text>Christian Rock</Text>
 
                                         </TouchableOpacity>
@@ -179,7 +181,7 @@ const GenreInst = ({ gigName, gigAddress, schedule, eventType, img, gender, musi
                                             ]}
                                             onPress={() => handleGenresClick("Country")}>
 
-                                            <Entypo name="vinyl" size={24} color="black" />
+                                            <MaterialCommunityIcons name="guitar-acoustic" size={24} color="black" />
                                             <Text>Country</Text>
 
                                         </TouchableOpacity>
@@ -197,7 +199,7 @@ const GenreInst = ({ gigName, gigAddress, schedule, eventType, img, gender, musi
                                             ]}
                                             onPress={() => handleGenresClick("Christian Jazz")}>
 
-                                            <Entypo name="vinyl" size={24} color="black" />
+                                            <MaterialCommunityIcons name="saxophone" size={24} color="black" />
                                             <Text>Christian Jazz</Text>
 
                                         </TouchableOpacity>
@@ -212,7 +214,7 @@ const GenreInst = ({ gigName, gigAddress, schedule, eventType, img, gender, musi
                                             ]}
                                             onPress={() => handleGenresClick("Gospel Blues")}>
 
-                                            <Entypo name="vinyl" size={24} color="black" />
+                                            <Ionicons name="glasses" size={24} color="black" />
                                             <Text>Gospel Blues</Text>
 
                                         </TouchableOpacity>
@@ -227,7 +229,7 @@ const GenreInst = ({ gigName, gigAddress, schedule, eventType, img, gender, musi
                                             ]}
                                             onPress={() => handleGenresClick("Reggae")}>
 
-                                            <Entypo name="vinyl" size={24} color="black" />
+                                            <Fontisto name="sunglasses-alt" size={24} color="black" />
                                             <Text>Reggae</Text>
 
                                         </TouchableOpacity>
@@ -259,7 +261,7 @@ const GenreInst = ({ gigName, gigAddress, schedule, eventType, img, gender, musi
                                             ]}
                                             onPress={() => handleGenresClick("Electronic")}>
 
-                                            <Entypo name="vinyl" size={24} color="black" />
+                                            <MaterialCommunityIcons name="cassette" size={24} color="black" />
                                             <Text>Electronic</Text>
 
                                         </TouchableOpacity>
@@ -272,7 +274,7 @@ const GenreInst = ({ gigName, gigAddress, schedule, eventType, img, gender, musi
                                             ]}
                                             onPress={() => handleGenresClick("Classical")}>
 
-                                            <Entypo name="vinyl" size={24} color="black" />
+                                            <MaterialCommunityIcons name="violin" size={24} color="black" />
                                             <Text>Classical</Text>
 
                                         </TouchableOpacity>
@@ -283,7 +285,7 @@ const GenreInst = ({ gigName, gigAddress, schedule, eventType, img, gender, musi
                                     {/* state changed */}
                                     <TouchableOpacity onPress={handleModalBtn} disabled={!isGenreSelected}>
                                         <View style={[styles.button, !isGenreSelected ? { backgroundColor: '#A0A0A0' } : null]}>
-                                            <Text style={styles.txtStyle}>View Overview</Text>
+                                            <Text style={styles.txtStyle}>View Gig Details</Text>
                                         </View>
                                     </TouchableOpacity>
                                 </View>

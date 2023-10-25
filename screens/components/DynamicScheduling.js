@@ -175,7 +175,13 @@ const DynamicScheduling = ({ handleParentModal, gigName, eventType, img, gender,
                 <Animated.View
                     style={{ right: ContentValue }}>
                     {isClicked ? (
-                        <GenreInst {...props} />
+                        <View style={{
+                            height: '100%'
+                        }}>
+                            <GenreInst {...props} />
+                        </View>
+
+
                     ) : null}
                 </Animated.View>
             ) : (

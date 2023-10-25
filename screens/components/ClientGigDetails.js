@@ -181,6 +181,71 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
             setGenre(data);
         })
     }, [])
+
+
+    // useEffect(() => {
+    //     const musicianRef = ref(db, 'users/musician/')
+    //     let musicianDetails = [];
+    //     onValue(musicianRef, (snapshot) => {
+    //         snapshot.forEach((childSnapshot) => {
+    //             musicianDetails.push({
+    //                 key: childSnapshot.key,
+    //                 firstName: childSnapshot.val().first_name,
+    //                 lastName: childSnapshot.val().lname,
+    //                 address: childSnapshot.val().address,
+    //                 profilePic: childSnapshot.val().profile_pic,
+    //                 uid: childSnapshot.val().uid,
+    //                 instruments: childSnapshot.val().instruments,
+    //                 genre: childSnapshot.val().genre,
+    //                 gender: childSnapshot.val().gender
+    //             })
+    //         });
+
+    //         const musicianScore = musicianDetails.map((musician) => {
+    //             const instrumentsMusician = musician.instruments;
+    //             const genreMusician = musician.genre;
+    //             const genderMusician = musician.gender;
+
+
+    //             setMusicianGenre(genreMusician);
+    //             setMusicianInstrument(instrumentsMusician);
+    //             setMusicianGender(genderMusician);
+
+    //             // Check for gender match
+    //             const genderMatch = selectedGender === genderMusician ? 1 : 0;
+
+    //             const totalItem = genderMatch + selectedInstruments.length + selectedGenres.length;
+
+    //             const matchedGenre = genreMusician.filter((genre) => selectedGenres.includes(genre));
+    //             const matchedInstruments = instrumentsMusician.filter((instrument) => selectedInstruments.includes(instrument));
+
+    //             const calculatePercentage = ((matchedGenre.length + matchedInstruments.length + genderMatch) / totalItem) * 100;
+
+    //             return { ...musician, calculatePercentage };
+
+    //         });
+    //         // Remove musicians with NaN or 0 percentage
+    //         const validMusicians = musicianScore.filter((musician) => !isNaN(musician.calculatePercentage) && musician.calculatePercentage > 0);
+
+    //         // Sort the musicians in descending order of percentage
+    //         const musicianSorted = validMusicians.sort((a, b) => b.calculatePercentage - a.calculatePercentage);
+
+    //         // Take the top 5 musicians
+    //         const topMusicians = musicianSorted.slice(0, 5);
+
+    //         setMatchedMusicians(topMusicians);
+    //     });
+
+    // }, [selectedGenres, selectedGender, selectedInstruments])
+
+
+    useEffect(() => {
+        appliedUsers.map((item) => {
+            console.log(item.key)
+        })
+    }, [])
+
+
     useEffect(() => {
         const usersAppliedRef = ref(db, 'gigPosts/' + postID + '/usersApplied');
         onValue(usersAppliedRef, (snapshot) => {
@@ -212,6 +277,8 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
             // getAcceptedUsers()
 
         });
+
+        console.log(appliedUsers)
     }, []);
 
     const getAcceptedUsers = () => {
@@ -295,6 +362,8 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
             }
         })
     }, [counter])
+
+
 
     //handles the rating visibility
     useEffect(() => {

@@ -32,7 +32,7 @@ const ClientGigSearch = () => {
     const [refreshing, setRefreshing] = useState(false);
     const [selectedItem, setSelectedItem] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
-    const [banPoints, setBanPoints] = useState();
+    const [banPoints, setBanPoints] = useState(null);
     const [banned, setBanned] = useState(false);
     const user = auth.currentUser;
     const uid = user.uid;
@@ -42,16 +42,12 @@ const ClientGigSearch = () => {
     useEffect(() => {
         const dbRef = db_ref(db, 'users/client/' + uid);
         onValue(dbRef, (snapshot) => {
-            setBanPoints(snapshot.val().banningPoints);
+            setBanPoints(snapshot.val().banningPoints || null);
         });
-
-
-
     }, [])
 
     // const showAddGig = () => {
     //     setShowModal(true)
-
     // };
     const showAddGig = () => {
         // const oneWeekInMillis = 7 * 24 * 60 * 60 * 1000; // 1 week in milliseconds

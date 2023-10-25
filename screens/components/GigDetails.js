@@ -114,7 +114,9 @@ const GigDetails = ({ postID, handleModal }) => {
                         firstName: snapshot.val().first_name,
                         lastName: snapshot.val().lname,
                         profilePic: snapshot.val().profile_pic,
-                        accepted: false
+                        accepted: false,
+                        genre: snapshot.val().genre,
+                        instrument: snapshot.val().instruments
                     };
                     setCurrentUserData(userInfo);
                 }

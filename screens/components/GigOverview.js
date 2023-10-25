@@ -119,6 +119,9 @@ const GigOverview = ({ handleGrandParentModal, InstrumentsNeeded, GenreNeeded, u
         setShowPicker(!showPicker)
     };
 
+
+
+    //erase the OS restriction of the app
     const onChange = ({ type }, selectedDate) => {
         if (type == 'set') {
             const currentDate = selectedDate;
