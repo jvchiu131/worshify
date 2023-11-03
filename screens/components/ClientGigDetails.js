@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ImageBackground, Dimensions, ScrollView, TouchableOpacity, Modal, TextInput } from 'react-native'
+import { StyleSheet, Text, View, ImageBackground, Dimensions, ScrollView, TouchableOpacity, Modal, TextInput, FlatList } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { child, onValue, ref, remove, update, set, get } from 'firebase/database';
 import { db, auth } from '../../firebase';
@@ -7,6 +7,7 @@ import { Entypo } from '@expo/vector-icons';
 import { Button } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import AppliedProfile from './AppliedProfile';
+import { EvilIcons } from '@expo/vector-icons';
 import { Appbar } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
@@ -29,6 +30,8 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
     const [loading, setLoading] = useState(false);
     const [genre, setGenre] = useState([]);
     const [archived, setArchived] = useState(false);
+    const [musicianGenre, setMusicianGenre] = useState([]);
+    const [musicianInstrument, setMusicianInstrument] = useState([]);
     const user = auth.currentUser;
     const uid = user.uid;
     const navigation = useNavigation();
@@ -75,6 +78,9 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
     const [closeBtnVisible, setCloseBtnVisible] = useState(false);
     const [onGoingBtnVisible, setOnGoingBtnVisible] = useState(false);
     const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+    const [gigInstrument, setGigInstrument] = useState([]);
+    const [matchedMusicians, setMatchedMusicians] = useState([]);
+    const [gigGenre, setGigGenre] = useState([]);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -82,12 +88,17 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
             setCounter(prevCount => prevCount + 1);
         }, 300);
 
-        console.log(counter)
+
         // Clean up the interval when the component unmounts
         return () => {
             clearInterval(interval);
         };
     }, []);
+
+    useEffect(() => {
+        const instrumentName = instruments.map((inst) => inst.name)
+        setGigInstrument(instrumentName);
+    }, [counter])
 
     const handleItemPress = (key) => {
         setSelectedItem(key);
@@ -125,6 +136,8 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
 
                 setPostDetails(gigData);
                 setGigStatus(gigData.GigStatus)
+                setGigGenre(gigData.GenreNeeded)
+                // setGigInstrument(gigData.InstrumentsNeeded);
             } else {
                 handleBtnClose(false)
             }
@@ -183,69 +196,73 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
     }, [])
 
 
-    // useEffect(() => {
-    //     const musicianRef = ref(db, 'users/musician/')
-    //     let musicianDetails = [];
-    //     onValue(musicianRef, (snapshot) => {
-    //         snapshot.forEach((childSnapshot) => {
-    //             musicianDetails.push({
-    //                 key: childSnapshot.key,
-    //                 firstName: childSnapshot.val().first_name,
-    //                 lastName: childSnapshot.val().lname,
-    //                 address: childSnapshot.val().address,
-    //                 profilePic: childSnapshot.val().profile_pic,
-    //                 uid: childSnapshot.val().uid,
-    //                 instruments: childSnapshot.val().instruments,
-    //                 genre: childSnapshot.val().genre,
-    //                 gender: childSnapshot.val().gender
-    //             })
-    //         });
-
-    //         const musicianScore = musicianDetails.map((musician) => {
-    //             const instrumentsMusician = musician.instruments;
-    //             const genreMusician = musician.genre;
-    //             const genderMusician = musician.gender;
-
-
-    //             setMusicianGenre(genreMusician);
-    //             setMusicianInstrument(instrumentsMusician);
-    //             setMusicianGender(genderMusician);
-
-    //             // Check for gender match
-    //             const genderMatch = selectedGender === genderMusician ? 1 : 0;
-
-    //             const totalItem = genderMatch + selectedInstruments.length + selectedGenres.length;
-
-    //             const matchedGenre = genreMusician.filter((genre) => selectedGenres.includes(genre));
-    //             const matchedInstruments = instrumentsMusician.filter((instrument) => selectedInstruments.includes(instrument));
-
-    //             const calculatePercentage = ((matchedGenre.length + matchedInstruments.length + genderMatch) / totalItem) * 100;
-
-    //             return { ...musician, calculatePercentage };
-
-    //         });
-    //         // Remove musicians with NaN or 0 percentage
-    //         const validMusicians = musicianScore.filter((musician) => !isNaN(musician.calculatePercentage) && musician.calculatePercentage > 0);
-
-    //         // Sort the musicians in descending order of percentage
-    //         const musicianSorted = validMusicians.sort((a, b) => b.calculatePercentage - a.calculatePercentage);
-
-    //         // Take the top 5 musicians
-    //         const topMusicians = musicianSorted.slice(0, 5);
-
-    //         setMatchedMusicians(topMusicians);
-    //     });
-
-    // }, [selectedGenres, selectedGender, selectedInstruments])
-
 
     useEffect(() => {
-        appliedUsers.map((item) => {
-            console.log(item.key)
-        })
-    }, [])
+        const musicianScore = appliedUsers.map((musician) => {
+            const instrumentsMusician = musician.instrument;
+            const genreMusician = musician.genre;
+            // const genderMusician = musician.gender;
+            setMusicianGenre(genreMusician);
+            setMusicianInstrument(instrumentsMusician);
+
+            // Check for gender match
+            // const genderMatch = selectedGender === genderMusician ? 1 : 0;
+
+            const totalItem = gigInstrument.length + gigGenre.length;
+            const matchedGenre = genreMusician.filter((genre) => gigGenre.includes(genre));
+            const matchedInstruments = instrumentsMusician.filter((instrument) => gigInstrument.includes(instrument));
+            const calculatePercentage = ((matchedGenre.length + matchedInstruments.length) / totalItem) * 100;
 
 
+            return { ...musician, calculatePercentage };
+
+        });
+        // Remove musicians with NaN or 0 percentage
+        // const validMusicians = musicianScore.filter((musician) => !isNaN(musician.calculatePercentage) && musician.calculatePercentage > 0);
+        const validMusicians = musicianScore.filter((musician) => !isNaN(musician.calculatePercentage));
+
+        // Sort the musicians in descending order of percentage
+        const musicianSorted = validMusicians.sort((a, b) => b.calculatePercentage - a.calculatePercentage);
+
+        // // Take the top 5 musicians
+        // const topMusicians = musicianSorted.slice(0, 5);
+
+        // console.log(musicianScore);
+
+        setMatchedMusicians(musicianSorted);
+
+
+    }, [counter, gigGenre, gigInstrument,])
+
+    const renderApplied = ({ item }) => {
+        return (
+            <TouchableOpacity onPress={() => handleItemPress(item.key)}>
+                <View style={styles.renderContainer}>
+                    <View style={styles.imgContainers}>
+                        <ImageBackground source={{ uri: item.profilePic }} style={styles.imgStyle}></ImageBackground>
+                    </View>
+                    <View style={styles.textContainer}>
+                        <View style={styles.nameContainer}>
+                            <Text style={styles.nameStyle}>{item.firstName} {item.lastName}</Text>
+                            <Text style={{ color: "#0EB080", fontWeight: 'bold' }}>{Math.round(item.calculatePercentage)}%</Text>
+                            {userAcceptanceStatus[item.key] ? (<AntDesign name="checkcircle" size={15} color="#0EB080" />) : null}
+                        </View>
+
+
+                    </View>
+                </View>
+            </TouchableOpacity>
+        )
+    }
+    const renderSeparator = () => {
+        return (
+            <View style={{
+                marginRight: 20,
+                height: 0.5
+            }} />
+        )
+
+    }
     useEffect(() => {
         const usersAppliedRef = ref(db, 'gigPosts/' + postID + '/usersApplied');
         onValue(usersAppliedRef, (snapshot) => {
@@ -259,6 +276,8 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
                     firstName: child.val().firstName,
                     lastName: child.val().lastName,
                     profilePic: child.val().profilePic,
+                    genre: child.val().genre,
+                    instrument: child.val().instrument
 
                 };
                 userApp.push(user);
@@ -278,7 +297,7 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
 
         });
 
-        console.log(appliedUsers)
+
     }, []);
 
     const getAcceptedUsers = () => {
@@ -819,18 +838,13 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
 
                 <View style={styles.appliedContainer}>
                     <Text style={{ fontWeight: 'bold', marginBottom: 10 }}>Applied Users:</Text>
-                    {appliedUsers.map((user, index) => (
-                        <TouchableOpacity key={index} style={styles.appliedUserContainer} onPress={() => handleItemPress(user.key)}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <ImageBackground style={styles.userProfilePic} source={{ uri: user.profilePic }}></ImageBackground>
-                                <View style={styles.userInfoContainer}>
-                                    <Text style={styles.userName}>{user.firstName} {user.lastName}</Text>
-                                </View>
-                            </View>
-
-                            {userAcceptanceStatus[user.key] ? (<AntDesign name="checkcircle" size={24} color="#0EB080" />) : null}
-                        </TouchableOpacity>
-                    ))}
+                    <FlatList
+                        data={matchedMusicians}
+                        horizontal={true}
+                        renderItem={renderApplied}
+                        keyExtractor={(item) => item.key}
+                        ItemSeparatorComponent={renderSeparator}
+                    />
                 </View>
             </ScrollView>
 
@@ -1035,6 +1049,31 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
 export default ClientGigDetails
 
 const styles = StyleSheet.create({
+    nameContainer: {
+        height: '100%',
+        justifyContent: 'space-between',
+        padding: 8,
+        flexDirection: 'row',
+    },
+    nameStyle: {
+        color: 'white',
+        fontWeight: 'bold'
+    },
+    textContainer: {
+        justifyContent: 'center',
+        height: '30%',
+    },
+    imgContainers: {
+        height: '70%',
+        width: '100%',
+    },
+    renderContainer: {
+        height: '100%',
+        width: 200,
+        backgroundColor: 'black',
+        borderRadius: 15,
+        overflow: 'hidden'
+    },
     gigStatusContainer: {
         width: '100%',
         justifyContent: 'center',
@@ -1206,7 +1245,8 @@ const styles = StyleSheet.create({
     },
     appliedContainer: {
         padding: 15,
-        top: screenHeight / 6
+        top: screenHeight / 6,
+        height: '30%'
     },
     appliedUserContainer: {
         flexDirection: 'row',
@@ -1343,8 +1383,6 @@ const styles = StyleSheet.create({
         zIndex: 2,
         top: -15,
         backgroundColor: 'white',
-
-
     },
     imgContainer: {
         height: '25%',

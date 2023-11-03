@@ -48,28 +48,30 @@ const FeaturedGig = () => {
                 gigDetails.push({
                     key: childSnapshot.key,
                     Event_Type: childSnapshot.val().Event_Type,
-                    GigAddress: childSnapshot.val().Gig_Address,
                     postID: childSnapshot.val().postID,
                     GigName: childSnapshot.val().Gig_Name,
                     uid: childSnapshot.val().uid,
                     GenreNeeded: childSnapshot.val().Genre_Needed,
-                    StartTime: childSnapshot.val().Gig_Start,
-                    EndTime: childSnapshot.val().Gig_End,
                     InstrumentsNeeded: childSnapshot.val().Instruments_Needed,
                     GigImage: childSnapshot.val().Gig_Image,
-                    GigDate: childSnapshot.val().Gig_Date,
+                    sched: childSnapshot.val().schedule,
+                    status: childSnapshot.val().gigStatus
                 });
+            });
 
 
+            const filteredGigs = gigDetails.filter((gig) => {
+                const excludedStatuses = ['Done', 'Cancel', 'On-going', 'Close'];
+                return !excludedStatuses.includes(gig.status);
             });
 
 
 
-
-
-            const gigScore = gigDetails.map((gig) => {
+            const gigScore = filteredGigs.map((gig) => {
                 const instrumentsGig = gig.InstrumentsNeeded?.map((inst) => inst.name) || [];
                 const genreGig = gig.GenreNeeded?.length ? gig.GenreNeeded : [];
+                const gigSched = gig.sched?.map((sched) => sched.date);
+                console.log(gig.status)
 
                 const matchedGenre = genreGig.filter((genre) => userGenre.includes(genre));
                 const matchedInstruments = instrumentsGig.filter((instrument) =>
@@ -77,11 +79,12 @@ const FeaturedGig = () => {
                 );
                 const totalGenreAndInstrument = userGenre.length + userInstrument.length
                 const calculatePercentage = ((matchedGenre.length + matchedInstruments.length) / totalGenreAndInstrument) * 100;
-
-                return { ...gig, calculatePercentage, GigDate: new Date(gig.GigDate) };
+                // console.log(calculatePercentage)
+                return { ...gig, calculatePercentage, GigDate: new Date(gigSched) };
             });
 
             const gigSortedByDate = gigScore.sort((a, b) => a.GigDate - b.GigDate);
+            // console.log(gigSortedByDate);
             const topGigs = gigSortedByDate.slice(0, 5);
             setFeaturedGigs(topGigs);
         });

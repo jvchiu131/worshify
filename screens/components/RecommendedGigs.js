@@ -1,14 +1,12 @@
 import { StyleSheet, Text, View, TouchableOpacity, ImageBackground, ScrollView, Dimensions, FlatList, Modal } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { db } from '../../firebase';
-import { ref, onValue } from 'firebase/database';
+import { ref, onValue, child } from 'firebase/database';
 import { auth } from '../../firebase';
 import { EvilIcons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Appbar } from 'react-native-paper';
 import GigDetails from './GigDetails';
-
-
 
 
 const { height: screenHeight } = Dimensions.get('screen');
@@ -31,6 +29,7 @@ const RecommendedGigs = () => {
     const showModal = () => setModalVisible(true);
     const hideModal = () => setModalVisible(false);
     const [counter, setCounter] = useState(0);
+    const [gigSched, setGigSched] = useState([]);
 
     useEffect(() => {
         const userInstrumentRef = ref(db, 'users/musician/' + uid + '/instruments');
@@ -39,12 +38,7 @@ const RecommendedGigs = () => {
             setUserInstruments(instrumentsData);
 
         })
-
-
     }, [uid])
-
-
-
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -58,7 +52,6 @@ const RecommendedGigs = () => {
             clearInterval(interval);
         };
     }, []);
-
 
     useEffect(() => {
         const userGenreRef = ref(db, 'users/musician/' + uid + '/genre');
@@ -89,9 +82,6 @@ const RecommendedGigs = () => {
         )
     }
 
-
-
-
     useEffect(() => {
         const gigRef = ref(db, 'gigPosts');
         let gigDetails = [];
@@ -101,24 +91,24 @@ const RecommendedGigs = () => {
                 gigDetails.push({
                     key: childSnapshot.key,
                     Event_Type: childSnapshot.val().Event_Type,
-                    GigAddress: childSnapshot.val().Gig_Address,
                     postID: childSnapshot.val().postID,
                     GigName: childSnapshot.val().Gig_Name,
                     uid: childSnapshot.val().uid,
                     GenreNeeded: childSnapshot.val().Genre_Needed,
-                    StartTime: childSnapshot.val().Gig_Start,
-                    EndTime: childSnapshot.val().Gig_End,
                     InstrumentsNeeded: childSnapshot.val().Instruments_Needed,
                     GigImage: childSnapshot.val().Gig_Image,
-                    GigDate: childSnapshot.val().Gig_Date,
-                    gender: childSnapshot.val().gender
+                    gender: childSnapshot.val().gender,
+                    sched: childSnapshot.val().schedule,
+                    status: childSnapshot.val().gigStatus
                 });
             });
 
+            const filteredGigs = gigDetails.filter((gig) => {
+                const excludedStatuses = ['Done', 'Cancel', 'On-going', 'Close'];
+                return !excludedStatuses.includes(gig.status);
+            });
 
-
-
-            const gigScore = gigDetails.map((gig) => {
+            const gigScore = filteredGigs.map((gig) => {
 
                 const instrumentsGig = gig.InstrumentsNeeded.map((inst) => inst.name) || [];
                 const genreGig = gig.GenreNeeded;
@@ -161,23 +151,21 @@ const RecommendedGigs = () => {
                     <Text style={styles.percentageStyle}>{Math.round(item.calculatePercentage)}% Matched</Text>
                 </View>
 
-
                 <View style={styles.nameContainer}>
                     <Text style={styles.titleStyle}>{item.GigName}</Text>
                 </View>
 
-                <View style={styles.dateAddressStyle}>
+                {/* <View style={styles.dateAddressStyle}>
                     <View style={styles.addressStyle}>
                         <EvilIcons name="location" size={15} color="#0EB080" />
                         <Text style={{ color: 'white' }}>{item.GigAddress}</Text>
                     </View>
 
-
                     <View style={styles.dateStyle}>
                         <MaterialIcons name="date-range" size={15} color="#0EB080" style={{ marginRight: 5 }} />
                         <Text style={{ color: 'white' }}>{item.GigDate}</Text>
                     </View>
-                </View>
+                </View> */}
             </TouchableOpacity>
         )
 

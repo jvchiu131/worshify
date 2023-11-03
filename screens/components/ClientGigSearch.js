@@ -42,7 +42,11 @@ const ClientGigSearch = () => {
     useEffect(() => {
         const dbRef = db_ref(db, 'users/client/' + uid);
         onValue(dbRef, (snapshot) => {
-            setBanPoints(snapshot.val().banningPoints || null);
+            if (snapshot.exists()) {
+                setBanPoints(snapshot.val().banningPoints || null);
+            } else {
+                setBanPoints(null);
+            }
         });
     }, [])
 
