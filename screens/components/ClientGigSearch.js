@@ -8,7 +8,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { Ionicons } from '@expo/vector-icons';
 import AddGigModal from './AddGigModal';
 import { db } from '../../firebase';
-import { ref as db_ref, onValue } from 'firebase/database';
+import { ref as db_ref, onValue, update } from 'firebase/database';
 import { auth } from '../../firebase';
 import { EvilIcons } from '@expo/vector-icons';
 import { Appbar } from 'react-native-paper';
@@ -16,6 +16,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
 import ClientGigDetails from './ClientGigDetails';
 import { useNavigation } from '@react-navigation/native';
+import { confirmButtonStyles } from 'react-native-modal-datetime-picker';
+
 
 //Screen dimensions
 const { height: screenHeight } = Dimensions.get('screen');
@@ -105,8 +107,8 @@ const ClientGigSearch = () => {
 
     const props = { postID: selectedItem };
 
-    useEffect(() => {
 
+    useEffect(() => {
         const dbRef = db_ref(db, 'users/client/' + uid + '/gigs');
 
         onValue(dbRef, (snapshot) => {
@@ -121,13 +123,54 @@ const ClientGigSearch = () => {
                     GenreNeeded: childSnapshot.Genre_Needed,
                     InstrumentsNeeded: childSnapshot.val().Instruments_Needed,
                     GigImage: childSnapshot.val().Gig_Image,
-                    GigStatus: childSnapshot.val().gigStatus
+                    GigStatus: childSnapshot.val().gigStatus,
+                    sched: childSnapshot.val().schedule
                 })
             })
             setGigData(gigDetails)
         });
-
     }, [])
+
+
+    // useEffect(() => {
+    //     gigData.forEach((gig) => {
+    //         // console.log(gig.sched[gig.sched.length - 1])
+    //         const lastSetDate = new Date(gig.sched[gig.sched.length - 1].date);
+    //         // console.log(lastSetDate);
+    //         const currentDate = new Date();
+    //         const differenceInDays = Math.floor((currentDate - lastSetDate) / (1000 * 60 * 60 * 24));
+    //         console.log(gig.sched && gig.sched.length > 0)
+    //     })
+    // }, [])
+
+    useEffect(() => {
+        gigData.forEach((gig) => {
+            if (gig.sched && gig.sched.length > 0) {
+                // Get the last set's date
+                const lastSetDate = new Date(gig.sched[gig.sched.length - 1].date);
+                const currentDate = new Date();
+                const differenceInDays = Math.floor((currentDate - lastSetDate) / (1000 * 60 * 60 * 24));
+
+                // If 3 or more days have passed since the last set's date, and gigStatus is not already 'Done', update gigStatus to 'Done'
+                if (differenceInDays >= 3 && gig.GigStatus !== 'Done') {
+                    // Update gigStatus in the database
+
+                    const gigRef = db_ref(db, 'users/client/' + uid + '/gigs/' + gig.key);
+                    const gigsRefs = db_ref(db, 'gigPosts/' + gig.key);
+                    update(gigRef, {
+                        gigStatus: 'Done'
+                    })
+                    update(gigsRefs, {
+                        gigStatus: 'Done'
+                    })
+                }
+
+
+            }
+        });
+    }, [gigData]);
+
+
 
 
     const renderItem = ({ item }) => {

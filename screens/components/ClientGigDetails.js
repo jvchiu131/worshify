@@ -234,6 +234,7 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
 
     }, [counter, gigGenre, gigInstrument,])
 
+
     const renderApplied = ({ item }) => {
         return (
             <TouchableOpacity onPress={() => handleItemPress(item.key)}>
@@ -247,8 +248,6 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
                             <Text style={{ color: "#0EB080", fontWeight: 'bold' }}>{Math.round(item.calculatePercentage)}%</Text>
                             {userAcceptanceStatus[item.key] ? (<AntDesign name="checkcircle" size={15} color="#0EB080" />) : null}
                         </View>
-
-
                     </View>
                 </View>
             </TouchableOpacity>

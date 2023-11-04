@@ -19,6 +19,7 @@ const UpcomingGigs = () => {
 
     const props = { postID: selectedItem };
 
+
     useEffect(() => {
         const gigPostRef = ref(db, 'gigPosts');
         onValue(gigPostRef, (snapshot) => {
@@ -33,9 +34,14 @@ const UpcomingGigs = () => {
         });
     }, []);
 
+    const filteredGigs = gigPosts.filter((gig) => {
+        const excludedStatuses = ['Done', 'Cancel', 'On-going', 'Close'];
+        return !excludedStatuses.includes(gig.gigStatus);
+    });
+
     return (
         <ScrollView contentContainerStyle={styles.scrollContainer}>
-            {gigPosts.map((gigPost) => (
+            {filteredGigs.map((gigPost) => (
                 <TouchableOpacity key={gigPost.postID} style={styles.gigContainer} onPress={() => { handlePress(gigPost.postID) }}>
                     {/* Display the gig post data */}
 
@@ -102,7 +108,6 @@ const styles = StyleSheet.create({
         height: '100%',
         width: '20%',
         marginRight: 15
-
     },
     gigContainer: {
         borderWidth: 1,
