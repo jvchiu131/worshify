@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Dimensions, ImageBackground, Modal } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { db } from '../../firebase';
-import { ref, onValue } from 'firebase/database';
+import { ref, onValue, update } from 'firebase/database';
 import { auth } from '../../firebase';
 import { EvilIcons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -66,12 +66,36 @@ const FeaturedGig = () => {
             });
 
 
+            filteredGigs.forEach((gig) => {
+                if (gig.sched && gig.sched.length > 0) {
+                    // Get the last set's date
+                    const lastSetDate = new Date(gig.sched[gig.sched.length - 1].date);
+                    const currentDate = new Date();
+                    const differenceInDays = Math.floor((currentDate - lastSetDate) / (1000 * 60 * 60 * 24));
+
+                    // If 3 or more days have passed since the last set's date, and gigStatus is not already 'Done', update gigStatus to 'Done'
+                    if (differenceInDays >= 3 && gig.status !== 'Done') {
+                        // Update gigStatus in the database
+
+                        const gigRef = ref(db, 'users/client/' + uid + '/gigs/' + gig.key);
+                        const gigsRefs = ref(db, 'gigPosts/' + gig.key);
+                        update(gigRef, {
+                            gigStatus: 'Done'
+                        })
+                        update(gigsRefs, {
+                            gigStatus: 'Done'
+                        })
+                    }
+                }
+            });
+
 
             const gigScore = filteredGigs.map((gig) => {
                 const instrumentsGig = gig.InstrumentsNeeded?.map((inst) => inst.name) || [];
                 const genreGig = gig.GenreNeeded?.length ? gig.GenreNeeded : [];
+                // const date = gig.map((sched) => sched.date)
                 const gigSched = gig.sched?.map((sched) => sched.date);
-                console.log(gig.status)
+                // console.log(gig.status)
 
                 const matchedGenre = genreGig.filter((genre) => userGenre.includes(genre));
                 const matchedInstruments = instrumentsGig.filter((instrument) =>
@@ -80,7 +104,7 @@ const FeaturedGig = () => {
                 const totalGenreAndInstrument = userGenre.length + userInstrument.length
                 const calculatePercentage = ((matchedGenre.length + matchedInstruments.length) / totalGenreAndInstrument) * 100;
                 // console.log(calculatePercentage)
-                return { ...gig, calculatePercentage, GigDate: new Date(gigSched) };
+                return { ...gig, calculatePercentage, GigDate: new Date(gigSched[0]) };
             });
 
             const gigSortedByDate = gigScore.sort((a, b) => a.GigDate - b.GigDate);

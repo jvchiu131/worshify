@@ -34,6 +34,8 @@ const GigDetails = ({ postID, handleModal }) => {
     const [selectedIndex, setSelectedIndex] = useState();
     const [visible, setVisible] = useState(false);
     const [schedule, setSchedule] = useState([]);
+    const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+    const [cancel, setCancel] = useState(false);
 
     const navigation = useNavigation();
 
@@ -290,22 +292,53 @@ const GigDetails = ({ postID, handleModal }) => {
 
     }
 
+    // const deleteGig = async () => {
+    //     setLoading(true);
+    //     const dbRef = ref(db, 'gigPosts/' + postID + '/usersApplied/' + uid)
+    //     sendCancelNotification()
+    //     await remove(dbRef)
+    //         .then(() => {
+    //             setLoading(false)
+    //             setApplied(false)
+    //         })
+    //         .catch((error) => console.log(error))
+    // }
+
     const deleteGig = async () => {
-        setLoading(true);
+        // setLoading(true);
         const dbRef = ref(db, 'gigPosts/' + postID + '/usersApplied/' + uid)
+        // sendCancelNotification()
         await remove(dbRef)
             .then(() => {
-                setLoading(false)
+                // setLoading(false)
                 setApplied(false)
-                handleApplyCancel();
             })
             .catch((error) => console.log(error))
     }
 
+
+
     const handleApplyCancel = async () => {
         const dbRef = ref(db, 'gigPosts/' + postID + '/usersApplied/' + uid)
-        await remove(dbRef)
+
+        const isWithinThreeDays = () => {
+            const currentDate = new Date();
+            const firstScheduledDate = new Date(schedule[0].date);
+            const timeDifference = firstScheduledDate.getTime() - currentDate.getTime();
+            const daysDifference = Math.ceil(timeDifference / (1000 * 3600 * 24));
+            return daysDifference <= 3;
+        };
+
+        if (isWithinThreeDays()) {
+            // Show the warning modal and handle cancellation logic there
+            // For example, set a state variable to show the warning modal
+            setShowConfirmationModal(true);
+        } else {
+            // Perform the cancellation directly without showing the warning
+            await remove(dbRef)
+        }
     }
+
 
     // Function to get the label for the button based on gigStatus
     const getApplyButtonLabel = () => {
@@ -444,6 +477,48 @@ const GigDetails = ({ postID, handleModal }) => {
                         </View>
                     </Modal>
 
+                    <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={showConfirmationModal}
+                        onRequestClose={() => {
+                            setShowConfirmationModal(false);
+                        }}
+                    >
+                        <View style={styles.modalContainer}>
+                            <View style={styles.modalContent}>
+                                <Text style={styles.modalText}>
+                                    Canceling this application within 3 days of the first scheduled date may lead to account suspension.
+                                    Are you sure you want to proceed?
+                                </Text>
+                                <TouchableOpacity
+                                    style={styles.modalButton}
+                                    onPress={() => {
+                                        // Client confirmed the cancellation, implement the logic to update banning points and ban account
+                                        // ...
+                                        // deleteGig()
+                                        setShowConfirmationModal(false);
+
+                                    }}
+                                >
+                                    <Text style={styles.buttonText}>Yes, Cancel</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={styles.modalButton}
+                                    onPress={() => {
+                                        // Client canceled the cancellation, do nothing or handle accordingly
+                                        // ...
+
+                                        setShowConfirmationModal(false);
+
+                                    }}
+                                >
+                                    <Text style={styles.buttonText}>No, Continue Gig</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </Modal>
+
 
 
                     <View style={styles.InstContainer}>
@@ -499,6 +574,8 @@ const GigDetails = ({ postID, handleModal }) => {
                         if (postDetails.gigStatus === 'Done' || postDetails.gigStatus === 'Cancel' || postDetails.gigStatus === 'Upcoming') {
                             // Do nothing if the gig is not accepting applications anymore
                         } else if (applied || alreadyApplied) {
+
+                            // handleApplyCancel();
                             deleteGig();
                             sendCancelNotification(clientToken);
                         } else {

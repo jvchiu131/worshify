@@ -28,12 +28,9 @@ const ChatScreen = () => {
 
     useEffect(() => {
         const userRef = ref(db, 'users/logged_users/' + uid);
-        console.log(chatExist)
         onValue(userRef, (snapshot) => {
             setUserDetail(snapshot.val().first_name)
             setUserPic(snapshot.val().profile_pic)
-
-            console.log(snapshot.val().first_name)
         })
     }, [uid])
 

@@ -44,10 +44,16 @@ const ContactScreen = () => {
         })
     }, [])
 
+    // useEffect(() => {
+    //     contacts.map((user) => {
+    //         console.log(user)
+    //     })
+    // }, [])
+
 
     useEffect(() => {
         contacts.map((item) => {
-            const chatParticipantsRef = ref(db, 'chatParticipants/' + item.element);
+            const chatParticipantsRef = ref(db, 'chatParticipants/' + item.key);
             onValue(chatParticipantsRef, (snapshot) => {
                 let userChat = []
                 snapshot.forEach((child) => {
@@ -56,7 +62,7 @@ const ContactScreen = () => {
                     }
                 })
                 setUserId(userChat);
-                console.log(userId)
+                // console.log(userId)
             })
         })
     }, [])
@@ -67,6 +73,7 @@ const ContactScreen = () => {
 
 
     useEffect(() => {
+
         const userRef = ref(db, 'users/logged_users/' + userId);
         onValue(userRef, (snapshot) => {
             let userData = []
@@ -143,12 +150,12 @@ const styles = StyleSheet.create({
         width: 20
     },
     txtContainer: {
-        borderWidth: 2,
-        borderColor: 'red'
+        // borderWidth: 2,
+        // borderColor: 'red'
     },
     imgContainer: {
-        borderWidth: 2,
-        borderColor: 'red'
+        // borderWidth: 2,
+        // borderColor: 'red'
     },
     itemContainer: {
         backgroundColor: '#1E1E1E',
@@ -163,14 +170,14 @@ const styles = StyleSheet.create({
         backgroundColor: '#151414',
         height: ScreenHeight,
         width: ScreenWidth,
-        borderWidth: 2,
-        borderColor: 'red'
+        // borderWidth: 2,
+        // borderColor: 'red'
     },
     container: {
         width: ScreenWidth,
         top: ScreenHeight / 15,
-        borderWidth: 2,
-        borderColor: 'red'
+        // borderWidth: 2,
+        // borderColor: 'red'
     },
 
 

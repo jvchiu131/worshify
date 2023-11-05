@@ -6,7 +6,7 @@ import { auth } from '../../firebase';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-
+import { Octicons } from '@expo/vector-icons';
 
 const { height: screenHeight } = Dimensions.get('screen');
 const { width: screenWidth } = Dimensions.get('screen');
@@ -49,10 +49,16 @@ const UserProfileCard = () => {
                 profilePic: snapshot.val().profile_pic,
                 address: snapshot.val().address,
                 accountType: snapshot.val().accountType,
+                gigsCompleted: snapshot.val().gigsCompleted || 0,
+                gigsCancelled: snapshot.val().gigsCancelled || 0
             }
             setUserDetails(userData);
         })
     }, [uid])
+
+    // useEffect(() => {
+    //     console.log(userDetails.gigsCompleted)
+    // }, [])
 
 
     useEffect(() => {
@@ -119,6 +125,20 @@ const UserProfileCard = () => {
                         ) : null}
 
                     </View>
+
+
+                    <View>
+                        <View style={styles.statisticsContainer}>
+                            <Octicons name="dot-fill" size={24} color="#0EB080" />
+                            <Text style={{ ...styles.emailTxtStyle, fontWeight: 'bold' }}>Gigs Completed</Text>
+                            <Text style={{ ...styles.emailTxtStyle, color: "#0EB080", fontWeight: 'bold' }}>{userDetails.gigsCompleted}</Text>
+                        </View>
+                        <View style={styles.statisticsContainer}>
+                            <Octicons name="dot-fill" size={24} color="red" />
+                            <Text style={{ ...styles.emailTxtStyle, fontWeight: 'bold' }}>Gigs Cancelled</Text>
+                            <Text style={{ ...styles.emailTxtStyle, color: "red", fontWeight: 'bold' }}>{userDetails.gigsCancelled}</Text>
+                        </View>
+                    </View>
                 </View>
             </View>
         </View>
@@ -128,6 +148,12 @@ const UserProfileCard = () => {
 export default UserProfileCard
 
 const styles = StyleSheet.create({
+
+    statisticsContainer: {
+        marginTop: 5,
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
 
     ratingContainer: {
         flexDirection: 'row',

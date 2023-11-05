@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, ImageBackground, Dimensions, ScrollView, TouchableOpacity, Modal, TextInput, FlatList } from 'react-native'
 import React, { useState, useEffect } from 'react'
-import { child, onValue, ref, remove, update, set, get } from 'firebase/database';
+import { child, onValue, ref, remove, update, set, get, runTransaction } from 'firebase/database';
 import { db, auth } from '../../firebase';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
@@ -112,8 +112,6 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
         hideAccepted()
         const variable = acceptedUsers.some((user) => user.key === selectedUserKey)
     };
-
-
 
     useEffect(() => {
         const dbRef = ref(db, 'gigPosts/' + postID);
@@ -235,6 +233,7 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
     }, [counter, gigGenre, gigInstrument,])
 
 
+
     const renderApplied = ({ item }) => {
         return (
             <TouchableOpacity onPress={() => handleItemPress(item.key)}>
@@ -305,6 +304,7 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
 
     const acceptedUsers = getAcceptedUsers();
     const acceptedUserKeys = acceptedUsers.map((user) => user.key);
+
 
 
     const handleRatingSubmission = async (userKey) => {
@@ -503,11 +503,6 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
     }
 
 
-    // useEffect(() => {
-    //     console.log(schedule[0].date);
-    // }, [])
-
-
     const handleBanPoints = () => {
         const currentDate = new Date();
         const firstScheduledDate = new Date(schedule[0].date);
@@ -541,25 +536,83 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
 
     }
 
+    // const handleCancelStatus = () => {
+    //     const dbRefUser = ref(db, 'gigPosts/' + postID)
+    //     const dbRef = ref(db, 'users/client/' + uid + '/gigs/' + postID);
+
+    //     setShowConfirmationModal(true);
+
+    //     handleBanPoints();
+
+    //     update(dbRefUser, {
+    //         gigStatus: 'Cancel'
+    //     })
+
+    //     update(dbRef, {
+    //         gigStatus: 'Cancel'
+    //     })
+
+    //     setGigModal(false)
+
+    // }
+
     const handleCancelStatus = () => {
-        const dbRefUser = ref(db, 'gigPosts/' + postID)
+        const dbRefUser = ref(db, 'gigPosts/' + postID);
         const dbRef = ref(db, 'users/client/' + uid + '/gigs/' + postID);
+        const userRef = ref(db, 'users/client/' + uid);
+        const userClient = ref(db, 'users/logged_users/' + uid);
 
+        // Show confirmation modal and handle ban points
         setShowConfirmationModal(true);
-
         handleBanPoints();
+        // Start a transaction to increment gigsCancelled value atomically for userRef
+        runTransaction(userClient, (userData) => {
+            // Ensure userData is defined and has the 'gigsCancelled' property
+            if (!userData || userData.gigsCancelled === undefined || userData.gigsCancelled === null) {
+                userData = { ...userData, gigsCancelled: 1 }; // Initialize data if it doesn't exist
+            } else {
+                // Create a new object and copy existing properties
+                userData = { ...userData, gigsCancelled: userData.gigsCancelled + 1 };
+                // Alternatively, you can use Object.assign():
+                // userData = Object.assign({}, userData, { gigsCompleted: userData.gigsCompleted + 1 });
+            }
+            return userData;
+        }).then(() => {
+            console.log('Successfully updated gigsCancelled');
+        }).catch((error) => {
+            console.error('Error updating gigsCancelled for userRef:', error);
+            // Handle the error here, such as showing an error message to the user
+        });
 
-        update(dbRefUser, {
-            gigStatus: 'Cancel'
-        })
+        // Start a transaction to increment gigsCancelled value atomically for userRef
+        runTransaction(userRef, (userData) => {
+            // Ensure userData is defined and has the 'gigsCancelled' property
+            if (!userData || userData.gigsCancelled === undefined || userData.gigsCancelled === null) {
+                userData = { ...userData, gigsCancelled: 1 }; // Initialize data if it doesn't exist
+            } else {
+                // Create a new object and copy existing properties
+                userData = { ...userData, gigsCancelled: userData.gigsCancelled + 1 };
+                // Alternatively, you can use Object.assign():
+                // userData = Object.assign({}, userData, { gigsCompleted: userData.gigsCompleted + 1 });
+            }
+            return userData;
+        }).then(() => {
+            // Update gigStatus in gigPosts and gigs nodes for userRef
+            update(dbRefUser, {
+                gigStatus: 'Cancel'
+            });
 
-        update(dbRef, {
-            gigStatus: 'Cancel'
-        })
+            update(dbRef, {
+                gigStatus: 'Cancel'
+            });
 
-        setGigModal(false)
-
-    }
+            // Close gig modal
+            setGigModal(false);
+        }).catch((error) => {
+            console.error('Error updating gigsCancelled for userRef:', error);
+            // Handle the error here, such as showing an error message to the user
+        });
+    };
 
     const handleOngoingStatus = () => {
         const dbRefUser = ref(db, 'gigPosts/' + postID)
@@ -568,30 +621,74 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
         update(dbRefUser, {
             gigStatus: 'On-going'
         })
-
         update(dbRef, {
             gigStatus: 'On-going'
         })
-
         setGigModal(false)
-
     }
+
+
 
     const handleDoneStatus = () => {
-        const dbRefUser = ref(db, 'gigPosts/' + postID)
+        const dbRefUser = ref(db, 'gigPosts/' + postID);
         const dbRef = ref(db, 'users/client/' + uid + '/gigs/' + postID);
+        const userRef = ref(db, 'users/client/' + uid);
 
-        update(dbRefUser, {
-            gigStatus: 'Done'
-        })
+        // Iterate through acceptedUserKeys array
+        acceptedUserKeys.forEach((userKey) => {
+            const musicianRef = ref(db, 'users/musician/' + userKey);
 
-        update(dbRef, {
-            gigStatus: 'Done'
-        })
+            // Start a transaction to increment gigsCompleted value atomically for musicianRef
+            // Inside the runTransaction callback for musicianRef
+            runTransaction(musicianRef, (musicianData) => {
+                // Ensure musicianData is defined and has the 'gigsCompleted' property
+                if (!musicianData || musicianData.gigsCompleted === undefined || musicianData.gigsCompleted === null) {
+                    musicianData = { ...musicianData, gigsCompleted: 1 }; // Initialize data if it doesn't exist
+                } else {
+                    // Create a new object and copy existing properties
+                    musicianData = { ...musicianData, gigsCompleted: musicianData.gigsCompleted + 1 };
+                    // Alternatively, you can use Object.assign():
+                    // musicianData = Object.assign({}, musicianData, { gigsCompleted: musicianData.gigsCompleted + 1 });
+                }
+                return musicianData;
+            }).then(() => {
+                console.log('Successfully updated gigsCompleted for musician with key:', userKey);
+            }).catch((error) => {
+                console.error('Error updating gigsCompleted for musician with key:', userKey, error);
+                // Handle the error here, such as showing an error message to the user
+            });
+        });
 
-        setGigModal(false)
+        // Start a transaction to increment gigsCompleted value atomically for userRef
+        runTransaction(userRef, (userData) => {
+            // Ensure userData is defined and has the 'gigsCompleted' property
+            if (!userData || userData.gigsCompleted === undefined || userData.gigsCompleted === null) {
+                userData = { ...userData, gigsCompleted: 1 }; // Initialize data if it doesn't exist
+            } else {
+                // Create a new object and copy existing properties
+                userData = { ...userData, gigsCompleted: userData.gigsCompleted + 1 };
+                // Alternatively, you can use Object.assign():
+                // userData = Object.assign({}, userData, { gigsCompleted: userData.gigsCompleted + 1 });
+            }
+            return userData;
+        }).then(() => {
+            // Update gigStatus in gigPosts and gigs nodes for userRef
+            update(dbRefUser, {
+                gigStatus: 'Done'
+            });
 
-    }
+            update(dbRef, {
+                gigStatus: 'Done'
+            });
+
+            // Close gig modal
+            setGigModal(false);
+        }).catch((error) => {
+            console.error('Error updating gigsCompleted for userRef:', error);
+            // Handle the error here, such as showing an error message to the user
+        });
+    };
+
 
     const handleAvailableStatus = () => {
         const dbRefUser = ref(db, 'gigPosts/' + postID)
@@ -608,6 +705,9 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
         setGigModal(false)
 
     }
+
+
+
 
     //replace the comment with attribute ratings
     //attribute rating will be calculated by average and becomes the overall rating of the musician

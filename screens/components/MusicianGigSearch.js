@@ -87,12 +87,44 @@ const MusicianGigSearch = () => {
                     GenreNeeded: childSnapshot.Genre_Needed,
                     InstrumentsNeeded: childSnapshot.val().Instruments_Needed,
                     GigImage: childSnapshot.val().Gig_Image,
-                    GigStatus: childSnapshot.val().gigStatus
+                    GigStatus: childSnapshot.val().gigStatus,
+                    gigSched: childSnapshot.val().schedule
 
                 })
             })
-            setGigData(gigDetails)
+            // setGigData(gigDetails)
         });
+
+        const filteredGigs = gigData.filter((gig) => {
+            const excludedStatuses = ['Done', 'Cancel', 'On-going', 'Close'];
+            return !excludedStatuses.includes(gig.GigStatus);
+        });
+
+
+        filteredGigs.forEach((gig) => {
+            if (gig.gigSched && gig.gigSched.length > 0) {
+                // Get the last set's date
+                const lastSetDate = new Date(gig.gigSched[gig.gigSched.length - 1].date);
+                const currentDate = new Date();
+                const differenceInDays = Math.floor((currentDate - lastSetDate) / (1000 * 60 * 60 * 24));
+
+                // If 3 or more days have passed since the last set's date, and gigStatus is not already 'Done', update gigStatus to 'Done'
+                if (differenceInDays >= 3 && gig.status !== 'Done') {
+                    // Update gigStatus in the database
+
+                    const gigRef = ref(db, 'users/client/' + uid + '/gigs/' + gig.key);
+                    const gigsRefs = ref(db, 'gigPosts/' + gig.key);
+                    update(gigRef, {
+                        gigStatus: 'Done'
+                    })
+                    update(gigsRefs, {
+                        gigStatus: 'Done'
+                    })
+                }
+            }
+        });
+
+        setGigData(filteredGigs)
 
     }, [])
 
@@ -123,13 +155,43 @@ const MusicianGigSearch = () => {
                     InstrumentsNeeded: childSnapshot.val().Instruments_Needed,
                     GigImage: childSnapshot.val().Gig_Image,
                     gigGender: childSnapshot.val().gender,
-                    GigStatus: childSnapshot.val().gigStatus
+                    GigStatus: childSnapshot.val().gigStatus,
+                    gigSched: childSnapshot.val().sched
                 });
+            });
+
+            const filteredGigs = gigDetails.filter((gig) => {
+                const excludedStatuses = ['Done', 'Cancel', 'On-going', 'Close'];
+                return !excludedStatuses.includes(gig.GigStatus);
+            });
+
+
+            filteredGigs.forEach((gig) => {
+                if (gig.gigSched && gig.gigSched.length > 0) {
+                    // Get the last set's date
+                    const lastSetDate = new Date(gig.gigSched[gig.gigSched.length - 1].date);
+                    const currentDate = new Date();
+                    const differenceInDays = Math.floor((currentDate - lastSetDate) / (1000 * 60 * 60 * 24));
+
+                    // If 3 or more days have passed since the last set's date, and gigStatus is not already 'Done', update gigStatus to 'Done'
+                    if (differenceInDays >= 3 && gig.status !== 'Done') {
+                        // Update gigStatus in the database
+
+                        const gigRef = ref(db, 'users/client/' + uid + '/gigs/' + gig.key);
+                        const gigsRefs = ref(db, 'gigPosts/' + gig.key);
+                        update(gigRef, {
+                            gigStatus: 'Done'
+                        })
+                        update(gigsRefs, {
+                            gigStatus: 'Done'
+                        })
+                    }
+                }
             });
 
 
 
-            const gigScore = gigDetails.map((gig) => {
+            const gigScore = filteredGigs.map((gig) => {
                 const instrumentsGig = gig.InstrumentsNeeded;
                 const genreGig = gig.GenreNeeded;
                 const genderGig = gig.gigGender;
