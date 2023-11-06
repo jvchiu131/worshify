@@ -13,6 +13,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 
+
+
 const { height: screenHeight } = Dimensions.get('screen');
 const { width: screenWidth } = Dimensions.get('screen');
 
@@ -317,7 +319,6 @@ const GigDetails = ({ postID, handleModal }) => {
     }
 
 
-
     const handleApplyCancel = async () => {
         const dbRef = ref(db, 'gigPosts/' + postID + '/usersApplied/' + uid)
 
@@ -567,30 +568,31 @@ const GigDetails = ({ postID, handleModal }) => {
 
 
             <View style={styles.btnContainer}>
+                {user && !user.isAnonymous && (
+                    <Button
+                        mode="elevated"
+                        onPress={() => {
+                            if (postDetails.gigStatus === 'Done' || postDetails.gigStatus === 'Cancel' || postDetails.gigStatus === 'Upcoming') {
+                                // Do nothing if the gig is not accepting applications anymore
+                            } else if (applied || alreadyApplied) {
 
-                <Button
-                    mode="elevated"
-                    onPress={() => {
-                        if (postDetails.gigStatus === 'Done' || postDetails.gigStatus === 'Cancel' || postDetails.gigStatus === 'Upcoming') {
-                            // Do nothing if the gig is not accepting applications anymore
-                        } else if (applied || alreadyApplied) {
-
-                            // handleApplyCancel();
-                            deleteGig();
-                            sendCancelNotification(clientToken);
-                        } else {
-                            applyGig();
-                            sendPushNotification(clientToken);
-                        }
-                    }}
-                    loading={loading}
-                    buttonColor={postDetails.gigStatus === 'Done' || postDetails.gigStatus === 'Cancel' || postDetails.gigStatus === 'Close' ? 'gray' : applied || alreadyApplied ? 'red' : '#0EB080'}
-                    textColor="white"
-                    style={styles.btnStyle}
-                    disabled={postDetails.gigStatus === 'Done' || postDetails.gigStatus === 'Cancel' || postDetails.gigStatus === 'Close' || postDetails.gigStatus === 'On-going'}
-                >
-                    {getApplyButtonLabel()}
-                </Button>
+                                // handleApplyCancel();
+                                deleteGig();
+                                sendCancelNotification(clientToken);
+                            } else {
+                                applyGig();
+                                sendPushNotification(clientToken);
+                            }
+                        }}
+                        loading={loading}
+                        buttonColor={postDetails.gigStatus === 'Done' || postDetails.gigStatus === 'Cancel' || postDetails.gigStatus === 'Close' ? 'gray' : applied || alreadyApplied ? 'red' : '#0EB080'}
+                        textColor="white"
+                        style={styles.btnStyle}
+                        disabled={postDetails.gigStatus === 'Done' || postDetails.gigStatus === 'Cancel' || postDetails.gigStatus === 'Close' || postDetails.gigStatus === 'On-going'}
+                    >
+                        {getApplyButtonLabel()}
+                    </Button>
+                )}
             </View>
         </View>
     )

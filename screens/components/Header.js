@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import ProfileScreen from '../screens/ProfileScreen';
-
+import { auth } from '../../firebase';
 
 const { width: screenWidth } = Dimensions.get('screen');
 const { height: screenHeight } = Dimensions.get('screen');
@@ -16,23 +16,36 @@ const Header = () => {
     const navigation = useNavigation();
     const route = useRoute();
     const currentHeaderTitle = route.name;
+    const user = auth.currentUser;
 
 
     return (
         <SafeAreaView>
             <View style={styles.container}>
+                {
+                    user && !user.isAnonymous && (
+                        <TouchableOpacity onPress={() => { navigation.navigate('Profile') }}>
+                            <FontAwesome name="user-circle-o" size={24} color="white" />
+                        </TouchableOpacity>
+                    )
+                }
 
-                <TouchableOpacity onPress={() => { navigation.navigate('Profile') }}>
-                    <FontAwesome name="user-circle-o" size={24} color="white" />
-                </TouchableOpacity>
-
+                {user && user.isAnonymous && (
+                    <View>
+                        <Text style={styles.textStyle}>Welcome <Text style={{ ...styles.textStyle, color: '#0EB080' }}>Guest!</Text></Text>
+                    </View>
+                )}
 
                 <View>
                     <Text style={styles.textStyle}>{currentHeaderTitle}</Text>
                 </View>
-                <TouchableOpacity onPress={() => { navigation.navigate('Notification') }}>
-                    <Ionicons name="notifications" size={24} color="white" />
-                </TouchableOpacity>
+
+                {user && !user.isAnonymous && (
+                    <TouchableOpacity onPress={() => { navigation.navigate('Notification') }}>
+                        <Ionicons name="notifications" size={24} color="white" />
+                    </TouchableOpacity>
+                )}
+
 
             </View>
         </SafeAreaView>

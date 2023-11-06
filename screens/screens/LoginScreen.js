@@ -1,4 +1,4 @@
-import { KeyboardAvoidingView, StyleSheet, Text, View, Dimensions, Animated } from 'react-native'
+import { KeyboardAvoidingView, StyleSheet, Text, View, Dimensions, Animated, Alert } from 'react-native'
 import React, { useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import { TouchableOpacity } from 'react-native'
@@ -7,7 +7,8 @@ import RegisterModal from '../components/RegisterModal'
 import { TouchableWithoutFeedback } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import Logo from '../components/assets/Logo'
-
+import { auth } from '../../firebase'
+import { signInAnonymously } from 'firebase/auth';
 
 
 const { height: screenHeight } = Dimensions.get('window');
@@ -37,7 +38,19 @@ const LoginScreen = () => {
     }
 
     const handleCasualUser = () => {
-        navigation.navigate('DashScreen');
+        signInAnonymously(auth)
+            .then(() => {
+                // Signed in..
+                navigation.navigate('DashScreen');
+
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                // ...
+                console.log(errorCode)
+                alert(errorMessage);
+            });
     }
 
     const moveRegModal = () => {
@@ -125,7 +138,7 @@ const LoginScreen = () => {
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    onPress={handleCasualUser}
+                    onPress={() => handleCasualUser()}
                     style={[styles.rootbtn, styles.rootbtnOutline]}>
                     <Text style={styles.buttonOutlineText}>Casual User</Text>
                 </TouchableOpacity>

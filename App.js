@@ -22,16 +22,18 @@ import * as Notifications from 'expo-notifications';
 import { LogBox } from 'react-native';
 import Toast from 'react-native-toast-message';
 import ClientProfile from './screens/components/ClientProfile';
+import { auth } from './firebase';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
-
+const user = auth.currentUser;
 
 export default function App() {
   const [expoPushToken, setExpoPushToken] = useState('');
   const [notification, setNotification] = useState(false);
   const notificationListener = useRef();
   const responseListener = useRef();
+
 
   useEffect(() => {
     LogBox.ignoreAllLogs();
@@ -129,15 +131,19 @@ function BottomTab() {
             ),
           }}
         />
-        <Tab.Screen
-          name='Contacts'
-          component={ContactNav}
-          options={{
-            tabBarIcon: ({ color, size }) => (
-              <Feather name='message-square' size={size} color={color} />
-            ),
-          }}
-        />
+
+        {user && !user.isAnonymous && (
+          <Tab.Screen
+            name='Contacts'
+            component={ContactNav}
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <Feather name='message-square' size={size} color={color} />
+              ),
+            }}
+          />
+        )}
+
       </Tab.Navigator>
       <StatusBar style='light' />
       <Toast

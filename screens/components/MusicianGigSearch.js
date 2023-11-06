@@ -92,39 +92,40 @@ const MusicianGigSearch = () => {
 
                 })
             })
-            // setGigData(gigDetails)
-        });
 
-        const filteredGigs = gigData.filter((gig) => {
-            const excludedStatuses = ['Done', 'Cancel', 'On-going', 'Close'];
-            return !excludedStatuses.includes(gig.GigStatus);
-        });
+            const filteredGigs = gigDetails.filter((gig) => {
+                const excludedStatuses = ['Done', 'Cancel', 'On-going', 'Close'];
+                return !excludedStatuses.includes(gig.GigStatus);
+            });
 
 
-        filteredGigs.forEach((gig) => {
-            if (gig.gigSched && gig.gigSched.length > 0) {
-                // Get the last set's date
-                const lastSetDate = new Date(gig.gigSched[gig.gigSched.length - 1].date);
-                const currentDate = new Date();
-                const differenceInDays = Math.floor((currentDate - lastSetDate) / (1000 * 60 * 60 * 24));
+            filteredGigs.forEach((gig) => {
+                if (gig.gigSched && gig.gigSched.length > 0) {
+                    // Get the last set's date
+                    const lastSetDate = new Date(gig.gigSched[gig.gigSched.length - 1].date);
+                    const currentDate = new Date();
+                    const differenceInDays = Math.floor((currentDate - lastSetDate) / (1000 * 60 * 60 * 24));
 
-                // If 3 or more days have passed since the last set's date, and gigStatus is not already 'Done', update gigStatus to 'Done'
-                if (differenceInDays >= 3 && gig.status !== 'Done') {
-                    // Update gigStatus in the database
+                    // If 3 or more days have passed since the last set's date, and gigStatus is not already 'Done', update gigStatus to 'Done'
+                    if (differenceInDays >= 3 && gig.status !== 'Done') {
+                        // Update gigStatus in the database
 
-                    const gigRef = ref(db, 'users/client/' + uid + '/gigs/' + gig.key);
-                    const gigsRefs = ref(db, 'gigPosts/' + gig.key);
-                    update(gigRef, {
-                        gigStatus: 'Done'
-                    })
-                    update(gigsRefs, {
-                        gigStatus: 'Done'
-                    })
+                        const gigRef = ref(db, 'users/client/' + uid + '/gigs/' + gig.key);
+                        const gigsRefs = ref(db, 'gigPosts/' + gig.key);
+                        update(gigRef, {
+                            gigStatus: 'Done'
+                        })
+                        update(gigsRefs, {
+                            gigStatus: 'Done'
+                        })
+                    }
                 }
-            }
+            });
+
+            setGigData(filteredGigs)
         });
 
-        setGigData(filteredGigs)
+
 
     }, [])
 

@@ -84,6 +84,10 @@ const ClientDashboard = () => {
     const user = auth.currentUser;
     const uid = user.uid;
 
+    useEffect(() => {
+        console.log(user.isAnonymous)
+    }, [])
+
 
 
 

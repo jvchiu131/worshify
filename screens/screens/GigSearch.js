@@ -45,7 +45,7 @@ const GigSearch = () => {
             <Header />
 
             <View>
-                {isMusician ? (
+                {isMusician || user.isAnonymous ? (
                     <MusicianGigSearch />
                 ) : (
                     <ClientGigSearch />

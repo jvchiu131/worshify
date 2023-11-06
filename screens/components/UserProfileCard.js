@@ -1,12 +1,16 @@
-import { StyleSheet, Text, View, Dimensions, TouchableOpacity, ImageBackground } from 'react-native'
+import { StyleSheet, Text, View, Dimensions, TouchableOpacity, ImageBackground, Alert } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { db } from '../../firebase';
 import { onValue, ref } from 'firebase/database';
+import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 import { Octicons } from '@expo/vector-icons';
+import LoginScreen from '../screens/LoginScreen';
+import { useNavigation } from '@react-navigation/native';
 
 const { height: screenHeight } = Dimensions.get('screen');
 const { width: screenWidth } = Dimensions.get('screen');
@@ -17,6 +21,8 @@ const UserProfileCard = () => {
 
     const user = auth.currentUser;
     const uid = user.uid;
+
+    const navigation = useNavigation();
 
 
     const [userDetails, setUserDetails] = useState([]);
@@ -60,6 +66,33 @@ const UserProfileCard = () => {
     //     console.log(userDetails.gigsCompleted)
     // }, [])
 
+    const handleSignOut = () => {
+        Alert.alert(
+            'Sign Out',
+            'Are you sure you want to sign out?',
+            [
+                {
+                    text: 'Cancel',
+                    style: 'cancel',
+                },
+                {
+                    text: 'Sign Out',
+                    onPress: () => {
+                        // Perform sign out logic here, for example:
+                        // auth.signOut();
+                        // You can navigate to the sign-in screen or perform any other action after sign out.
+                        signOut(auth).then(() => {
+                            // Sign-out successful.
+                            navigation.navigate('Login')
+                        }).catch((error) => {
+                            // An error happened.
+                        });
+                    },
+                },
+            ],
+            { cancelable: false }
+        );
+    };
 
     useEffect(() => {
         if (userDetails.accountType === "Musician") {
@@ -139,7 +172,17 @@ const UserProfileCard = () => {
                             <Text style={{ ...styles.emailTxtStyle, color: "red", fontWeight: 'bold' }}>{userDetails.gigsCancelled}</Text>
                         </View>
                     </View>
+
+                    <View >
+                        <TouchableOpacity style={styles.signOutContainer} onPress={() => handleSignOut()}>
+                            <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                                <FontAwesome name="sign-out" size={24} color="white" />
+                                <Text style={{ fontWeight: 'bold', color: 'white' }}>Sign Out</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
                 </View>
+
             </View>
         </View>
     )
@@ -148,7 +191,16 @@ const UserProfileCard = () => {
 export default UserProfileCard
 
 const styles = StyleSheet.create({
-
+    signOutContainer: {
+        borderWidth: 2,
+        borderColor: 'red',
+        padding: 2,
+        marginTop: 25,
+        backgroundColor: 'red',
+        borderRadius: 15,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
     statisticsContainer: {
         marginTop: 5,
         flexDirection: 'row',

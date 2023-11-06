@@ -163,9 +163,13 @@ const MusicianProfile = () => {
 
             <Appbar.Header style={styles.appBarHeader}>
                 <Appbar.BackAction onPress={navigation.goBack} color='white' />
-                <TouchableOpacity onPress={handleClick}>
-                    <Ionicons name="chatbox-ellipses-outline" size={24} color="white" style={{ padding: 20 }} />
-                </TouchableOpacity>
+
+                {user && !user.isAnonymous && (
+                    <TouchableOpacity onPress={handleClick}>
+                        <Ionicons name="chatbox-ellipses-outline" size={24} color="white" style={{ padding: 20 }} />
+                    </TouchableOpacity>
+                )}
+
 
             </Appbar.Header>
 

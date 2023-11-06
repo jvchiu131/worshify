@@ -8,6 +8,7 @@ import { Button } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import AppliedProfile from './AppliedProfile';
 import { EvilIcons } from '@expo/vector-icons';
+
 import { Appbar } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
@@ -536,25 +537,7 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
 
     }
 
-    // const handleCancelStatus = () => {
-    //     const dbRefUser = ref(db, 'gigPosts/' + postID)
-    //     const dbRef = ref(db, 'users/client/' + uid + '/gigs/' + postID);
 
-    //     setShowConfirmationModal(true);
-
-    //     handleBanPoints();
-
-    //     update(dbRefUser, {
-    //         gigStatus: 'Cancel'
-    //     })
-
-    //     update(dbRef, {
-    //         gigStatus: 'Cancel'
-    //     })
-
-    //     setGigModal(false)
-
-    // }
 
     const handleCancelStatus = () => {
         const dbRefUser = ref(db, 'gigPosts/' + postID);
@@ -632,7 +615,7 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
     const handleDoneStatus = () => {
         const dbRefUser = ref(db, 'gigPosts/' + postID);
         const dbRef = ref(db, 'users/client/' + uid + '/gigs/' + postID);
-        const userRef = ref(db, 'users/client/' + uid);
+        const userRef = ref(db, 'users/logged_users/' + uid);
 
         // Iterate through acceptedUserKeys array
         acceptedUserKeys.forEach((userKey) => {
@@ -813,7 +796,7 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
 
 
                                 <TouchableOpacity onPress={() => setGigModal(false)}>
-                                    <Text>Close</Text>
+                                    <AntDesign name="closecircle" size={24} color="red" />
                                 </TouchableOpacity>
                             </View>
                         </View>
