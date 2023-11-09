@@ -132,17 +132,17 @@ function BottomTab() {
           }}
         />
 
-        {user && !user.isAnonymous && (
-          <Tab.Screen
-            name='Contacts'
-            component={ContactNav}
-            options={{
-              tabBarIcon: ({ color, size }) => (
-                <Feather name='message-square' size={size} color={color} />
-              ),
-            }}
-          />
-        )}
+
+        <Tab.Screen
+          name='Contacts'
+          component={ContactNav}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Feather name='message-square' size={size} color={color} />
+            ),
+          }}
+        />
+
 
       </Tab.Navigator>
       <StatusBar style='light' />

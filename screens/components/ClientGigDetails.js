@@ -128,7 +128,6 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
                     GenreNeeded: snapshot.val().Genre_Needed,
                     InstrumentsNeeded: snapshot.val().Instruments_Needed,
                     GigImage: snapshot.val().Gig_Image,
-                    GigDate: snapshot.val().Gig_Date,
                     about: snapshot.val().about,
                     GigStatus: snapshot.val().gigStatus
                 };
