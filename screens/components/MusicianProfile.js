@@ -169,8 +169,6 @@ const MusicianProfile = () => {
                         <Ionicons name="chatbox-ellipses-outline" size={24} color="white" style={{ padding: 20 }} />
                     </TouchableOpacity>
                 )}
-
-
             </Appbar.Header>
 
             <View style={styles.container}>

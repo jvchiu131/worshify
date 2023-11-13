@@ -4,6 +4,7 @@ import { db } from '../../firebase'
 import { onValue, ref, child, get } from 'firebase/database'
 import { AirbnbRating, Rating } from 'react-native-ratings';
 import { useNavigation } from '@react-navigation/native';
+import { auth } from '../../firebase';
 
 
 const FeaturedMusician = () => {

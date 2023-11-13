@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Dimensions } from 'react-native'
+import { StyleSheet, Text, View, Dimensions, KeyboardAvoidingView, Platform } from 'react-native'
 import React, { useState, useCallback, useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Appbar } from 'react-native-paper';
@@ -22,8 +22,7 @@ const ChatScreen = () => {
     const [messages, setMessages] = useState([]);
     const [userDetail, setUserDetail] = useState([]);
     const [userPic, setUserPic] = useState([]);
-
-
+    const [counter, setCounter] = useState(0);
 
 
     useEffect(() => {
@@ -41,40 +40,93 @@ const ChatScreen = () => {
         onValue(dbRef, (snapshot) => {
             console.log(snapshot.val());
         })
-    })
+    }, [])
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            // Update the count every second
+            setCounter(prevCount => prevCount + 1);
+        }, 500);
+
+        console.log(counter)
+        // Clean up the interval when the component unmounts
+        return () => {
+            clearInterval(interval);
+        };
+    }, []);
 
 
+
+
+    // useEffect(() => {
+
+    //     if (!chatExist) {
+    //         // createChat()
+    //         console.log('chat exist')
+
+    //     } else if (chatExist) {
+    //         const chatRoomRef = query(ref(db, 'chatroom/' + chatRefKey || chatRef), orderByChild('createdAt'));
+    //         onValue(chatRoomRef, (snapshot) => {
+    //             const messageList = []
+    //             snapshot.forEach((child) => {
+    //                 const { createdAt, text, user } = child.val();
+    //                 messageList.push({
+    //                     _id: child.key,
+    //                     createdAt: new Date(createdAt),
+    //                     text,
+    //                     user
+    //                 });
+    //             });
+    //             setMessages(messageList.reverse());
+    //         });
+    //         return () => {
+    //             off(chatRoomRef) // Unsubscribe from chatroomsRef updates
+    //         };
+    //     }
+
+
+    // }, []);
 
 
     useEffect(() => {
-
         if (!chatExist) {
             // createChat()
-            console.log('chat exist')
+            console.log('chat does not exist');
+        } else {
+            let chatPath = 'chatroom/';
 
-        } else if (chatExist) {
-            const chatRoomRef = query(ref(db, 'chatroom/' + chatRefKey), orderByChild('createdAt'));
+            if (chatRefKey) {
+                chatPath += chatRefKey;
+                console.log(chatPath)
+            } else if (chatRef) {
+                chatPath += chatRef;
+                console.log(chatPath)
+            } else {
+                // Handle the case where both chatRefKey and chatRef are falsy
+                console.error('Both chatRefKey and chatRef are falsy. Unable to construct chatRoomRef path.');
+                return;
+            }
+
+            const chatRoomRef = query(ref(db, chatPath), orderByChild('createdAt'));
             onValue(chatRoomRef, (snapshot) => {
-                const messageList = []
+                const messageList = [];
                 snapshot.forEach((child) => {
                     const { createdAt, text, user } = child.val();
                     messageList.push({
                         _id: child.key,
                         createdAt: new Date(createdAt),
                         text,
-                        user
+                        user,
                     });
                 });
                 setMessages(messageList.reverse());
             });
+
             return () => {
-                off(chatRoomRef) // Unsubscribe from chatroomsRef updates
+                off(chatRoomRef); // Unsubscribe from chatroomsRef updates
             };
         }
-
-
-    }, []);
-
+    }, [chatExist, chatRefKey, chatRef]);
 
     const onSend = useCallback((messages = []) => {
         setMessages(previousMessage => GiftedChat.append(previousMessage, messages));
@@ -117,8 +169,6 @@ const ChatScreen = () => {
             update(userChat, userChatData);
             update(secondUserChat, secondUserChatData);
 
-            console.log(chatRefKey);
-
         }
 
     };
@@ -132,7 +182,7 @@ const ChatScreen = () => {
                     <Appbar.BackAction onPress={navigation.goBack} />
                 </Appbar.Header>
 
-                <View style={styles.chatStyle}>
+                {/* <View style={styles.chatStyle}>
                     <GiftedChat
                         messages={messages}
                         onSend={messages => onSend(messages)}
@@ -145,7 +195,26 @@ const ChatScreen = () => {
 
                         }}
                     />
-                </View>
+                </View> */}
+
+                <KeyboardAvoidingView
+                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                    style={{ bottom: 1 }}
+                >
+                    <View style={styles.chatStyle}>
+                        <GiftedChat
+                            messages={messages}
+                            onSend={messages => onSend(messages)}
+                            messagesContainerStyle={{
+                                backgroundColor: '#fff',
+                            }}
+                            user={{
+                                _id: uid,
+                                name: userDetail,
+                            }}
+                        />
+                    </View>
+                </KeyboardAvoidingView>
             </View>
         </View>
 

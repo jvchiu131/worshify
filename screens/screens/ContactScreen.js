@@ -25,8 +25,7 @@ const ContactScreen = () => {
 
     const handleItemPress = (key) => {
         console.log('item presseedd', key)
-        // showModal();
-        navigation.navigate('Chat', { chatRef: key });
+        navigation.navigate('Chat', { chatRef: key, chatExist: true });
     };
 
     //extracting user chat rooms
@@ -61,15 +60,12 @@ const ContactScreen = () => {
                         userChat.push(child.key)
                     }
                 })
+
                 setUserId(userChat);
-                // console.log(userId)
+
             })
         })
     }, [])
-
-
-
-
 
 
     useEffect(() => {
@@ -86,22 +82,22 @@ const ContactScreen = () => {
                 })
             })
             setUserDetails(userData);
-            // console.log(userData);
+            console.log(userId);
         })
     }, [])
 
 
+
+
     const renderItem = ({ item }) => {
-
-
+        // 
         return (
             <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemPress(item.element)}>
                 <View style={styles.imgContainer}>
                     <ImageBackground source={{ uri: item.profilePic }} style={styles.imgStyle}>
-
                     </ImageBackground>
                 </View>
-                <Text style={{ color: 'white' }}>{item.element} {item.lastName}</Text>
+                <Text style={{ color: 'white' }}>{item.element}{item.lastName}</Text>
             </TouchableOpacity>
         )
     }
@@ -125,10 +121,10 @@ const ContactScreen = () => {
         <View style={styles.root}>
             <Header />
             <View style={styles.container}>
-                <View>
+                {/* <View>
 
-                </View>
-                <View>
+                </View> */}
+                <View style={styles.flatStyle}>
                     <FlatList
                         data={contacts}
                         renderItem={renderItem}
@@ -145,6 +141,9 @@ const ContactScreen = () => {
 export default ContactScreen
 
 const styles = StyleSheet.create({
+    flatStyle: {
+        height: '100%'
+    },
     imgStyle: {
         height: 20,
         width: 20
@@ -162,7 +161,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         padding: 10,
-        borderRadius: 20
+        borderRadius: 20,
     },
     root: {
         justifyContent: 'flex-start',
@@ -172,12 +171,15 @@ const styles = StyleSheet.create({
         width: ScreenWidth,
         // borderWidth: 2,
         // borderColor: 'red'
+
     },
     container: {
         width: ScreenWidth,
-        top: ScreenHeight / 15,
+        // top: ScreenHeight / ,
+        bottom: ScreenHeight / 4,
         // borderWidth: 2,
-        // borderColor: 'red'
+        // borderColor: 'red',
+        height: '81%'
     },
 
 
