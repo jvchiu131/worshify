@@ -45,7 +45,7 @@ const ContactScreen = () => {
 
     // useEffect(() => {
     //     contacts.map((user) => {
-    //         console.log(user)
+    //         console.log(user.key)
     //     })
     // }, [])
 
@@ -62,7 +62,7 @@ const ContactScreen = () => {
                 })
 
                 setUserId(userChat);
-
+                // console.log(userId)
             })
         })
     }, [])
@@ -70,7 +70,7 @@ const ContactScreen = () => {
 
     useEffect(() => {
 
-        const userRef = ref(db, 'users/logged_users/' + userId);
+        const userRef = ref(db, 'users/logged_users/' + userId.map((item) => console.log(item)));
         onValue(userRef, (snapshot) => {
             let userData = []
             snapshot.forEach((child) => {
@@ -80,24 +80,37 @@ const ContactScreen = () => {
                     lastName: child.val().lname,
                     profilePic: child.val().profile_pic
                 })
+
             })
             setUserDetails(userData);
-            console.log(userId);
+            // console.log(userDetails.map((items) => console.log(items.firstName)))
+            // userDetails.map((item) =>
+            //     console.log(item.firstName))
         })
     }, [])
+
+    // useEffect(() => {
+    //     // userDetails.map((pips) => {
+    //     //     console.log(pips.firstName)
+    //     // })
+    //     // console.log(userDetails.firstName)
+    // }, [])
 
 
 
 
     const renderItem = ({ item }) => {
-        // 
+
+
+
+
         return (
             <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemPress(item.element)}>
                 <View style={styles.imgContainer}>
                     <ImageBackground source={{ uri: item.profilePic }} style={styles.imgStyle}>
                     </ImageBackground>
                 </View>
-                <Text style={{ color: 'white' }}>{item.element}{item.lastName}</Text>
+                <Text style={{ color: 'white' }}>{item.element}</Text>
             </TouchableOpacity>
         )
     }
