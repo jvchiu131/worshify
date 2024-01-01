@@ -79,13 +79,11 @@ const ContactScreen = () => {
                     <ImageBackground source={{ uri: item.profilePic }} style={styles.imgStyle}>
                     </ImageBackground>
                 </View>
-                <Text style={{ color: 'white' }}>{item.fName} </Text>
-                <Text style={{ color: 'white' }}>{item.lName}</Text>
+                <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 15 }}>{item.fName} </Text>
+                <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 15 }}>{item.lName}</Text>
             </TouchableOpacity>
         )
     }
-
-
 
     const renderSeparator = () => {
         return (
@@ -97,16 +95,12 @@ const ContactScreen = () => {
 
     }
 
-
-
     return (
 
         <View style={styles.root}>
             <Header />
             <View style={styles.container}>
-                {/* <View>
 
-                </View> */}
                 <View style={styles.flatStyle}>
                     <FlatList
                         data={contacts}
@@ -125,19 +119,20 @@ export default ContactScreen
 
 const styles = StyleSheet.create({
     flatStyle: {
-        height: '100%'
+        height: '94%',
+        padding: 10,
+        top: 15
     },
     imgStyle: {
-        height: 20,
-        width: 20
+        height: 50,
+        width: 50,
+
     },
-    txtContainer: {
-        // borderWidth: 2,
-        // borderColor: 'red'
-    },
+
     imgContainer: {
-        // borderWidth: 2,
-        // borderColor: 'red'
+        borderRadius: 10,
+        overflow: 'hidden',
+        marginRight: '10%'
     },
     itemContainer: {
         backgroundColor: '#1E1E1E',
@@ -145,6 +140,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 10,
         borderRadius: 20,
+        height: 70
     },
     root: {
         justifyContent: 'flex-start',

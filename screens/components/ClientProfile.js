@@ -25,6 +25,8 @@ const ClientProfile = () => {
     const [chatRefKey, setChatRefKey] = useState(null);
     const [chatExist, setChatExist] = useState(false);
     const [counter, setCounter] = useState(0);
+    const [userData, setUserData] = useState([]);
+    const [secUserData, setSecUserData] = useState([]);
 
     const [visible, setVisible] = useState(false);
 
@@ -107,7 +109,7 @@ const ClientProfile = () => {
     }, [counter])
 
     useEffect(() => {
-        const dbRef = ref(db, 'users/musician/' + userId);
+        const dbRef = ref(db, 'users/client/' + userId);
         onValue(dbRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
