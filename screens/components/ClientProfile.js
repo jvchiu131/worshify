@@ -106,6 +106,35 @@ const ClientProfile = () => {
         }
     }, [counter])
 
+    useEffect(() => {
+        const dbRef = ref(db, 'users/musician/' + userId);
+        onValue(dbRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                setSecUserData({
+                    fName: data.first_name || '',
+                    lName: data.lname || '',
+                    profilePic: data.profile_pic || '',
+                });
+            }
+        });
+
+    }, [userId])
+
+    useEffect(() => {
+        const dbRef = ref(db, 'users/logged_users/' + uid);
+        onValue(dbRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                setUserData({
+                    fName: data.first_name || '',
+                    lName: data.lname || '',
+                    profilePic: data.profile_pic || '',
+                });
+            }
+        });
+    }, [uid])
+
 
     //create chat to users with non existing chat
     const createChat = () => {
@@ -119,6 +148,28 @@ const ClientProfile = () => {
             const newChatRef = ref(db, 'chatParticipants/' + newChatRefKey);
             const userChat = ref(db, 'userChats/' + uid);
             const secondUserChat = ref(db, 'userChats/' + userId);
+            const contactRef = ref(db, 'contacts/' + uid + '/' + newChatRefKey);
+            const secContactRef = ref(db, 'contacts/' + userId + '/' + newChatRefKey);
+            const userFName = userData?.fName || '';
+            const userLName = userData?.lName || '';
+            const userPic = userData?.profilePic || '';
+            const user2Fname = secUserData?.fName || '';
+            const user2Lname = secUserData?.lName || '';
+            const user2Pic = secUserData?.profilePic || '';
+
+            const contactData = {
+                fName: user2Fname,
+                lName: user2Lname,
+                profilePic: user2Pic,
+                newChatRefKey
+            }
+
+            const secContactData = {
+                fName: userFName,
+                lName: userLName,
+                profilePic: userPic,
+                newChatRefKey
+            }
 
             const chatData = {
                 [uid]: true,
@@ -131,13 +182,12 @@ const ClientProfile = () => {
                 [newChatRefKey]: newChatRefKey,
             }
             set(newChatRef, chatData);
+            update(contactRef, contactData);
+            update(secContactRef, secContactData);
             update(userChat, userChatData);
             update(secondUserChat, secondUserChatData);
 
             chatRefcontainer = newChatRefKey;
-
-            // console.log(chatRefKey);
-
         }
         setChatExist(true);
         setChatRefKey(chatRefcontainer);

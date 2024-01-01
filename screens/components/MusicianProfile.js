@@ -25,6 +25,8 @@ const MusicianProfile = () => {
     const [chatRefKey, setChatRefKey] = useState(null);
     const [chatExist, setChatExist] = useState(false);
     const [counter, setCounter] = useState(0);
+    const [userData, setUserData] = useState([]);
+    const [secUserData, setSecUserData] = useState([]);
 
     const [visible, setVisible] = useState(false);
 
@@ -52,8 +54,34 @@ const MusicianProfile = () => {
         checkChat();
     }, [])
 
+    useEffect(() => {
+        const dbRef = ref(db, 'users/musician/' + userId);
+        onValue(dbRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                setSecUserData({
+                    fName: data.first_name || '',
+                    lName: data.lname || '',
+                    profilePic: data.profile_pic || '',
+                });
+            }
+        });
 
+    }, [userId])
 
+    useEffect(() => {
+        const dbRef = ref(db, 'users/logged_users/' + uid);
+        onValue(dbRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                setUserData({
+                    fName: data.first_name || '',
+                    lName: data.lname || '',
+                    profilePic: data.profile_pic || '',
+                });
+            }
+        });
+    }, [uid])
 
     //checks if user already has a chat with this user
     const checkChat = () => {
@@ -119,6 +147,28 @@ const MusicianProfile = () => {
             const newChatRef = ref(db, 'chatParticipants/' + newChatRefKey);
             const userChat = ref(db, 'userChats/' + uid);
             const secondUserChat = ref(db, 'userChats/' + userId);
+            const contactRef = ref(db, 'contacts/' + uid + '/' + newChatRefKey);
+            const secContactRef = ref(db, 'contacts/' + userId + '/' + newChatRefKey);
+            const userFName = userData?.fName || '';
+            const userLName = userData?.lName || '';
+            const userPic = userData?.profilePic || '';
+            const user2Fname = secUserData?.fName || '';
+            const user2Lname = secUserData?.lName || '';
+            const user2Pic = secUserData?.profilePic || '';
+
+            const contactData = {
+                fName: user2Fname,
+                lName: user2Lname,
+                profilePic: user2Pic,
+                newChatRefKey
+            }
+
+            const secContactData = {
+                fName: userFName,
+                lName: userLName,
+                profilePic: userPic,
+                newChatRefKey
+            }
 
             const chatData = {
                 [uid]: true,
@@ -131,12 +181,14 @@ const MusicianProfile = () => {
                 [newChatRefKey]: newChatRefKey,
             }
             set(newChatRef, chatData);
+            update(contactRef, contactData);
+            update(secContactRef, secContactData);
             update(userChat, userChatData);
             update(secondUserChat, secondUserChatData);
 
             chatRefcontainer = newChatRefKey;
 
-            // console.log(chatRefKey);
+
 
         }
         setChatExist(true);

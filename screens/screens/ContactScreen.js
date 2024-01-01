@@ -25,18 +25,20 @@ const ContactScreen = () => {
 
     const handleItemPress = (key) => {
         console.log('item presseedd', key)
-        navigation.navigate('Chat', { chatRef: key, chatExist: true });
+        navigation.navigate('Chat', { chatRefKey: key, chatExist: true, });
     };
 
     //extracting user chat rooms
     useEffect(() => {
-        const userChatRef = ref(db, 'userChats/' + uid);
+        const userChatRef = ref(db, 'contacts/' + uid);
         onValue(userChatRef, (snapshot) => {
             let userChatData = []
             snapshot.forEach((child) => {
                 userChatData.push({
-                    key: child.key,
-                    element: child.val()
+                    newChatRefKey: child.val().newChatRefKey,
+                    fName: child.val().fName,
+                    lName: child.val().lName,
+                    profilePic: child.val().profilePic
                 })
             })
             setContacts(userChatData);
@@ -45,7 +47,7 @@ const ContactScreen = () => {
 
     // useEffect(() => {
     //     contacts.map((user) => {
-    //         console.log(user.key)
+    //         console.log(user.newChatRefKey)
     //     })
     // }, [])
 
@@ -68,49 +70,17 @@ const ContactScreen = () => {
     }, [])
 
 
-    useEffect(() => {
-
-        const userRef = ref(db, 'users/logged_users/' + userId.map((item) => console.log(item)));
-        onValue(userRef, (snapshot) => {
-            let userData = []
-            snapshot.forEach((child) => {
-                userData.push({
-                    key: child.key,
-                    firstName: child.val().first_name,
-                    lastName: child.val().lname,
-                    profilePic: child.val().profile_pic
-                })
-
-            })
-            setUserDetails(userData);
-            // console.log(userDetails.map((items) => console.log(items.firstName)))
-            // userDetails.map((item) =>
-            //     console.log(item.firstName))
-        })
-    }, [])
-
-    // useEffect(() => {
-    //     // userDetails.map((pips) => {
-    //     //     console.log(pips.firstName)
-    //     // })
-    //     // console.log(userDetails.firstName)
-    // }, [])
-
-
-
 
     const renderItem = ({ item }) => {
 
-
-
-
         return (
-            <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemPress(item.element)}>
+            <TouchableOpacity style={styles.itemContainer} onPress={() => handleItemPress(item.newChatRefKey)}>
                 <View style={styles.imgContainer}>
                     <ImageBackground source={{ uri: item.profilePic }} style={styles.imgStyle}>
                     </ImageBackground>
                 </View>
-                <Text style={{ color: 'white' }}>{item.element}</Text>
+                <Text style={{ color: 'white' }}>{item.fName} </Text>
+                <Text style={{ color: 'white' }}>{item.lName}</Text>
             </TouchableOpacity>
         )
     }
