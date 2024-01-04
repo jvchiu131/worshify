@@ -93,7 +93,7 @@ const LoginScreen = () => {
 
             <View style={styles.textLogo}>
                 <Logo />
-                <Text style={styles.wors}>WORS<Text style={styles.hify}>HIFY</Text></Text>
+                <Text style={styles.worshify}>WORSHIFY</Text>
             </View>
             <TouchableWithoutFeedback onPressOut={moveBack}>
                 <Animated.View
@@ -137,10 +137,10 @@ const LoginScreen = () => {
                     <Text style={styles.buttonOutlineText}>Register</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity
-                    onPress={() => handleCasualUser()}
-                    style={[styles.rootbtn, styles.rootbtnOutline]}>
-                    <Text style={styles.buttonOutlineText}>Casual User</Text>
+                <TouchableOpacity onPress={handleCasualUser}>
+                    <Text style={{ textDecorationLine: 'underline', color: '#0EB080', textAlign: 'center', paddingTop: 25 }}>
+                        Continue as Casual User
+                    </Text>
                 </TouchableOpacity>
             </View>
             <StatusBar style='light' />
@@ -177,14 +177,12 @@ const styles = StyleSheet.create({
     },
     rootbtnContainer: {
         width: "80%",
-        top: '30%'
+        top: '28%'
     },
-    wors: {
+    worshify: {
         color: '#F9F9F9',
-        fontSize: 35
-    },
-    hify: {
-        color: '#0EB080'
+        fontSize: 35,
+        marginTop: '5%'
     },
     textLogo: {
         position: 'absolute',

@@ -2,6 +2,7 @@
   "expo": {
     "name": "worshify",
     "slug": "worshify",
+    "description": "Capstone project by DEVLEVON",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/logoWorshify.png",
