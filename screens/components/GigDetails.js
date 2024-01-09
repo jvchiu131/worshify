@@ -8,12 +8,10 @@ import { Button } from 'react-native-paper';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { useNavigation } from '@react-navigation/native';
-import { AntDesign } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
-
-
 
 const { height: screenHeight } = Dimensions.get('screen');
 const { width: screenWidth } = Dimensions.get('screen');
@@ -319,6 +317,7 @@ const GigDetails = ({ postID, handleModal }) => {
     }
 
 
+
     const handleApplyCancel = async () => {
         const dbRef = ref(db, 'gigPosts/' + postID + '/usersApplied/' + uid)
 
@@ -385,28 +384,21 @@ const GigDetails = ({ postID, handleModal }) => {
             <ScrollView style={styles.scrollContainer}>
                 <View style={styles.detailContainer}>
                     <View style={styles.titleContainer}>
-                        <Text style={styles.titleStyle}>{postDetails.GigName}</Text>
+                        <Text style={styles.titleStyle}>{postDetails.GigName} : {postDetails.Event_Type}</Text>
                     </View>
                     <View style={{ ...styles.statusContainer, flexDirection: 'row' }}>
-                        <AntDesign name="checkcircle" size={24} color="#0EB080" />
+                        <MaterialCommunityIcons name="checkbox-marked-circle" size={24} color="#0EB080" />
                         <Text style={{ ...styles.statusChip, marginLeft: 15 }}>{postDetails.gigStatus}</Text>
                     </View>
-
-                    <View style={{ ...styles.statusContainer, alignItems: 'center', alignSelf: 'center' }}>
-                        <Text style={{ ...styles.statusChip, marginTop: 10, marginBottom: 20 }}>{postDetails.Event_Type}</Text>
-                    </View>
-
                     <View style={styles.dateTimeContainer}>
                         <View>
-                            <Text>Schedule</Text>
+                            <Text style={{ fontWeight: 'bold', color: 'black', fontSize: 18 }}>Schedule</Text>
                         </View>
-
-                        <View style={styles.dateContainer}>
-
+                        <View style={{ flexDirection: 'row', paddingTop: 15 }}>
                             {schedule.map((sched, index) => (
-                                <TouchableOpacity style={styles.schedItem} onPress={() => handleSet(index)}>
+                                <TouchableOpacity style={styles.schedItem} onPress={() => handleSet(index)} key={index}>
                                     <Text style={{ fontSize: 20, fontWeight: '500' }}>Set</Text>
-                                    <View key={index} style={{
+                                    <View style={{
                                         backgroundColor: '#F0F0F0',
                                         height: 45,
                                         width: 45,
@@ -520,24 +512,6 @@ const GigDetails = ({ postID, handleModal }) => {
                         </View>
                     </Modal>
 
-
-
-                    <View style={styles.InstContainer}>
-                        <View style={styles.instrumentStyle}>
-                            {instruments.map((instrument, index) => (
-                                <View key={index} style={styles.chip}>
-                                    <Text style={styles.instTxt}>{instrument.quantity}</Text>
-                                    <Text style={styles.instTxt}>{instrument.name}</Text>
-                                </View>
-                            ))}
-                        </View>
-                        <View style={styles.genreStyle}>
-                            {genre.map((genres, index) => (
-                                <Text style={[styles.chip, styles.genreTxt]} key={index}>{genres}</Text>
-                            ))}
-                        </View>
-                    </View>
-
                     <TouchableOpacity onPress={() => handleItemPress(userData.key)}>
 
                         <View style={styles.organizerContainer}>
@@ -554,6 +528,27 @@ const GigDetails = ({ postID, handleModal }) => {
 
                     </TouchableOpacity>
 
+                    <View style={styles.InstContainer}>
+                        <Text style={[styles.titleTxt, { textAlign: 'left', color: 'black', fontSize: 15, fontWeight: 'bold' }]}>Instruments</Text>
+                        <View style={[styles.instrumentStyle, { flex: 1 }]}>
+
+                            {instruments.map((instrument, index) => (
+                                <View key={index} style={styles.chip}>
+                                    <Text style={styles.instTxt}>{instrument.quantity}</Text>
+                                    <Text style={styles.instTxt}>{instrument.name}</Text>
+                                </View>
+                            ))}
+                        </View>
+                        <Text style={[styles.titleTxt, { textAlign: 'left', color: 'black', fontSize: 15, fontWeight: 'bold' }]}>Genres</Text>
+                        <View style={[styles.genreStyle, { flex: 1 }]}>
+
+                            {genre.map((genres, index) => (
+                                <Text style={[styles.chip, styles.genreTxt]} key={index}>{genres}</Text>
+                            ))}
+                        </View>
+                    </View>
+
+
                     <View style={styles.aboutContainer}>
                         <View style={styles.aboutTitle}>
                             <Text style={{ fontWeight: 'bold' }}>About Event</Text>
@@ -568,31 +563,30 @@ const GigDetails = ({ postID, handleModal }) => {
 
 
             <View style={styles.btnContainer}>
-                {user && !user.isAnonymous && (
-                    <Button
-                        mode="elevated"
-                        onPress={() => {
-                            if (postDetails.gigStatus === 'Done' || postDetails.gigStatus === 'Cancel' || postDetails.gigStatus === 'Upcoming') {
-                                // Do nothing if the gig is not accepting applications anymore
-                            } else if (applied || alreadyApplied) {
 
-                                // handleApplyCancel();
-                                deleteGig();
-                                sendCancelNotification(clientToken);
-                            } else {
-                                applyGig();
-                                sendPushNotification(clientToken);
-                            }
-                        }}
-                        loading={loading}
-                        buttonColor={postDetails.gigStatus === 'Done' || postDetails.gigStatus === 'Cancel' || postDetails.gigStatus === 'Close' ? 'gray' : applied || alreadyApplied ? 'red' : '#0EB080'}
-                        textColor="white"
-                        style={styles.btnStyle}
-                        disabled={postDetails.gigStatus === 'Done' || postDetails.gigStatus === 'Cancel' || postDetails.gigStatus === 'Close' || postDetails.gigStatus === 'On-going'}
-                    >
-                        {getApplyButtonLabel()}
-                    </Button>
-                )}
+                <Button
+                    mode="elevated"
+                    onPress={() => {
+                        if (postDetails.gigStatus === 'Done' || postDetails.gigStatus === 'Cancel' || postDetails.gigStatus === 'Upcoming') {
+                            // Do nothing if the gig is not accepting applications anymore
+                        } else if (applied || alreadyApplied) {
+
+                            // handleApplyCancel();
+                            deleteGig();
+                            sendCancelNotification(clientToken);
+                        } else {
+                            applyGig();
+                            sendPushNotification(clientToken);
+                        }
+                    }}
+                    loading={loading}
+                    buttonColor={postDetails.gigStatus === 'Done' || postDetails.gigStatus === 'Cancel' || postDetails.gigStatus === 'Close' ? 'gray' : applied || alreadyApplied ? 'red' : '#0EB080'}
+                    textColor="white"
+                    style={styles.btnStyle}
+                    disabled={postDetails.gigStatus === 'Done' || postDetails.gigStatus === 'Cancel' || postDetails.gigStatus === 'Close' || postDetails.gigStatus === 'On-going'}
+                >
+                    {getApplyButtonLabel()}
+                </Button>
             </View>
         </View>
     )

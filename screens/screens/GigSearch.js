@@ -72,11 +72,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         width: screenWidth,
 
+
     },
     container: {
         height: '100%',
         width: screenWidth,
         bottom: screenHeight / 5,
+
     },
     btnContainer: {
         padding: 5,
@@ -95,6 +97,7 @@ const styles = StyleSheet.create({
         height: screenHeight,
         position: 'absolute',
         backgroundColor: '#F9F9F9',
+
 
 
     },

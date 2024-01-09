@@ -136,6 +136,7 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
                 setGigStatus(gigData.GigStatus)
                 setGigGenre(gigData.GenreNeeded)
                 // setGigInstrument(gigData.InstrumentsNeeded);
+
             } else {
                 handleBtnClose(false)
             }
@@ -618,7 +619,7 @@ const ClientGigDetails = ({ postID, handleBtnClose }) => {
 
         // Iterate through acceptedUserKeys array
         acceptedUserKeys.forEach((userKey) => {
-            const musicianRef = ref(db, 'users/musician/' + userKey);
+            const musicianRef = ref(db, 'users/logged_users/' + userKey);
 
             // Start a transaction to increment gigsCompleted value atomically for musicianRef
             // Inside the runTransaction callback for musicianRef

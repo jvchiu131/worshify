@@ -349,11 +349,10 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     flatlistContainer: {
-        height: '100%',
+        height: '90%',
         width: '100%',
-        bottom: screenHeight / 5,
+        bottom: screenHeight / 4,
         padding: 20,
-
     },
     renderContainer: {
 
@@ -361,7 +360,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         padding: 10,
-        borderRadius: 20
+        borderRadius: 20,
+
 
     },
     root: {

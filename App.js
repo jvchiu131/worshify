@@ -134,7 +134,7 @@ function BottomTab() {
 
 
         <Tab.Screen
-          name='Contacts'
+          name='Message'
           component={ContactNav}
           options={{
             tabBarIcon: ({ color, size }) => (

@@ -341,10 +341,11 @@ const styles = StyleSheet.create({
     },
     root: {
         backgroundColor: '#151414',
-        height: screenHeight,
+        height: "93%",
         width: screenWidth,
         bottom: screenHeight / 4.4,
         padding: 15,
+
 
     },
     container: {

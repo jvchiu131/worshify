@@ -60,23 +60,16 @@ const RegisterModal = ({ moveLoginModal }) => {
                             <Text style={styles.typeTxt}>Select Your Role!</Text>
                         </View>
 
-                        <View
-                            style={styles.buttonContainer}>
-                            <TouchableOpacity
-                                onPress={handleClient}
-                                style={styles.button}>
-                                <FontAwesome5 name="user-tie" size={60} color="white" />
-                                <Text style={styles.buttonText}>Client</Text>
+                        <View style={styles.buttonContainer}>
+                            <TouchableOpacity onPress={handleClient} style={{ ...styles.button, marginRight: 10 }}>
+                                <FontAwesome5 name="user-tie" size={35} color="white" />
+                                <Text style={styles.buttonText}>Event Organizer</Text>
                             </TouchableOpacity>
 
 
-                            <TouchableOpacity
-                                onPress={handleMusician}
-                                style={[styles.button, styles.buttonOutline]}>
-                                <MaterialCommunityIcons name="account-music-outline" size={70} color="#0EB080" />
-                                <Text style={styles.buttonOutlineText}>
-                                    Musician
-                                </Text>
+                            <TouchableOpacity onPress={handleMusician} style={{ ...styles.button, ...styles.buttonOutline }}>
+                                <MaterialCommunityIcons name="account-music-outline" size={40} color="#0EB080" />
+                                <Text style={styles.buttonOutlineText}>Musician</Text>
                             </TouchableOpacity>
                         </View>
 
@@ -96,7 +89,7 @@ const RegisterModal = ({ moveLoginModal }) => {
     )
 }
 
-export default RegisterModal
+export default RegisterModal;
 
 const styles = StyleSheet.create({
     root: {
@@ -105,7 +98,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         position: 'relative',
-
     },
     container: {
         justifyContent: 'center',
@@ -113,8 +105,7 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 50,
         borderTopRightRadius: 50,
         width: '100%',
-        height: '100%',
-
+        height: '60%',
     },
     regContainer: {
         justifyContent: 'center',
@@ -123,17 +114,16 @@ const styles = StyleSheet.create({
     },
     RegTxt: {
         fontSize: 24,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
     typeContainer: {
         justifyContent: 'center',
         alignItems: 'center',
         bottom: '7%',
-
     },
     typeTxt: {
         fontSize: 15,
-        fontWeight: 'normal'
+        fontWeight: 'normal',
     },
     buttonContainer: {
         width: "100%",
@@ -142,33 +132,30 @@ const styles = StyleSheet.create({
         marginTop: 40,
         flexDirection: 'row',
         bottom: '5%',
-
     },
     button: {
         backgroundColor: '#0EB080',
-        width: '50%',
+        width: '45%',
         alignItems: 'center',
-        paddingVertical: '15%',
+        paddingVertical: '10%',
         borderRadius: 10,
         borderWidth: 2,
-        borderColor: '#0EB080'
+        borderColor: '#0EB080',
     },
     buttonOutline: {
         backgroundColor: '#F9F9F9',
         borderColor: '#0EB080',
-        borderWidth: 2,
-
+        borderWidth: 1,
     },
     buttonText: {
         color: '#F9F9F9',
         fontWeight: '700',
         fontSize: 16,
         marginTop: "5%",
-
     },
     buttonOutlineText: {
         color: '#0EB080',
         fontWeight: '700',
         fontSize: 16,
-    }
-})
+    },
+});

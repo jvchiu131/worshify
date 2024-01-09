@@ -50,11 +50,11 @@ const UpcomingGigs = () => {
                     </View>
                     <View style={styles.txtContainer}>
                         <Text style={styles.gigNameStyle}>{gigPost.Gig_Name}</Text>
-                        <View style={[gigPost.gigStatus === 'Available' ? styles.gigStatusGreen :
-                            gigPost.gigStatus === 'Cancel' ? styles.gigStatusRed :
-                                gigPost.gigStatus === 'On-going' ? styles.gigStatusYellow :
-                                    gigPost.gigStatus === 'Done' ? styles.gigStatusGreen :
-                                        styles.gigStatusGray]}>
+                        <View style={[gigPost.gigStatus === 'Available' ? [styles.gigStatusGreen, styles.addressContainer] :
+                            gigPost.gigStatus === 'Cancel' ? [styles.gigStatusRed, styles.addressContainer] :
+                                gigPost.gigStatus === 'On-going' ? [styles.gigStatusYellow, styles.addressContainer] :
+                                    gigPost.gigStatus === 'Done' ? [styles.gigStatusGreen, styles.addressContainer] :
+                                        [styles.gigStatusGray, styles.addressContainer]]}>
                             <Text style={styles.gigStatusStyle}>
                                 {gigPost.gigStatus}
                             </Text>
@@ -85,6 +85,7 @@ export default UpcomingGigs;
 const styles = StyleSheet.create({
     gigStatusGreen: {
         backgroundColor: "#0EB080", // Green color
+
     },
     gigStatusRed: {
         backgroundColor: 'red', // Red color
@@ -99,15 +100,12 @@ const styles = StyleSheet.create({
         backgroundColor: '#151414',
         justifyContent: 'space-between'
     },
-    txtContainer: {
-        width: '75%',
-        height: '100%',
-
-    },
-    imgContainer: {
-        height: '100%',
-        width: '20%',
-        marginRight: 15
+    addressContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        width: '35%',
+        borderRadius: 10,
+        paddingVertical: 2
     },
     gigContainer: {
         borderWidth: 1,
@@ -115,17 +113,88 @@ const styles = StyleSheet.create({
         padding: 10,
         marginBottom: 10,
         flexDirection: 'row',
-        height: '10%',
-        borderRadius: 10
+        height: '9%',
+        borderRadius: 10,
+        // alignItems: 'center'
     },
     gigNameStyle: {
         color: 'white',
         width: '95%',
-        marginBottom: '5%'
+        marginBottom: '2%',
+        fontWeight: 'bold'
     },
     gigStatusStyle: {
         color: 'white',
         fontWeight: 'bold',
+        padding: 2
+    },
+    // container: {
+    //     flexDirection: 'row',
+    //     justifyContent: 'space-evenly',
+    // },
+    // renderStyle: {
+    //     marginHorizontal: 2,
+    // },
+    // titleStyle: {
+    //     color: 'white',
+    //     fontSize: 13,
+    //     fontWeight: 'bold',
+    //     width: '107%'
+    // },
+    // titleContainer: {
+    //     margin: 2
+    // },
+    // txtContainer: {
+    //     width: '60%',
+    // },
+    // imgContainer: {
+    //     height: '70%',
+    //     width: '30%',
+    //     borderRadius: 10,
+    //     overflow: 'hidden',
+    // },
+    // imgStyle: {
+    //     width: '100%',
+    //     height: 70,
+    // },
+    txtStyle: {
+        color: 'white',
+        fontSize: 11,
+        padding: 5,
+        borderRadius: 10,
+        overflow: 'hidden',
+        fontWeight: 'bold'
+    },
+    renderStyle: {
+        marginHorizontal: 2,
+    },
+    titleStyle: {
+        color: 'white',
+        fontSize: 13,
+        fontWeight: 'bold',
+        width: '107%',
+        borderWidth: 2,
+        borderColor: 'red'
+    },
+    titleContainer: {
+        margin: 2
+    },
+    txtContainer: {
+        width: '60%',
+        marginLeft: 10
+    },
+    imgContainer: {
+        height: '90%',
+        width: '30%',
+        borderRadius: 10,
+        overflow: 'hidden',
+        borderWidth: 1,
+        borderColor: '#0EB080',
+        alignSelf: 'center'
+    },
+    imgStyle: {
+        width: '100%',
+        height: 70,
     },
     scrollContainer: {
         flexGrow: 1,

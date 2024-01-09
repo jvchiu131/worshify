@@ -884,28 +884,23 @@ const ViewGig = ({ postID, handleModal }) => {
             <ScrollView style={styles.scrollContainer}>
                 <View style={styles.detailContainer}>
                     <View style={styles.titleContainer}>
-                        <Text style={styles.titleStyle}>{postDetails.GigName}</Text>
+                        <Text style={styles.titleStyle}>{postDetails.GigName} : {postDetails.Event_Type}</Text>
                     </View>
                     <View style={{ ...styles.statusContainer, flexDirection: 'row' }}>
                         <AntDesign name="checkcircle" size={24} color="#0EB080" />
                         <Text style={{ ...styles.statusChip, marginLeft: 15 }}>{postDetails.gigStatus}</Text>
                     </View>
 
-                    <View style={{ ...styles.statusContainer, alignItems: 'center', alignSelf: 'center' }}>
-                        <Text style={{ ...styles.statusChip, marginTop: 10, marginBottom: 20 }}>{postDetails.Event_Type}</Text>
-                    </View>
 
                     <View style={styles.dateTimeContainer}>
                         <View>
-                            <Text>Schedule</Text>
+                            <Text style={{ fontWeight: 'bold', color: 'black', fontSize: 18 }}>Schedule</Text>
                         </View>
-
-                        <View style={styles.dateContainer}>
-
+                        <View style={{ flexDirection: 'row', paddingTop: 15 }}>
                             {schedule.map((sched, index) => (
-                                <TouchableOpacity style={styles.schedItem} onPress={() => handleSet(index)}>
+                                <TouchableOpacity style={styles.schedItem} onPress={() => handleSet(index)} key={index}>
                                     <Text style={{ fontSize: 20, fontWeight: '500' }}>Set</Text>
-                                    <View key={index} style={{
+                                    <View style={{
                                         backgroundColor: '#F0F0F0',
                                         height: 45,
                                         width: 45,
@@ -979,7 +974,9 @@ const ViewGig = ({ postID, handleModal }) => {
 
 
                     <View style={styles.InstContainer}>
-                        <View style={styles.instrumentStyle}>
+                        <Text style={[styles.titleTxt, { textAlign: 'left', color: 'black', fontSize: 15, fontWeight: 'bold' }]}>Instruments</Text>
+                        <View style={[styles.instrumentStyle, { flex: 1 }]}>
+
                             {instruments.map((instrument, index) => (
                                 <View key={index} style={styles.chip}>
                                     <Text style={styles.instTxt}>{instrument.quantity}</Text>
@@ -987,7 +984,9 @@ const ViewGig = ({ postID, handleModal }) => {
                                 </View>
                             ))}
                         </View>
-                        <View style={styles.genreStyle}>
+                        <Text style={[styles.titleTxt, { textAlign: 'left', color: 'black', fontSize: 15, fontWeight: 'bold' }]}>Genres</Text>
+                        <View style={[styles.genreStyle, { flex: 1 }]}>
+
                             {genre.map((genres, index) => (
                                 <Text style={[styles.chip, styles.genreTxt]} key={index}>{genres}</Text>
                             ))}
@@ -1207,7 +1206,7 @@ const styles = StyleSheet.create({
         padding: 10
     },
     imgContainer: {
-        height: '25%',
+        height: '30%',
         width: '100%',
     },
     imgStyle: {
